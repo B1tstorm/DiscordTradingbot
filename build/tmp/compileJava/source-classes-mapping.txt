@@ -1,0 +1,2 @@
+de/fh_kiel/discordtradingbot/DemoBot.java
+ de.fh_kiel.discordtradingbot.DemoBot
