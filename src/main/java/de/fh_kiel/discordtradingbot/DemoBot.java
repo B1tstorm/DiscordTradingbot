@@ -15,7 +15,10 @@ public class DemoBot {
 
         //Bei Discord über Token authentifizieren
         GatewayDiscordClient client =
-                DiscordClientBuilder.create(DiscordAuthToken).build().login().block();
+                DiscordClientBuilder.create(DiscordAuthToken)
+                        .build()
+                        .login()
+                        .block();
 
         //Erfolgreiche Authentifikation nach Stdout loggen
         client.getEventDispatcher().on(ReadyEvent.class)
