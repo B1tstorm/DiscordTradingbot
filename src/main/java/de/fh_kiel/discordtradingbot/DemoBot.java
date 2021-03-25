@@ -38,5 +38,7 @@ public class DemoBot {
 
         //Verbindung schließen
         client.onDisconnect().block();
+
+        // Wo kann ich jetzt mit dem Bot interagieren?
     }
 }
