@@ -39,6 +39,7 @@ public class DemoBot {
         //Verbindung schließen
         client.onDisconnect().block();
 
+        //TODO: Nachricht senden, wenn eingeloggt.
         // Wo kann ich jetzt mit dem Bot interagieren?
     }
 }
