@@ -1,4 +1,4 @@
-package Transactions;
+package de.fh_kiel.discordtradingbot.Transactions;
 
 public class Transaction {
 

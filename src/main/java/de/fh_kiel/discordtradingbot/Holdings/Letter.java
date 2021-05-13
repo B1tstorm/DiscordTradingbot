@@ -1,4 +1,4 @@
-package Holdings;
+package de.fh_kiel.discordtradingbot.Holdings;
 
 public class Letter {
 

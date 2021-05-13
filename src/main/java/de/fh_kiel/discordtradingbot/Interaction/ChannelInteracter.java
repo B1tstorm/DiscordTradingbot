@@ -1,4 +1,4 @@
-package Interaction;
+package de.fh_kiel.discordtradingbot.Interaction;
 
 public class ChannelInteracter {
 

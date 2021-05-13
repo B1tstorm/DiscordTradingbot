@@ -1,4 +1,4 @@
-package Analysis;
+package de.fh_kiel.discordtradingbot.Analysis;
 
 public class LogListener {
 
