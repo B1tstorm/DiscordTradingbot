@@ -11,4 +11,14 @@ public class Cart {
 	private ArrayList<Letter> BuchstabenSoll;
 	private ArrayList<Letter> BuchstabenIst;
 
+	public Cart(Integer ID, LocalTime time, ArrayList<Letter> buchstabenSoll) {
+		this.ID = ID;
+		Time = time;
+		BuchstabenSoll = buchstabenSoll;
+		this.value = 0;
+		//berechne den gesamt value des carts
+		for (Letter l : buchstabenSoll) {
+			value += l.getValue();
+		}
+	}
 }

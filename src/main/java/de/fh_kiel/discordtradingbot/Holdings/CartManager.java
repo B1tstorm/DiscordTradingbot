@@ -4,6 +4,8 @@ import java.util.ArrayList;
 
 public class CartManager {
 
+	///für cart ID vergabe. wird jedes mal inkrementiert
+	private Integer IdCounter = 0;
 	private ArrayList<Cart> carts;
 
 	public void createCart() {
@@ -29,5 +31,7 @@ public class CartManager {
 		// TODO - implement CartManager.addLetterToCart
 		throw new UnsupportedOperationException();
 	}
-
+	public Integer getIdCounter() {
+		return IdCounter;
+	}
 }
