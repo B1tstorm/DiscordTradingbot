@@ -46,4 +46,5 @@ public class Cart {
 	public Integer getValue() {
 		return value;
 	}
+
 }
