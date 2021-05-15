@@ -16,10 +16,11 @@ class CartManagerTest {
         ArrayList<Letter> sollTestArray = new ArrayList<>();
         Letter letter1 = new Letter('A', 20);
         Letter letter2 = new Letter('B', 10);
-        sollTestArray.add(letter1);
-        sollTestArray.add(letter2);
-        Cart cart = new Cart(testManager.getIdCounter(), java.time.LocalTime.now(), sollTestArray);
-        assertThat(sollTestArray).isNotEmpty();
+
+        solltestArray.add(letter1);
+        solltestArray.add(letter2);
+        Cart cart = new Cart(java.time.LocalTime.now(), solltestArray);
+        assertThat(solltestArray).isNotEmpty();
 
     }
 

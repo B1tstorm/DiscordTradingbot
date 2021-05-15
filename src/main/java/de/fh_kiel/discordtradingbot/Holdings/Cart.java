@@ -11,8 +11,9 @@ public class Cart {
 	private ArrayList<Letter> buchstabenSoll;
 	private ArrayList<Letter> buchstabenIst;
 
-	public Cart(Integer ID, LocalTime time, ArrayList<Letter> buchstabenSoll) {
-		this.id = ID;
+
+	public Cart(LocalTime time, ArrayList<Letter> buchstabenSoll) {
+		this.id = CartManager.IdCounter++;
 		this.time = time;
 		this.buchstabenSoll = buchstabenSoll;
 		this.value = 0;
