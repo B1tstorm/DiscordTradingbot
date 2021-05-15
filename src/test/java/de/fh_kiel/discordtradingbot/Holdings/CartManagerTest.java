@@ -13,13 +13,13 @@ class CartManagerTest {
     @Test
     void createCart() {
         CartManager testManager = new CartManager();
-        ArrayList<Letter> solltestArray = new ArrayList<>();
+        ArrayList<Letter> sollTestArray = new ArrayList<>();
         Letter letter1 = new Letter('A', 20);
         Letter letter2 = new Letter('B', 10);
-        solltestArray.add(letter1);
-        solltestArray.add(letter2);
-        Cart cart = new Cart(testManager.getIdCounter(), java.time.LocalTime.now(), solltestArray);
-        assertThat(solltestArray).isNotEmpty();
+        sollTestArray.add(letter1);
+        sollTestArray.add(letter2);
+        Cart cart = new Cart(testManager.getIdCounter(), java.time.LocalTime.now(), sollTestArray);
+        assertThat(sollTestArray).isNotEmpty();
 
     }
 
@@ -29,5 +29,13 @@ class CartManagerTest {
 
     @Test
     void addLetterToCart() {
+        CartManager testManager = new CartManager();
+        ArrayList<Letter> sollTestArray = new ArrayList<>();
+        Letter letter1 = new Letter('A', 20);
+        sollTestArray.add(letter1);
+        Cart cart = new Cart(testManager.getIdCounter(), java.time.LocalTime.now(), sollTestArray);
+
+        assertThat(cart.getBuchstabenIst().size()).isLessThanOrEqualTo(cart.getBuchstabenSoll().size());
+        //assertThat(testManager.addLetterToCart('A', 1));
     }
 }
