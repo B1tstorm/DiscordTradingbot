@@ -2,7 +2,7 @@ package de.fh_kiel.discordtradingbot.Transactions;
 
 public class Bidder {
 
-	private int currentBid;
+	private Integer currentBid;
 
 	public void Bid() {
 		// TODO - implement Bidder.Bid

@@ -2,12 +2,12 @@ package de.fh_kiel.discordtradingbot.Analysis;
 
 public class Handelsverlauf {
 
-	private int transaktionID;
-	private int buyer;
-	private int seller;
-	private int date;
-	private int product;
-	private int price;
+	private Integer transaktionID;
+	private Integer buyer;
+	private Integer seller;
+	private Integer date;
+	private Integer product;
+	private Integer price;
 
 	public void showTradingHistory() {
 		// TODO - implement Handelsverlauf.showTradingHistory

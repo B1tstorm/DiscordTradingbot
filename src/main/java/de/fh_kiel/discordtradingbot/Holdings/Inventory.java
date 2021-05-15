@@ -1,15 +1,17 @@
 package de.fh_kiel.discordtradingbot.Holdings;
 
+import java.util.ArrayList;
+
 public class Inventory {
 
 	private ArrayList<Letter> letters;
-	private int wallet;
+	private Integer wallet;
 
 	/**
 	 * 
 	 * @param letter
 	 */
-	private int calculateValue(Letter letter) {
+	private Integer calculateValue(Letter letter) {
 		// TODO - implement Inventory.calculateValue
 		throw new UnsupportedOperationException();
 	}
@@ -18,7 +20,7 @@ public class Inventory {
 	 * 
 	 * @param amount
 	 */
-	public boolean updateWallet(int amount) {
+	public Boolean updateWallet(Integer amount) {
 		// TODO - implement Inventory.updateWallet
 		throw new UnsupportedOperationException();
 	}

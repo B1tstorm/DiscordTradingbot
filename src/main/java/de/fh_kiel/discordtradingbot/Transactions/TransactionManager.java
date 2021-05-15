@@ -1,6 +1,9 @@
 package de.fh_kiel.discordtradingbot.Transactions;
 
-import Holdings.*;
+
+import de.fh_kiel.discordtradingbot.Holdings.Cart;
+
+import java.util.HashMap;
 
 public class TransactionManager {
 
@@ -22,7 +25,7 @@ public class TransactionManager {
 	 * @param transactionKind
 	 * @param product
 	 */
-	public bool startTransaction(String traidingpartner, int Preis, String transactionKind, String product) {
+	public Boolean startTransaction(String traidingpartner, Integer Preis, String transactionKind, String product) {
 		// TODO - implement TransactionManager.startTransaction
 		throw new UnsupportedOperationException();
 	}

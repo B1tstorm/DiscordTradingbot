@@ -1,5 +1,7 @@
 package de.fh_kiel.discordtradingbot.Holdings;
 
+import java.util.ArrayList;
+
 public class CartManager {
 
 	private ArrayList<Cart> carts;
@@ -13,7 +15,7 @@ public class CartManager {
 	 * 
 	 * @param cartID
 	 */
-	public void deleteCart(int cartID) {
+	public void deleteCart(Integer cartID) {
 		// TODO - implement CartManager.deleteCart
 		throw new UnsupportedOperationException();
 	}
@@ -23,7 +25,7 @@ public class CartManager {
 	 * @param letter
 	 * @param cartID
 	 */
-	public void addLetterToCart(char letter, int cartID) {
+	public void addLetterToCart(Character letter, Integer cartID) {
 		// TODO - implement CartManager.addLetterToCart
 		throw new UnsupportedOperationException();
 	}

@@ -1,8 +1,8 @@
 package de.fh_kiel.discordtradingbot.Interaction;
 
-public class ChannelInteracter {
-
-	private Channel channel;
+public class ChannelInteracter implements EventListener {
+	private String tag;
+	private String channelCommand;
 
 	public void operation() {
 		// TODO - implement ChannelInteracter.operation
@@ -13,18 +13,23 @@ public class ChannelInteracter {
 	 * 
 	 * @param message
 	 */
-	public bool writeMessage(String message) {
+	public Boolean writeMessage(String message) {
 		// TODO - implement ChannelInteracter.writeMessage
 		throw new UnsupportedOperationException();
 	}
 
 	/**
-	 * 
+	 *
 	 * @param emoji
+	 * @return Boolean
 	 */
-	public boolean reactEmoji(string emoji) {
+	public Boolean reactEmoji(String emoji) {
 		// TODO - implement ChannelInteracter.reactEmoji
 		throw new UnsupportedOperationException();
 	}
 
+	@Override
+	public void update(String tag, String channelCommand) {
+		System.out.println("Tag: " + tag + " channelCommand: " + channelCommand);
+	}
 }

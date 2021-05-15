@@ -1,11 +1,14 @@
 package de.fh_kiel.discordtradingbot.Holdings;
 
+import java.time.LocalTime;
+import java.util.ArrayList;
+
 public class Cart {
 
-	private int ID;
+	private Integer ID;
 	private LocalTime Time;
-	private int value;
-	private List BuchstabenSoll;
-	private List BuchstabenIst;
+	private Integer value;
+	private ArrayList<Letter> BuchstabenSoll;
+	private ArrayList<Letter> BuchstabenIst;
 
 }
