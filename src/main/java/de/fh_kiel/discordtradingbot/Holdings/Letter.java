@@ -13,8 +13,9 @@ public class Letter {
 		return value;
 	}
 
-	public Letter(Character letter, Integer value) {
+	public Letter(Character letter, Integer amount,Integer value) {
 		this.letter = letter;
+		this.amount = amount;
 		this.value = (value<0)? 0 : value;
 
 
