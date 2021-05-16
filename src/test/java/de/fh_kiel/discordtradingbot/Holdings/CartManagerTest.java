@@ -45,13 +45,6 @@ class CartManagerTest {
 
     @Test
     void addLetterToCart() {
-        CartManager testManager = new CartManager();
-        ArrayList<Letter> sollTestArray = new ArrayList<>();
-        Letter letter1 = new Letter('A', 20);
-        sollTestArray.add(letter1);
-        Cart cart = new Cart(sollTestArray);
 
-        assertThat(cart.getBuchstabenIst().size()).isLessThanOrEqualTo(cart.getBuchstabenSoll().size());
-        //assertThat(testManager.addLetterToCart('A', 1));
     }
 }
