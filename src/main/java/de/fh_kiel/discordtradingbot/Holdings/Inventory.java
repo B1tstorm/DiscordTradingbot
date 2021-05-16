@@ -4,8 +4,15 @@ import java.util.ArrayList;
 
 public class Inventory {
 
-	private ArrayList<Letter> letters;
+	private static ArrayList<Letter> letters;
 	private Integer wallet;
+
+	public Inventory() {
+		// Alle 26 Buchstaben von A - Z werden mittels ascii initial gespeichert
+		for (int ascii = 65; ascii < 91; ascii++) {
+			letters.add(new Letter((char)ascii, 0, 1));
+		}
+	}
 
 	/**
 	 * 
