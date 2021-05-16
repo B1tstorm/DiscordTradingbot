@@ -2,7 +2,9 @@ package de.fh_kiel.discordtradingbot.Transactions;
 
 
 import de.fh_kiel.discordtradingbot.Holdings.Cart;
+import de.fh_kiel.discordtradingbot.Holdings.Letter;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class TransactionManager {
@@ -10,7 +12,7 @@ public class TransactionManager {
 	private HashMap<Integer, Transaction> transactions;
 
 	/**
-	 * 
+	 *
 	 * @param input
 	 */
 	private Cart checkInventory(String input) {
@@ -19,7 +21,7 @@ public class TransactionManager {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param traidingpartner
 	 * @param Preis
 	 * @param transactionKind
@@ -27,6 +29,14 @@ public class TransactionManager {
 	 */
 	public Boolean startTransaction(String traidingpartner, Integer Preis, String transactionKind, String product) {
 		// TODO - implement TransactionManager.startTransaction
+		//wandel den produkt in letterArray
+		ArrayList<Letter> letterArray = new ArrayList<>();
+
+
+		Transaction transaction= new Transaction(traidingpartner,transactionKind);
+
+
+
 		throw new UnsupportedOperationException();
 	}
 
