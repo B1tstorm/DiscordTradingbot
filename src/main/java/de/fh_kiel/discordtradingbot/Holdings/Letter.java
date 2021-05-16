@@ -6,15 +6,19 @@ public class Letter {
 
 	private Character letter;
 	private Integer amount;
+	private Integer value;
+
 
 	public Integer getValue() {
 		return value;
 	}
 
-	private Integer value;
-
 	public Letter(Character letter, Integer value) {
 		this.letter = letter;
-		this.value = value;
+		this.value = (value<0)? 0 : value;
+
+
 	}
+
+
 }

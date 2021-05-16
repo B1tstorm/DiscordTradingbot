@@ -12,9 +12,9 @@ public class Cart {
 	private ArrayList<Letter> buchstabenIst;
 
 
-	public Cart(LocalTime time, ArrayList<Letter> buchstabenSoll) {
-		this.id = CartManager.IdCounter++;
-		this.time = time;
+	public Cart( ArrayList<Letter> buchstabenSoll) {
+		this.id = ++CartManager.IdCounter;
+		this.time = java.time.LocalTime.now();
 		this.buchstabenSoll = buchstabenSoll;
 		this.value = 0;
 		//berechne den gesamt value des carts

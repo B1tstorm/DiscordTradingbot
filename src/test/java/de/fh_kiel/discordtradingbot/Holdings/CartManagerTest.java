@@ -14,21 +14,29 @@ class CartManagerTest {
     @Test
     void createCart() {
         CartManager testManager = new CartManager();
-        ArrayList<Letter> solltestArray = new ArrayList<>();
+        ArrayList<Letter> buchstabenssollTest = new ArrayList<>();
         Letter letter1 = new Letter('A', 20);
         Letter letter2 = new Letter('B', 10);
-        solltestArray.add(letter1);
-        solltestArray.add(letter2);
-        LocalTime time = java.time.LocalTime.now();
-        Cart cart = new Cart(time, solltestArray);
+        Letter letter3 = new Letter('C', -100);
+        buchstabenssollTest.add(letter1);
+        buchstabenssollTest.add(letter2);
+        buchstabenssollTest.add(letter3);
+        Cart cart = new Cart(buchstabenssollTest);
 
-        testManager.createCart(time,solltestArray);
-
-       // assertSame(testManager.getCarts().get(0), cart);
-       // assertEquals(testManager.getCarts().get(0), cart);
-        assertThat(testManager.getCarts().get(0).getBuchstabenSoll()).isEqualTo(solltestArray);
+        testManager.createCart(buchstabenssollTest);
+        //test ob "buchstabenSoll" im cartManager/cats/index0 richtig inzialisieet wurde
+        assertThat(testManager.getCarts().get(0).getBuchstabenSoll()).isEqualTo(buchstabenssollTest);
+        //test ob "value" im cartManager/cats/index0 richtig inzialisieet wurde
         assertThat(testManager.getCarts().get(0).getValue()).isEqualTo(cart.getValue());
-        //assertThat(testManager.createCart(time,solltestArray).getCats,)
+        //test ob die Value der Buchstaben richitg gerechnet wurde
+        assertThat(cart.getValue()).isEqualTo(letter1.getValue()+letter2.getValue());
+        //test ob negative values vorhanden sind
+        for (Cart c :testManager.getCarts()) {
+            for (Letter l : c.getBuchstabenSoll()) {
+                assertThat(l.getValue()).isNotNegative();
+            }
+        }
+
     }
 
     @Test
@@ -41,7 +49,7 @@ class CartManagerTest {
         ArrayList<Letter> sollTestArray = new ArrayList<>();
         Letter letter1 = new Letter('A', 20);
         sollTestArray.add(letter1);
-        Cart cart = new Cart(java.time.LocalTime.now(), sollTestArray);
+        Cart cart = new Cart(sollTestArray);
 
         assertThat(cart.getBuchstabenIst().size()).isLessThanOrEqualTo(cart.getBuchstabenSoll().size());
         //assertThat(testManager.addLetterToCart('A', 1));

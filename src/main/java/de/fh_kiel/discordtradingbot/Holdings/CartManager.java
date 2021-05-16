@@ -12,10 +12,13 @@ public class CartManager {
 
 	private ArrayList<Cart> carts = new ArrayList<>();
 
-	public void createCart(LocalTime time, ArrayList<Letter> buchstabenSoll) {
+	// Das
+	public void createCart(ArrayList<Letter> buchstabenSoll) {
 		// TODO - implement CartManager.createCart
 		//throw new UnsupportedOperationException();
-		this.carts.add(new Cart (time, buchstabenSoll));
+
+		this.carts.add(new Cart (buchstabenSoll));
+		//this.carts.add(cart);
 	}
 
 	/**
