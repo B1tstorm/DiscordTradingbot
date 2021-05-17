@@ -42,17 +42,22 @@ public class TransactionManager {
 	}
 
 	//prüft ob produkt einen bestimmten Wert wert ist
-	public Boolean isProduktWorth(Integer price, String  product) {
+	public Boolean isProduktWorth(Integer price, String product) {
 		//ToDo Method is to be tested
-		int temp_totalValue = 0;
+		int tempTotalValue = 0;
 		char[] char_arr = product.toCharArray();
-		ArrayList<Letter> letterArray =Inventory.getLetters();
+		ArrayList<Letter> letterArray = Inventory.getLetters();
 		//rechne gesamtWert vom product
 		for (char c : char_arr) {
-			 temp_totalValue +=letterArray.get((int)c-65).getValue();
+			//zugriff auf werte im Inventar Letter Array mit ascii index berechnung
+			 tempTotalValue += letterArray.get((int)c-65).getValue();
 		}
-		if (temp_totalValue == 0) return false;
-		return temp_totalValue <= price;
+
+		// Der Fall wenn wir auf einen Buchstaben bieten können und der Buchstabe bei uns einen Wert von 0 hat, dann bieten wir nicht mit.
+		if (tempTotalValue == 0) return false;
+		// Der Fall wenn wir Buchstaben verkaufen und mehr oder gleichviel zahlen möchte (price), wie alle Buchstaben zusammen wert sind (tempTotalValue, dann true
+		return tempTotalValue <= price;
+		// TODO für später: falls tempTotalValue z.B. 5% mehr wäre als das Gebot, trotzem verkaufen
 	}
 
 	public void executeTransaction(Integer eventId, Integer price, String product){
@@ -67,7 +72,7 @@ public class TransactionManager {
 	}
 
 	//TODO -implement update()
-	public void update(){
+	public void update() {
 		//Methode soll sich Infos vom ChannelInteractor holen (observer) wie
 		// tradingPartner //price //transactionKind //eventId //Product
 		//Je nach transactionKind wied eine Methode aufgerufen

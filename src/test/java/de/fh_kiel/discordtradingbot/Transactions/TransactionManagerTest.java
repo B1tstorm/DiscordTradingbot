@@ -11,7 +11,7 @@ class TransactionManagerTest {
     //kein TDD TEST
     @Test
     void isProduktWorth() {
-        int preis = 3;
+        int preis = 2;
         Inventory inventory = new Inventory();
         String product = "ABC";
         TransactionManager transactionManager = new TransactionManager();
@@ -19,6 +19,11 @@ class TransactionManagerTest {
         Boolean b = transactionManager.isProduktWorth(preis,product );
 
         System.out.println(b);
+
+    }
+
+    @Test
+    void update(){
 
     }
 
