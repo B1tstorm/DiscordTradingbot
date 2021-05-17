@@ -9,15 +9,14 @@ public class Transaction {
 	private String status;
 	private String transactionKind;
 
-	public Transaction(String traidingpartner,String transactionKind) {
+	public Transaction(String transactionKind) {
 		this.id = Transaction.IdCounter++;
 		this.transactionKind = transactionKind;
-		this.traidingPartner = traidingpartner;
 		this.status="waiting";
 	}
 
-	public void bid(Integer auctionId){
-
+	public void bid(Integer eventId) {
+		System.out.println("ich bidde gerade");
 	}
 
 	//getter and setter
