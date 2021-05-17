@@ -14,9 +14,9 @@ public class ChannelListener {
 	}
 
 	// TODO Channel abhören
-	public void listenToChannel(String channelId, String channelCommand) {
+	public void listenToChannel(String eventType, Integer price, Integer eventId, String product) {
 		if (channelCommand.equals("!bid")) {
-			events.notify("bieten", "!bid_an_A_for_20");
+			events.notify(eventType, price, eventId, product);
 		}
 	}
 }

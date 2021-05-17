@@ -29,7 +29,7 @@ public class ChannelInteracter implements EventListener {
 	}
 
 	@Override
-	public void update(String tag, String channelCommand) {
-		System.out.println("Tag: " + tag + " channelCommand: " + channelCommand);
+	public void update(String eventType, Integer price, Integer eventId, String product) {
+		System.out.println("EventType: " + eventType + " Preis: " + price);
 	}
 }
