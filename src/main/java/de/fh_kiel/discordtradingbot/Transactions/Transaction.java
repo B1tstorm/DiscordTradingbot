@@ -15,7 +15,7 @@ public class Transaction {
 		this.status="waiting";
 	}
 
-	public void bid(Integer eventId) {
+	public void bid(Integer eventId, Integer currentBid) {
 		System.out.println("ich bidde gerade");
 	}
 
