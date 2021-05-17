@@ -22,16 +22,11 @@ public class TransactionManager implements EventListener {
         throw new UnsupportedOperationException();
     }
 
-    public void startTransaction(Integer eventId, Integer price, String eventType, String product) {
+    public Transaction startTransaction(String eventType) {
         // TODO Test?
         //in auction/bid Fall
-        if (eventType.equals("auction")) {
-            if (isProduktWorth(price, product)) {
-                Transaction auctionTransaction = new Transaction(eventType);
-                TransactionManager.transactions.put(eventId, auctionTransaction);
-                auctionTransaction.bid(eventId, price);
-            }
-        }
+        return new Transaction(eventType);
+
         // TODO - implement TransactionManager.startTransaction in sell Fall
     }
 
@@ -75,9 +70,14 @@ public class TransactionManager implements EventListener {
         //kind kann folgends sein ?: auction start... auction versteigerung..... auction Ende/gewonnen...... seg will kaufen
 
         //prüfe ob eventId bekannt ist ggf. bidde mit
-        if (TransactionManager.getTransactions().get(eventId) != null) {
-            if (isProduktWorth(price, product)) {
+        if (eventType.equals("auction") && isProduktWorth(price, product)) {
+            if (TransactionManager.getTransactions().get(eventId) != null) {
                 TransactionManager.getTransactions().get(eventId).bid(eventId, price);
+                //wenn evenID neu ist erstelle eine neue transaction
+            } else {
+                Transaction auctionTransaction = startTransaction(eventType);
+                TransactionManager.transactions.put(eventId, auctionTransaction);
+                auctionTransaction.bid(eventId, price);
             }
         }
 
