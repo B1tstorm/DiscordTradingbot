@@ -9,6 +9,10 @@ public class Letter {
 	private Integer value;
 
 
+	public Character getLetter() {
+		return letter;
+	}
+
 	public Integer getValue() {
 		return value;
 	}

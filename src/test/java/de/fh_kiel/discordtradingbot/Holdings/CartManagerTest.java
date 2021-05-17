@@ -15,9 +15,9 @@ class CartManagerTest {
     void createCart() {
         CartManager testManager = new CartManager();
         ArrayList<Letter> buchstabenssollTest = new ArrayList<>();
-        Letter letter1 = new Letter('A', 20);
-        Letter letter2 = new Letter('B', 10);
-        Letter letter3 = new Letter('C', -100);
+        Letter letter1 =  Inventory.getLetters().get(0);
+        Letter letter2 =  Inventory.getLetters().get(1);
+        Letter letter3 =  Inventory.getLetters().get(2);
         buchstabenssollTest.add(letter1);
         buchstabenssollTest.add(letter2);
         buchstabenssollTest.add(letter3);
