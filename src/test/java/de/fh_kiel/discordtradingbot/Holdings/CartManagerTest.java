@@ -14,6 +14,7 @@ class CartManagerTest {
     @Test
     void createCart() {
         CartManager testManager = new CartManager();
+        Inventory testInventory = new Inventory();
         ArrayList<Letter> buchstabenssollTest = new ArrayList<>();
         Letter letter1 =  Inventory.getLetters().get(0);
         Letter letter2 =  Inventory.getLetters().get(1);
@@ -29,14 +30,13 @@ class CartManagerTest {
         //test ob "value" im cartManager/cats/index0 richtig inzialisieet wurde
         assertThat(testManager.getCarts().get(0).getValue()).isEqualTo(cart.getValue());
         //test ob die Value der Buchstaben richitg gerechnet wurde
-        assertThat(cart.getValue()).isEqualTo(letter1.getValue()+letter2.getValue());
+        assertThat(cart.getValue()).isEqualTo(letter1.getValue() + letter2.getValue() + letter3.getValue());
         //test ob negative values vorhanden sind
         for (Cart c :testManager.getCarts()) {
             for (Letter l : c.getBuchstabenSoll()) {
                 assertThat(l.getValue()).isNotNegative();
             }
         }
-
     }
 
     @Test
