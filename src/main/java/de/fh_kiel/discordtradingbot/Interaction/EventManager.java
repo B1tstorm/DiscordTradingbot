@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 
 public class EventManager {
+    // TODO: Aus HashMap hasMap löschen und Konstruktor anpassen
+    ArrayList<EventListener> subscribers = new ArrayList<>();
     Map<String, List<EventListener>> listeners = new HashMap<>();
 
     public EventManager(String... operations) {
@@ -15,23 +17,16 @@ public class EventManager {
     }
 
     public void subscribe(EventListener listener) {
-        /*List<EventListener> users = listeners.get(eventType);
-        users.add(listener);*/
-        listeners.put()
+        subscribers.add(listener);
     }
 
     public void unsubscribe(EventListener listener) {
-        List<EventListener> users = listeners.get(eventType);
-        users.remove(listener);
+        subscribers.remove(listener);
     }
 
     public void notify(EventItem eventItem) {
-        /* Da es kein eventType mehr gibt, braucht man auch nicht mehr prüfen für wen das ist
-        List<EventListener> users = listeners.get(eventType);
-
-        for (EventListener listener : users) {
-            listener.update(eventItem);
-        }*/
-        listeners.get();
+        for (EventListener subscriber : subscribers) {
+            subscriber.update(eventItem);
+        }
     }
 }
