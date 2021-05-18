@@ -10,14 +10,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class TransactionManager implements EventListener {
-    //todo final ???
+
     private static final HashMap<Integer, Transaction> transactions = new HashMap<>();
 
     public static HashMap<Integer, Transaction> getTransactions() {
         return transactions;
     }
 
-    private Cart checkInventory(String input) {
+    private Boolean checkInventory(String input) {
         // TODO - implement TransactionManager.checkInventory
         throw new UnsupportedOperationException();
     }
@@ -63,11 +63,27 @@ public class TransactionManager implements EventListener {
 
     //TODO -implement update()
     @Override
-    public void update(String eventType, Integer price, Integer eventId, String product) {
-        //Methode soll sich Infos vom ChannelInteractor holen (observer) wie
-        // tradingPartner //price //transactionKind //eventId //Product
-        //Je nach transactionKind wied eine Methode aufgerufen
+    public void update(String eventType, Integer price, Integer eventId, String product/**,Integer winnerId*/) {
+        //*Methode soll  Infos vom ChannelInteractor bekommen (observer) wie
+        //? tradingPartner //price //transactionKind //eventId //Product
+        //*Je nach transactionKind wied eine Methode aufgerufen
+
         //kind kann folgends sein ?: auction start... auction versteigerung..... auction Ende/gewonnen...... seg will kaufen
+
+
+        //! +++++++++++++++++++++++++++++++FALL auction +++++++++++++++++++++++++++++++
+        //!falls winnerId eienen Wert hat. und wir der Winner wind sollen wir Überweien
+        //!Falls winner einen Wert hat und wir nicht gewonnen haben soll die transaction geschlossen werden
+
+//         if (winnerId){
+//            if (winnerId == ZuLU ID){
+//            executeTransaction();
+//            }else{
+//                  dismissTransaction();
+//             }
+//            return;
+//        }
+
 
         //prüfe ob eventId bekannt ist ggf. bidde mit
         if (eventType.equals("auction") && isProduktWorth(price, product)) {
@@ -79,22 +95,22 @@ public class TransactionManager implements EventListener {
                 TransactionManager.transactions.put(eventId, auctionTransaction);
                 auctionTransaction.bid(eventId, price);
             }
+        }// ! +++++++++++++++++++++++++++++++ FAll SEG will Kaufen +++++++++++++++++++++++++++++++
+        else if (eventType.equals("SegWillKaufen")){
+            if (!isProduktWorth(price,product) && checkInventory(product)){
+                //? wie läuft die communikaton mit SEG? ist es 3 way hand shake? soll man hier execute machen
+                //! Antworte SEG positiv
+                TransactionManager.transactions.put(eventId,new Transaction(eventType));
+                executeTransaction(eventId,price,product);
+            }else{
+                //! lehen Angebot ab
+                dismissTransaction(eventId);
+                //! mach einen gegen angebot
+            }
         }
 
-        //if (transactionKind.equals("auction")){
-        // isProduktWorth
-        // wenn ja	startTransaction(eventId);
-        //}
 
 
-        //if (transactionKind.equals("auction/ende oder gewonnen")){
-        //	transaction ebschließen und falls gewonnen bezahlen und amount erhöhnen
-        //}
-
-        //if (transactionKind.equals("seg wanna buy ")){
-        //  check Inventory
-        //	startTransaction(); ohne bidder
-        //}
 
 
     }
