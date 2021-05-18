@@ -14,20 +14,24 @@ public class EventManager {
         }
     }
 
-    public void subscribe(String eventType, EventListener listener) {
-        List<EventListener> users = listeners.get(eventType);
-        users.add(listener);
+    public void subscribe(EventListener listener) {
+        /*List<EventListener> users = listeners.get(eventType);
+        users.add(listener);*/
+        listeners.put()
     }
 
-    public void unsubscribe(String eventType, EventListener listener) {
+    public void unsubscribe(EventListener listener) {
         List<EventListener> users = listeners.get(eventType);
         users.remove(listener);
     }
 
-    public void notify(String eventType, Integer price, Integer eventId, String product) {
+    public void notify(EventItem eventItem) {
+        /* Da es kein eventType mehr gibt, braucht man auch nicht mehr prüfen für wen das ist
         List<EventListener> users = listeners.get(eventType);
+
         for (EventListener listener : users) {
-            listener.update(eventType, price, eventId, product);
-        }
+            listener.update(eventItem);
+        }*/
+        listeners.get();
     }
 }

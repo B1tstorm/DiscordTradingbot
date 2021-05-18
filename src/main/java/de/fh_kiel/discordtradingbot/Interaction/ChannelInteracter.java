@@ -3,11 +3,7 @@ package de.fh_kiel.discordtradingbot.Interaction;
 public class ChannelInteracter {
     public EventManager events;
     private String channelCommand;
-
-    public void operation() {
-        // TODO - implement ChannelInteracter.operation
-        throw new UnsupportedOperationException();
-    }
+    private EventItem eventItem = new EventItem();
 
     /**
      * @param message
@@ -27,9 +23,7 @@ public class ChannelInteracter {
     }
 
     // TODO Channel abhören
-    public void listenToChannel(String eventType, Integer price, Integer eventId, String product) {
-        if (channelCommand.equals("!bid")) {
-            events.notify(eventType, price, eventId, product);
-        }
+    public void listenToChannel() {
+        events.notify(eventItem);
     }
 }
