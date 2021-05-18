@@ -23,24 +23,21 @@ class TransactionManagerTest {
 
     @Test
     void update(){
-        // Case: auction - seg bietet uns ein Z für 10
-        String tradingPartner = "SEG";
-        String transactionKind = "auction";
-        String product = "Z";
-        Integer price = 1;
-        Integer eventId = 111;
+        // Case: auction - seg bietet uns ein Z für 1
         // Bei instanziierung von Inventory() wird im Konstruktor ein statisches Array mit allen Buchstaben angelegt
         Inventory testInventory = new Inventory();
         TransactionManager testTransactionManager = new TransactionManager();
+
         // Dieser aufruf sollte eine neue (Transaktion) Instanz erzeugen, da Preis <= Buchstabenwert
-        testTransactionManager.startTransaction( eventId, price, transactionKind, product);
-        assertThat(TransactionManager.getTransactions().get(eventId)).isNotNull();
-        //price erhöht durch andere mitbieter
-        price += 5;
+        testTransactionManager.update("auction",1,111,"Z");
         // Dieser aufruf sollte keine neue (Transaktion) Instanz erzeugen, da Preis > Buchstabenwert
-        testTransactionManager.startTransaction( eventId, price, transactionKind, product);
+        testTransactionManager.update("auction",11,111,"Z");
         assertThat(TransactionManager.getTransactions().size()).isEqualTo(1);
 
+        testTransactionManager.update("auction",2,112,"Q");
+        testTransactionManager.update("auction",4,112,"Q");
+        assertThat(TransactionManager.getTransactions().get(112)).isNotNull();
+        assertThat(TransactionManager.getTransactions().size()).isEqualTo(2);
     }
 
 }
