@@ -15,7 +15,8 @@ public class Transaction {
 		this.status="waiting";
 	}
 
-	public void bid(Integer eventId, Integer currentBid) {
+	public void bid(Integer eventId, Integer price) {
+		//* zum testen
 		System.out.println("ich bidde gerade");
 	}
 

@@ -65,7 +65,7 @@ public class TransactionManager implements EventListener {
     @Override
     public void update(String eventType, Integer price, Integer eventId, String product/**,Integer winnerId*/) {
         //*Methode soll  Infos vom ChannelInteractor bekommen (observer) wie
-        //? tradingPartner //price //transactionKind //eventId //Product
+        //? tradingPartner //price //transactionKind //eventId //Product und winnerID
         //*Je nach transactionKind wied eine Methode aufgerufen
 
         //kind kann folgends sein ?: auction start... auction versteigerung..... auction Ende/gewonnen...... seg will kaufen
@@ -99,13 +99,12 @@ public class TransactionManager implements EventListener {
         else if (eventType.equals("SegWillKaufen")){
             if (!isProduktWorth(price,product) && checkInventory(product)){
                 //? wie läuft die communikaton mit SEG? ist es 3 way hand shake? soll man hier execute machen
-                //! Antworte SEG positiv
+                //! Antworte SEG positiv // todo Channelinteractor einschalten
                 TransactionManager.transactions.put(eventId,new Transaction(eventType));
                 executeTransaction(eventId,price,product);
             }else{
-                //! lehen Angebot ab
-                dismissTransaction(eventId);
-                //! mach einen gegen angebot
+                //! lehen Angebot ab todo Channelinteractor einschalten
+                //! mach einen gegen angebot todo Channelinteractor einschalten
             }
         }
 
