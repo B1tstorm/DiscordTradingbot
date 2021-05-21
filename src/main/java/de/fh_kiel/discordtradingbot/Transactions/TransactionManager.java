@@ -58,7 +58,7 @@ public class TransactionManager implements EventListener {
     }
 
     public void dismissTransaction(Integer eventId) {
-        TransactionManager.transactions.get(eventId).setStatus("dismissed");
+        TransactionManager.transactions.remove(eventId).setStatus("dismissed");
     }
 
     //TODO -implement update()
@@ -95,10 +95,10 @@ public class TransactionManager implements EventListener {
                 TransactionManager.transactions.put(eventId, auctionTransaction);
                 auctionTransaction.bid(eventId, price);
             }
-        }// ! +++++++++++++++++++++++++++++++ FAll SEG will Kaufen +++++++++++++++++++++++++++++++
+        }// ! +++++++++++++++++++++++++++++++ FAll "jemand will Kaufen" +++++++++++++++++++++++++++++++
         else if (eventType.equals("SegWillKaufen")){
             if (!isProduktWorth(price,product) && checkInventory(product)){
-                //? wie läuft die communikaton mit SEG? ist es 3 way hand shake? soll man hier execute machen
+                //? wie läuft die communikaton mit Kunde? ist es 3 way hand shake? soll man hier execute machen
                 //! Antworte SEG positiv // todo Channelinteractor einschalten
                 TransactionManager.transactions.put(eventId,new Transaction(eventType));
                 executeTransaction(eventId,price,product);
