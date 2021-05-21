@@ -2,7 +2,7 @@ package de.fh_kiel.discordtradingbot.Transactions;
 
 public class Transaction {
 	public static Integer IdCounter =0;
-	private Integer id;
+	private String id;
 	private Integer cartId;
 	private String traidingPartner;
 	private Bidder bidder;
@@ -10,18 +10,18 @@ public class Transaction {
 	private String transactionKind;
 
 	public Transaction(String transactionKind) {
-		this.id = Transaction.IdCounter++;
+		this.id = (Transaction.IdCounter++).toString();
 		this.transactionKind = transactionKind;
 		this.status="waiting";
 	}
 
-	public void bid(Integer eventId, Integer price) {
+	public void bid(String eventId, Integer price) {
 		//* zum testen
 		System.out.println("ich bidde gerade");
 	}
 
 	//getter and setter
-	public void setId(Integer id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 
@@ -41,7 +41,7 @@ public class Transaction {
 		this.status = status;
 	}
 
-	public Integer getId() {
+	public String getId() {
 		return id;
 	}
 

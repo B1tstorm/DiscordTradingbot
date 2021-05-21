@@ -11,9 +11,9 @@ import java.util.HashMap;
 
 public class TransactionManager implements EventListener {
 
-    private static final HashMap<Integer, Transaction> transactions = new HashMap<>();
+    private static final HashMap<String, Transaction> transactions = new HashMap<>();
 
-    public static HashMap<Integer, Transaction> getTransactions() {
+    public static HashMap<String, Transaction> getTransactions() {
         return transactions;
     }
 
@@ -50,39 +50,44 @@ public class TransactionManager implements EventListener {
         // TODO für später: falls tempTotalValue z.B. 5% mehr wäre als das Gebot, trotzdem verkaufen
     }
 
-    public void executeTransaction(Integer eventId, Integer price, String product) {
+    public void executeTransaction(String eventId, Integer price, String product) {
         //TODO updateWallet und Letter Methoden sollen positiv und negativ sein!!
         //Inventory.updateWallet;(price)
         //Inventory.updateLetterAmount(product)
         TransactionManager.transactions.get(eventId).setStatus("executed");
     }
 
-    public void dismissTransaction(Integer eventId) {
+    public void dismissTransaction(String eventId) {
         TransactionManager.transactions.remove(eventId).setStatus("dismissed");
     }
 
     //TODO -implement update()
     @Override
-    public void update(String eventType, Integer price, Integer eventId, String product/**,Integer winnerId*/) {
+    public void update(EventItem eventItem) {
         //*Methode soll  Infos vom ChannelInteractor bekommen (observer) wie
         //? tradingPartner //price //transactionKind //eventId //Product und winnerID
         //*Je nach transactionKind wied eine Methode aufgerufen
 
         //kind kann folgends sein ?: auction start... auction versteigerung..... auction Ende/gewonnen...... seg will kaufen
 
+        String eventType = eventItem.evenType;
+        Integer price = eventItem.price;
+        String eventId = eventItem.eventId;
+        String product = eventItem.product;
+        String winnerId = eventType.winnerId;
 
         //! +++++++++++++++++++++++++++++++FALL auction +++++++++++++++++++++++++++++++
         //!falls winnerId eienen Wert hat. und wir der Winner wind sollen wir Überweien
         //!Falls winner einen Wert hat und wir nicht gewonnen haben soll die transaction geschlossen werden
 
-//         if (winnerId){
-//            if (winnerId == ZuLU ID){
-//            executeTransaction();
-//            }else{
-//                  dismissTransaction();
-//             }
-//            return;
-//        }
+         if (null !=winnerId){
+            if (winnerId.equals("ZuluId")){
+            executeTransaction(eventId,price,product);
+            }else{
+                  dismissTransaction(eventId);
+             }
+            return;
+        }
 
 
         //prüfe ob eventId bekannt ist ggf. bidde mit

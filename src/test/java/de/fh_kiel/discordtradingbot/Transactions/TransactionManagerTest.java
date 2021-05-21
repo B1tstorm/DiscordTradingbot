@@ -23,6 +23,8 @@ class TransactionManagerTest {
 
     @Test
     void update(){
+
+        //! nach eventItem wieder updaten bitte
         // Case: auction - seg bietet uns ein Z für 1
         // Bei instanziierung von Inventory() wird im Konstruktor ein statisches Array mit allen Buchstaben angelegt
         Inventory testInventory = new Inventory();
