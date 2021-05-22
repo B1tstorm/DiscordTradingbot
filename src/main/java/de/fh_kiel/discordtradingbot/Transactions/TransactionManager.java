@@ -62,60 +62,60 @@ public class TransactionManager implements EventListener {
     }
 
     //TODO -implement update()
-//    @Override
-//    public void update(EventItem eventItem) {
-//        //*Methode soll  Infos vom ChannelInteractor bekommen (observer) wie
-//        //? tradingPartner //price //transactionKind //eventId //Product und winnerID
-//        //*Je nach transactionKind wied eine Methode aufgerufen
-//
-//        //kind kann folgends sein ?: auction start... auction versteigerung..... auction Ende/gewonnen...... seg will kaufen
-//
-//        String eventType = eventItem.evenType;
-//        Integer price = eventItem.price;
-//        String eventId = eventItem.eventId;
-//        String product = eventItem.product;
-//        String winnerId = eventType.winnerId;
-//
-//        //! +++++++++++++++++++++++++++++++FALL auction +++++++++++++++++++++++++++++++
-//        //!falls winnerId eienen Wert hat. und wir der Winner wind sollen wir Überweien
-//        //!Falls winner einen Wert hat und wir nicht gewonnen haben soll die transaction geschlossen werden
-//
-//         if (null !=winnerId){
-//            if (winnerId.equals("ZuluId")){
-//            executeTransaction(eventId,price,product);
-//            }else{
-//                  dismissTransaction(eventId);
-//             }
-//            return;
-//        }
-//
-//
-//        //prüfe ob eventId bekannt ist ggf. bidde mit
-//        if (eventType.equals("auction") && isProduktWorth(price, product)) {
-//            if (TransactionManager.getTransactions().get(eventId) != null) {
-//                TransactionManager.getTransactions().get(eventId).bid(eventId, price);
-//                //wenn evenID neu ist erstelle eine neue transaction
-//            } else {
-//                Transaction auctionTransaction = startTransaction(eventType);
-//                TransactionManager.transactions.put(eventId, auctionTransaction);
-//                auctionTransaction.bid(eventId, price);
-//            }
-//        }// ! +++++++++++++++++++++++++++++++ FAll "jemand will Kaufen" +++++++++++++++++++++++++++++++
-//        else if (eventType.equals("SegWillKaufen")){
-//            if (!isProduktWorth(price,product) && checkInventory(product)){
-//                //? wie läuft die communikaton mit Kunde? ist es 3 way hand shake? soll man hier execute machen
-//                //! Antworte SEG positiv // todo Channelinteractor einschalten
-//                TransactionManager.transactions.put(eventId,new Transaction(eventType));
-//                executeTransaction(eventId,price,product);
-//            }else{
-//                //! lehen Angebot ab todo Channelinteractor einschalten
-//                //! mach einen gegen angebot todo Channelinteractor einschalten
-//            }
-//        }
-//
-//
-//
-//
-//
-//    }
+    @Override
+    public void update(EventItem eventItem) {
+        //*Methode soll  Infos vom ChannelInteractor bekommen (observer) wie
+        //? tradingPartner //price //transactionKind //eventId //Product und winnerID
+        //*Je nach transactionKind wied eine Methode aufgerufen
+
+        //kind kann folgends sein ?: auction start... auction versteigerung..... auction Ende/gewonnen...... seg will kaufen
+
+        String eventType = eventItem.evenType;
+        Integer price = eventItem.price;
+        String eventId = eventItem.eventId;
+        String product = eventItem.product;
+        String winnerId = eventType.winnerId;
+
+        //! +++++++++++++++++++++++++++++++FALL auction +++++++++++++++++++++++++++++++
+        //!falls winnerId eienen Wert hat. und wir der Winner wind sollen wir Überweien
+        //!Falls winner einen Wert hat und wir nicht gewonnen haben soll die transaction geschlossen werden
+
+         if (null !=winnerId){
+            if (winnerId.equals("ZuluId")){
+            executeTransaction(eventId,price,product);
+            }else{
+                  dismissTransaction(eventId);
+             }
+            return;
+        }
+
+
+        //prüfe ob eventId bekannt ist ggf. bidde mit
+        if (eventType.equals("auction") && isProduktWorth(price, product)) {
+            if (TransactionManager.getTransactions().get(eventId) != null) {
+                TransactionManager.getTransactions().get(eventId).bid(eventId, price);
+                //wenn evenID neu ist erstelle eine neue transaction
+            } else {
+                Transaction auctionTransaction = startTransaction(eventType);
+                TransactionManager.transactions.put(eventId, auctionTransaction);
+                auctionTransaction.bid(eventId, price);
+            }
+        }// ! +++++++++++++++++++++++++++++++ FAll "jemand will Kaufen" +++++++++++++++++++++++++++++++
+        else if (eventType.equals("SegWillKaufen")){
+            if (!isProduktWorth(price,product) && checkInventory(product)){
+                //? wie läuft die communikaton mit Kunde? ist es 3 way hand shake? soll man hier execute machen
+                //! Antworte SEG positiv // todo Channelinteractor einschalten
+                TransactionManager.transactions.put(eventId,new Transaction(eventType));
+                executeTransaction(eventId,price,product);
+            }else{
+                //! lehen Angebot ab todo Channelinteractor einschalten
+                //! mach einen gegen angebot todo Channelinteractor einschalten
+            }
+        }
+
+
+
+
+
+    }
 }
