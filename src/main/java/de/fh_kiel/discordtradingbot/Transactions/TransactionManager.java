@@ -17,9 +17,24 @@ public class TransactionManager implements EventListener {
         return transactions;
     }
 
-    private Boolean checkInventory(String input) {
-        // TODO - implement TransactionManager.checkInventory
-        throw new UnsupportedOperationException();
+    private Boolean checkInventory(String product) {
+        ArrayList<Letter> letters = Inventory.getInstance().getLetters();
+        HashMap<Character,Integer> hashmap = fillHashmap(new HashMap<>());
+        char[] buchstaben = product.toCharArray();
+
+        //todo: vereinfachung testen
+        for (Character buchstabe: buchstaben) {
+                hashmap.put(buchstabe, hashmap.get(buchstabe)+1);
+        }
+        for (Letter letter : letters) {
+            if (!(letter.getAmount()>= hashmap.get(letter.getLetter())));
+            return false;
+        }
+        return true;
+    }
+
+    private Boolean checkWallet(Integer price) {
+       return price <= Inventory.getInstance().getWallet();
     }
 
     public Transaction startTransaction(String eventType) {
@@ -117,5 +132,11 @@ public class TransactionManager implements EventListener {
 
 
 
+    }
+    private HashMap<Character,Integer> fillHashmap (HashMap<Character,Integer> hashMap){
+        for (int ascii = 65; ascii < 91; ascii++) {
+            hashMap.put((char)ascii,0);
+        }
+        return hashMap;
     }
 }

@@ -21,9 +21,9 @@ public class Letter {
 		this.letter = letter;
 		this.amount = amount;
 		this.value = (value<0)? 0 : value;
-
-
 	}
 
-
+	public Integer getAmount() {
+		return amount;
+	}
 }
