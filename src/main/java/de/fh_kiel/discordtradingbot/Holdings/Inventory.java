@@ -3,35 +3,49 @@ package de.fh_kiel.discordtradingbot.Holdings;
 import java.util.ArrayList;
 
 public class Inventory {
+	//singelton pattern
+	private static Inventory inventory;
 
-
-
-	private static ArrayList<Letter> letters = new ArrayList<>();
+	private final ArrayList<Letter> letters = new ArrayList<>();
 	private Integer wallet;
 
-	public Inventory() {
+	//bei der erstellung eines Objekt, wird das ArrayLetters erstellt und initialisiert
+	private Inventory() {
 		// Alle 26 Buchstaben von A - Z werden mittels ascii initial gespeichert
 		for (int ascii = 65; ascii < 91; ascii++) {
-			Inventory.letters.add(new Letter((char)ascii, 0, 10));
+		letters.add(new Letter((char)ascii, 0, 10));
 		}
 	}
 
-	/**
-	 * 
-	 * @param letter
-	 */
+	public static Inventory getInstance(){
+		if (Inventory.inventory == null){
+			Inventory.inventory = new Inventory();
+		}
+		return Inventory.inventory;
+	}
+
 	private Integer calculateValue(Letter letter) {
 		// TODO - implement Inventory.calculateValue
 		throw new UnsupportedOperationException();
 	}
 
-	/**
-	 * 
-	 * @param amount
-	 */
-	public Boolean updateWallet(Integer amount) {
-		// TODO - implement Inventory.updateWallet
-		throw new UnsupportedOperationException();
+	//metode kann auch einen negativen price bekommen
+	public void updateWallet(Integer price)   {
+		this.wallet +=price;
+//		if (this.wallet<0) throw new Exception("Wallet kann nicht Nigativ werden");
+	}
+
+//	Vermindert oder erhöht den amount der Buchstaben im Array
+	public void updateAmount( String eventType,String product){
+		char[] buchstaben = product.toCharArray();
+		ArrayList<Letter> letterArray = Inventory.getInstance().getLetters();
+			for (char c : buchstaben) {
+				if(eventType.equals("auction")){
+					letterArray.get((int) c - 65).incrementAmount();
+				}else{
+					letterArray.get((int) c - 65).decrementAmount();
+				}
+			}
 	}
 
 	public void deposit() {
@@ -39,8 +53,11 @@ public class Inventory {
 		throw new UnsupportedOperationException();
 	}
 
-	public static ArrayList<Letter> getLetters() {
-		return letters;
+	public  ArrayList<Letter> getLetters() {
+		return this.letters;
+	}
+	public Integer getWallet() {
+		return wallet;
 	}
 
 }

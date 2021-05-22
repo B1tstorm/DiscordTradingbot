@@ -4,10 +4,16 @@ import java.util.HashMap;
 
 public class Letter {
 
-	private Character letter;
+	private final Character letter;
 	private Integer amount;
 	private Integer value;
 
+
+	public Letter(Character letter, Integer amount,Integer value) {
+		this.letter = letter;
+		this.amount = amount;
+		this.value = (value<0)? 0 : value;
+	}
 
 	public Character getLetter() {
 		return letter;
@@ -17,13 +23,18 @@ public class Letter {
 		return value;
 	}
 
-	public Letter(Character letter, Integer amount,Integer value) {
-		this.letter = letter;
-		this.amount = amount;
-		this.value = (value<0)? 0 : value;
 
 
+	public void incrementAmount() {
+		this.amount++;
 	}
 
+	public void decrementAmount() {
+		this.amount--;
+		//TODO amount soll nicht nigativ werden (exeption schreiben)
+	}
 
+	public Integer getAmount() {
+		return amount;
+	}
 }
