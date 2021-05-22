@@ -24,4 +24,16 @@ public class Letter {
 	}
 
 
+
+	public void incrementAmount() {
+		this.amount++;
+	}
+
+	public void decrementAmount() {
+		this.amount--;
+	}
+
+	public Integer getAmount() {
+		return amount;
+	}
 }

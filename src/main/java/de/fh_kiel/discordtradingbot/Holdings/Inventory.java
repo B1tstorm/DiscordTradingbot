@@ -38,6 +38,19 @@ public class Inventory {
 //		if (this.wallet<0) throw new Exception("Wallet kann nicht Nigativ werden");
 	}
 
+//	Vermindert oder erhöht die Anzahl der Buchstaben
+	public void updateAmount( String eventType,String product){
+		char[] buchstaben = product.toCharArray();
+		ArrayList<Letter> letterArray = Inventory.getInstance().getLetters();
+			for (char c : buchstaben) {
+				if(eventType.equals("auction")){
+					letterArray.get((int) c - 65).incrementAmount();
+				}else{
+					letterArray.get((int) c - 65).decrementAmount();
+				}
+			}
+	}
+
 	public void deposit() {
 		// TODO - implement Inventory.deposit
 		throw new UnsupportedOperationException();

@@ -50,7 +50,7 @@ public class TransactionManager implements EventListener {
         // TODO für später: falls tempTotalValue z.B. 5% mehr wäre als das Gebot, trotzdem verkaufen
     }
 
-    public void executeTransaction(String eventId, Integer price, String product)   {
+    public void executeTransaction(String eventType,String eventId, Integer price, String product)   {
         //TODO updateWallet und Letter Methoden sollen positiv und negativ sein!!
         Inventory.getInstance().updateWallet(price);
         //Inventory.updateLetterAmount(product)
@@ -83,7 +83,7 @@ public class TransactionManager implements EventListener {
          if (null !=winnerId){
             if (winnerId.equals("ZuluId")){
                 //* "price*(-1)" macht die transaktion negativ (wie bezahlen)
-                executeTransaction(eventId,price*(-1),product);
+                executeTransaction(eventType,eventId,price*(-1),product);
             }else{
                   dismissTransaction(eventId);
              }
@@ -107,7 +107,7 @@ public class TransactionManager implements EventListener {
                 //? wie läuft die communikaton mit Kunde? ist es 3 way hand shake? soll man hier execute machen
                 //! Antworte SEG positiv // todo Channelinteractor einschalten
                 TransactionManager.transactions.put(eventId,new Transaction(eventType));
-                executeTransaction(eventId,price,product);
+                executeTransaction(eventType,eventId,price,product);
             }else{
                 //! lehen Angebot ab todo Channelinteractor einschalten
                 //! mach einen gegen angebot todo Channelinteractor einschalten
