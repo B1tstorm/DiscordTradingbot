@@ -66,6 +66,7 @@ public class TransactionManager implements EventListener {
         // TODO für später: falls tempTotalValue z.B. 5% mehr wäre als das Gebot, trotzdem verkaufen
     }
 
+    //todo unbedingt test schreiben
     public void executeTransaction(String eventType,String eventId, Integer price, String product)   {
         //TODO updateWallet und Letter Methoden sollen positiv und negativ sein!!
         Inventory.getInstance().updateWallet(price);
@@ -108,7 +109,7 @@ public class TransactionManager implements EventListener {
 
 
         //prüfe ob eventId bekannt ist ggf. bidde mit
-        if (eventType.equals("auction") && isProduktWorth(price, product)) {
+        if (eventType.equals("auction") && isProduktWorth(price, product) && isPriceAffordable(price)) {
             if (TransactionManager.getTransactions().get(eventId) != null) {
                 TransactionManager.getTransactions().get(eventId).bid(eventId, price);
               //wenn evenID neu ist erstelle eine neue transaction
