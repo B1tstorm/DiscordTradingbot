@@ -11,7 +11,7 @@ class TransactionManagerTest {
     @Test
     void isProduktWorth() {
         int preis = 2;
-        Inventory inventory = new Inventory();
+        Inventory inventory = Inventory.getInstance();
         String product = "ABC";
         TransactionManager transactionManager = new TransactionManager();
 
@@ -27,7 +27,7 @@ class TransactionManagerTest {
         //! nach eventItem wieder updaten bitte
         // Case: auction - seg bietet uns ein Z für 1
         // Bei instanziierung von Inventory() wird im Konstruktor ein statisches Array mit allen Buchstaben angelegt
-        Inventory testInventory = new Inventory();
+        Inventory testInventory = Inventory.getInstance();
         TransactionManager testTransactionManager = new TransactionManager();
 
         // Dieser aufruf sollte eine neue (Transaktion) Instanz erzeugen, da Preis <= Buchstabenwert

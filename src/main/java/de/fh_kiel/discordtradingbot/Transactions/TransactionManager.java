@@ -35,7 +35,7 @@ public class TransactionManager implements EventListener {
         //ToDo Method is to be tested
         int tempTotalValue = 0;
         char[] char_arr = product.toCharArray();
-        ArrayList<Letter> letterArray = Inventory.getLetters();
+        ArrayList<Letter> letterArray = Inventory.getInstance().getLetters();
         //rechne gesamtWert vom product
         for (char c : char_arr) {
             //zugriff auf werte im Inventar Letter Array mit ascii index berechnung
@@ -50,9 +50,9 @@ public class TransactionManager implements EventListener {
         // TODO für später: falls tempTotalValue z.B. 5% mehr wäre als das Gebot, trotzdem verkaufen
     }
 
-    public void executeTransaction(String eventId, Integer price, String product) {
+    public void executeTransaction(String eventId, Integer price, String product)   {
         //TODO updateWallet und Letter Methoden sollen positiv und negativ sein!!
-        //Inventory.updateWallet;(price)
+        Inventory.getInstance().updateWallet(price);
         //Inventory.updateLetterAmount(product)
         TransactionManager.transactions.get(eventId).setStatus("executed");
     }
@@ -82,7 +82,8 @@ public class TransactionManager implements EventListener {
 
          if (null !=winnerId){
             if (winnerId.equals("ZuluId")){
-            executeTransaction(eventId,price,product);
+                //* "price*(-1)" macht die transaktion negativ (wie bezahlen)
+                executeTransaction(eventId,price*(-1),product);
             }else{
                   dismissTransaction(eventId);
              }
@@ -101,7 +102,7 @@ public class TransactionManager implements EventListener {
                 auctionTransaction.bid(eventId, price);
             }
         }// ! +++++++++++++++++++++++++++++++ FAll "jemand will Kaufen" +++++++++++++++++++++++++++++++
-        else if (eventType.equals("SegWillKaufen")){
+        else if (eventType.equals("KundeWillKaufen")){
             if (!isProduktWorth(price,product) && checkInventory(product)){
                 //? wie läuft die communikaton mit Kunde? ist es 3 way hand shake? soll man hier execute machen
                 //! Antworte SEG positiv // todo Channelinteractor einschalten
