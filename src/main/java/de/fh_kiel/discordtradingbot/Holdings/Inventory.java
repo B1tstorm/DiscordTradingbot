@@ -3,16 +3,13 @@ package de.fh_kiel.discordtradingbot.Holdings;
 import java.util.ArrayList;
 
 public class Inventory {
-
+	//singelton pattern
 	private static Inventory inventory;
 
-	private  ArrayList<Letter> letters = new ArrayList<>();
-
-
-
+	private final ArrayList<Letter> letters = new ArrayList<>();
 	private Integer wallet;
 
-	//bei der erstellung eines Objekt, wird das ArrayLetters erstellt und befüllt
+	//bei der erstellung eines Objekt, wird das ArrayLetters erstellt und initialisiert
 	private Inventory() {
 		// Alle 26 Buchstaben von A - Z werden mittels ascii initial gespeichert
 		for (int ascii = 65; ascii < 91; ascii++) {
@@ -32,13 +29,13 @@ public class Inventory {
 		throw new UnsupportedOperationException();
 	}
 
-
-	public void updateWallet(Integer amount)   {
-		this.wallet +=amount;
+	//metode kann auch einen negativen price bekommen
+	public void updateWallet(Integer price)   {
+		this.wallet +=price;
 //		if (this.wallet<0) throw new Exception("Wallet kann nicht Nigativ werden");
 	}
 
-//	Vermindert oder erhöht die Anzahl der Buchstaben
+//	Vermindert oder erhöht den amount der Buchstaben im Array
 	public void updateAmount( String eventType,String product){
 		char[] buchstaben = product.toCharArray();
 		ArrayList<Letter> letterArray = Inventory.getInstance().getLetters();

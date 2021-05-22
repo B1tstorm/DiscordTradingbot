@@ -23,11 +23,8 @@ public class TransactionManager implements EventListener {
     }
 
     public Transaction startTransaction(String eventType) {
-        // TODO Test?
-        //in auction/bid Fall
-        return new Transaction(eventType);
 
-        // TODO - implement TransactionManager.startTransaction in sell Fall
+        return new Transaction(eventType);
     }
 
     //prüft ob produkt einen bestimmten Wert wert ist
@@ -41,7 +38,6 @@ public class TransactionManager implements EventListener {
             //zugriff auf werte im Inventar Letter Array mit ascii index berechnung
             tempTotalValue += letterArray.get((int) c - 65).getValue();
         }
-
         // Der Fall wenn wir auf einen Buchstaben bieten können und der Buchstabe bei uns einen Wert von 0 hat, dann bieten wir nicht mit.
         if (tempTotalValue == 0) return false;
         // Der Fall wenn wir auf Buchstaben bieten und unser Value (tempTotalValue) größer ist als der Preis (price)
@@ -95,7 +91,7 @@ public class TransactionManager implements EventListener {
         if (eventType.equals("auction") && isProduktWorth(price, product)) {
             if (TransactionManager.getTransactions().get(eventId) != null) {
                 TransactionManager.getTransactions().get(eventId).bid(eventId, price);
-                //wenn evenID neu ist erstelle eine neue transaction
+              //wenn evenID neu ist erstelle eine neue transaction
             } else {
                 Transaction auctionTransaction = startTransaction(eventType);
                 TransactionManager.transactions.put(eventId, auctionTransaction);
