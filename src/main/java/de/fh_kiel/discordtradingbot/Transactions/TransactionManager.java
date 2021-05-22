@@ -10,28 +10,23 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class TransactionManager implements EventListener {
-    //todo final ???
-    private static final HashMap<Integer, Transaction> transactions = new HashMap<>();
 
-    public static HashMap<Integer, Transaction> getTransactions() {
+    private static final HashMap<String, Transaction> transactions = new HashMap<>();
+
+    public static HashMap<String, Transaction> getTransactions() {
         return transactions;
     }
 
-    private Cart checkInventory(String input) {
+    private Boolean checkInventory(String input) {
         // TODO - implement TransactionManager.checkInventory
         throw new UnsupportedOperationException();
     }
 
-    public void startTransaction(Integer eventId, Integer price, String eventType, String product) {
+    public Transaction startTransaction(String eventType) {
         // TODO Test?
         //in auction/bid Fall
-        if (eventType.equals("auction")) {
-            if (isProduktWorth(price, product)) {
-                Transaction auctionTransaction = new Transaction(eventType);
-                TransactionManager.transactions.put(eventId, auctionTransaction);
-                auctionTransaction.bid(eventId, price);
-            }
-        }
+        return new Transaction(eventType);
+
         // TODO - implement TransactionManager.startTransaction in sell Fall
     }
 
@@ -55,46 +50,71 @@ public class TransactionManager implements EventListener {
         // TODO für später: falls tempTotalValue z.B. 5% mehr wäre als das Gebot, trotzdem verkaufen
     }
 
-    public void executeTransaction(Integer eventId, Integer price, String product) {
+    public void executeTransaction(String eventId, Integer price, String product) {
         //TODO updateWallet und Letter Methoden sollen positiv und negativ sein!!
         //Inventory.updateWallet;(price)
         //Inventory.updateLetterAmount(product)
         TransactionManager.transactions.get(eventId).setStatus("executed");
     }
 
-    public void dismissTransaction(Integer eventId) {
-        TransactionManager.transactions.get(eventId).setStatus("dismissed");
+    public void dismissTransaction(String eventId) {
+        TransactionManager.transactions.remove(eventId).setStatus("dismissed");
     }
 
     //TODO -implement update()
     @Override
-    public void update(String eventType, Integer price, Integer eventId, String product) {
-        //Methode soll sich Infos vom ChannelInteractor holen (observer) wie
-        // tradingPartner //price //transactionKind //eventId //Product
-        //Je nach transactionKind wied eine Methode aufgerufen
+    public void update(EventItem eventItem) {
+        //*Methode soll  Infos vom ChannelInteractor bekommen (observer) wie
+        //? tradingPartner //price //transactionKind //eventId //Product und winnerID
+        //*Je nach transactionKind wied eine Methode aufgerufen
+
         //kind kann folgends sein ?: auction start... auction versteigerung..... auction Ende/gewonnen...... seg will kaufen
 
+        String eventType = eventItem.evenType;
+        Integer price = eventItem.price;
+        String eventId = eventItem.eventId;
+        String product = eventItem.product;
+        String winnerId = eventType.winnerId;
+
+        //! +++++++++++++++++++++++++++++++FALL auction +++++++++++++++++++++++++++++++
+        //!falls winnerId eienen Wert hat. und wir der Winner wind sollen wir Überweien
+        //!Falls winner einen Wert hat und wir nicht gewonnen haben soll die transaction geschlossen werden
+
+         if (null !=winnerId){
+            if (winnerId.equals("ZuluId")){
+            executeTransaction(eventId,price,product);
+            }else{
+                  dismissTransaction(eventId);
+             }
+            return;
+        }
+
+
         //prüfe ob eventId bekannt ist ggf. bidde mit
-        if (TransactionManager.getTransactions().get(eventId) != null) {
-            if (isProduktWorth(price, product)) {
+        if (eventType.equals("auction") && isProduktWorth(price, product)) {
+            if (TransactionManager.getTransactions().get(eventId) != null) {
                 TransactionManager.getTransactions().get(eventId).bid(eventId, price);
+                //wenn evenID neu ist erstelle eine neue transaction
+            } else {
+                Transaction auctionTransaction = startTransaction(eventType);
+                TransactionManager.transactions.put(eventId, auctionTransaction);
+                auctionTransaction.bid(eventId, price);
+            }
+        }// ! +++++++++++++++++++++++++++++++ FAll "jemand will Kaufen" +++++++++++++++++++++++++++++++
+        else if (eventType.equals("SegWillKaufen")){
+            if (!isProduktWorth(price,product) && checkInventory(product)){
+                //? wie läuft die communikaton mit Kunde? ist es 3 way hand shake? soll man hier execute machen
+                //! Antworte SEG positiv // todo Channelinteractor einschalten
+                TransactionManager.transactions.put(eventId,new Transaction(eventType));
+                executeTransaction(eventId,price,product);
+            }else{
+                //! lehen Angebot ab todo Channelinteractor einschalten
+                //! mach einen gegen angebot todo Channelinteractor einschalten
             }
         }
 
-        //if (transactionKind.equals("auction")){
-        // isProduktWorth
-        // wenn ja	startTransaction(eventId);
-        //}
 
 
-        //if (transactionKind.equals("auction/ende oder gewonnen")){
-        //	transaction ebschließen und falls gewonnen bezahlen und amount erhöhnen
-        //}
-
-        //if (transactionKind.equals("seg wanna buy ")){
-        //  check Inventory
-        //	startTransaction(); ohne bidder
-        //}
 
 
     }
