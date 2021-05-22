@@ -31,6 +31,7 @@ public class Letter {
 
 	public void decrementAmount() {
 		this.amount--;
+		//TODO amount soll nicht nigativ werden (exeption schreiben)
 	}
 
 	public Integer getAmount() {

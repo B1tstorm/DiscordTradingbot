@@ -26,6 +26,11 @@ class InventoryTest {
     void updateAmount() {
         Inventory inventory = Inventory.getInstance();
 
+        inventory.updateAmount("jemandWillKaufen", "ABC");
+        assertThat(inventory.getLetters().get(0).getAmount()).isEqualTo(1);
+        assertThat(inventory.getLetters().get(1).getAmount()).isEqualTo(1);
+        assertThat(inventory.getLetters().get(2).getAmount()).isEqualTo(1);
+
         inventory.updateAmount("auction", "ABC");
         assertThat(inventory.getLetters().get(0).getAmount()).isEqualTo(0);
         assertThat(inventory.getLetters().get(1).getAmount()).isEqualTo(0);
