@@ -7,7 +7,7 @@ public class Inventory {
 	private static Inventory inventory;
 
 	private final ArrayList<Letter> letters = new ArrayList<>();
-	private Integer wallet;
+	private Integer wallet = 0;
 
 	//bei der erstellung eines Objekt, wird das ArrayLetters erstellt und initialisiert
 	private Inventory() {
@@ -18,8 +18,8 @@ public class Inventory {
 	}
 
 	public static Inventory getInstance(){
-		if (Inventory.inventory == null){
-			Inventory.inventory = new Inventory();
+		if (inventory == null){
+			inventory = new Inventory();
 		}
 		return Inventory.inventory;
 	}
@@ -32,7 +32,6 @@ public class Inventory {
 	//metode kann auch einen negativen price bekommen
 	public void updateWallet(Integer price)   {
 		this.wallet +=price;
-//		if (this.wallet<0) throw new Exception("Wallet kann nicht Nigativ werden");
 	}
 
 //	Vermindert oder erhöht den amount der Buchstaben im Array
@@ -54,7 +53,7 @@ public class Inventory {
 	}
 
 	public  ArrayList<Letter> getLetters() {
-		return this.letters;
+		return inventory.letters;
 	}
 	public Integer getWallet() {
 		return wallet;

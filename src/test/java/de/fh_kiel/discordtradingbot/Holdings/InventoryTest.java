@@ -24,6 +24,7 @@ class InventoryTest {
 
     @Test
     void updateAmount() {
+        //! Alle Amonts im Inventory sollen auf 0 sein sonst kein test
         Inventory inventory = Inventory.getInstance();
 
         inventory.updateAmount("jemandWillKaufen", "ABC");

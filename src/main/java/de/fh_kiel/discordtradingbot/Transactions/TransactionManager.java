@@ -18,23 +18,27 @@ public class TransactionManager implements EventListener {
         return transactions;
     }
 
-    private Boolean checkInventory(String product) {
+    public Boolean checkInventory(String product) {
         ArrayList<Letter> letters = Inventory.getInstance().getLetters();
         HashMap<Character,Integer> hashmap = fillHashmap(new HashMap<>());
         char[] buchstaben = product.toCharArray();
 
-        //todo: vereinfachung testen
         for (Character buchstabe: buchstaben) {
                 hashmap.put(buchstabe, hashmap.get(buchstabe)+1);
         }
         for (Letter letter : letters) {
-            if (!(letter.getAmount()>= hashmap.get(letter.getLetter())));
-            return false;
+            if (!(letter.getAmount()>= hashmap.get(letter.getLetter()))){
+                //* test Zeile
+                System.out.println("Buchstabe "+ letter.getLetter()+" im product: "+hashmap.get(letter.getLetter()) +" und im Inventar:  " + letter.getAmount() );
+                return false;
+            }
+            //* test Zeile
+            System.out.println("Buchstabe "+ letter.getLetter()+" im product: "+hashmap.get(letter.getLetter()) +" und im Inventar:  " + letter.getAmount() );
         }
         return true;
     }
 
-    private Boolean checkWallet(Integer price) {
+    public Boolean isPriceAffordable(Integer price) {
        return price <= Inventory.getInstance().getWallet();
     }
 
@@ -127,10 +131,8 @@ public class TransactionManager implements EventListener {
         }
 
 
-
-
-
     }
+    //interne Funktion
     private HashMap<Character,Integer> fillHashmap (HashMap<Character,Integer> hashMap){
         for (int ascii = 65; ascii < 91; ascii++) {
             hashMap.put((char)ascii,0);
