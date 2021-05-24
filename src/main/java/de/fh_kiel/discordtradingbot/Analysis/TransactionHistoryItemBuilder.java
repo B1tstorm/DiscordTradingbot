@@ -1,7 +1,7 @@
 package de.fh_kiel.discordtradingbot.Analysis;
 
 public class TransactionHistoryItemBuilder {
-    TransactionHistoryItem item;
+
     private Integer transactionId;
     private Integer value;
     private String sellerId;

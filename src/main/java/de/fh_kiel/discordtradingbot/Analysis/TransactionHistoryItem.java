@@ -1,6 +1,5 @@
 package de.fh_kiel.discordtradingbot.Analysis;
 
-import java.util.Date;
 
 public class TransactionHistoryItem {
     private final Integer transactionId;
