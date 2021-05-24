@@ -6,6 +6,7 @@ import de.fh_kiel.discordtradingbot.Holdings.Inventory;
 import de.fh_kiel.discordtradingbot.Holdings.Letter;
 import de.fh_kiel.discordtradingbot.Interaction.EventItem;
 import de.fh_kiel.discordtradingbot.Interaction.EventListener;
+import de.fh_kiel.discordtradingbot.Interaction.EventType;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -42,7 +43,7 @@ public class TransactionManager implements EventListener {
        return price <= Inventory.getInstance().getWallet();
     }
 
-    public Transaction startTransaction(String eventType) {
+    public Transaction startTransaction(EventType eventType) {
 
         return new Transaction(eventType);
     }
@@ -67,7 +68,7 @@ public class TransactionManager implements EventListener {
     }
 
     //todo unbedingt test schreiben
-    public void executeTransaction(String eventType,String eventId, Integer price, String product)   {
+    public void executeTransaction(EventType eventType,String eventId, Integer price, String product)   {
         //TODO updateWallet und Letter Methoden sollen positiv und negativ sein!!
         Inventory.getInstance().updateWallet(price);
         //Inventory.updateLetterAmount(product)
@@ -87,11 +88,11 @@ public class TransactionManager implements EventListener {
 
         //kind kann folgends sein ?: auction start... auction versteigerung..... auction Ende/gewonnen...... seg will kaufen
 
-        String eventType = eventItem.evenType;
-        Integer price = eventItem.price;
-        String eventId = eventItem.eventId;
-        String product = eventItem.product;
-        String winnerId = eventType.winnerId;
+        EventType eventType = eventItem.getEventType();
+        Integer price = eventItem.getValue();
+        String eventId = Integer.toString(eventItem.getAuctionId());
+        String product = eventItem.getProduct();
+        String winnerId = Integer.toString(eventItem.getTraderID());
 
         //! +++++++++++++++++++++++++++++++FALL auction +++++++++++++++++++++++++++++++
         //!falls winnerId eienen Wert hat. und wir der Winner wind sollen wir Überweien

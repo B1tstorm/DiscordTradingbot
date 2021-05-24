@@ -1,5 +1,7 @@
 package de.fh_kiel.discordtradingbot.Holdings;
 
+import de.fh_kiel.discordtradingbot.Interaction.EventType;
+
 import java.util.ArrayList;
 
 public class Inventory {
@@ -35,11 +37,11 @@ public class Inventory {
 	}
 
 //	Vermindert oder erhöht den amount der Buchstaben im Array
-	public void updateLetterAmount(String eventType, String product){
+	public void updateLetterAmount(EventType eventType, String product){
 		char[] buchstaben = product.toCharArray();
 		ArrayList<Letter> letterArray = Inventory.getInstance().getLetters();
 			for (char c : buchstaben) {
-				if(eventType.equals("BUY")){
+				if(eventType == EventType.BUY){
 					letterArray.get((int) c - 65).decrementAmount();
 				}else{
 					letterArray.get((int) c - 65).incrementAmount();

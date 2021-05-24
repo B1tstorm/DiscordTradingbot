@@ -1,5 +1,7 @@
 package de.fh_kiel.discordtradingbot.Transactions;
 
+import de.fh_kiel.discordtradingbot.Interaction.EventType;
+
 public class Transaction {
 	public static Integer IdCounter =0;
 	private String id;
@@ -7,11 +9,11 @@ public class Transaction {
 	private String traidingPartner;
 	private Bidder bidder;
 	private String status;
-	private String transactionKind;
+	private EventType transactionKind;
 
-	public Transaction(String transactionKind) {
+	public Transaction(EventType eventType) {
 		this.id = (Transaction.IdCounter++).toString();
-		this.transactionKind = transactionKind;
+		this.transactionKind = eventType;
 		this.status="waiting";
 	}
 
@@ -60,11 +62,13 @@ public class Transaction {
 	public String getStatus() {
 		return status;
 	}
-	public void setTransactionKind(String transactionKind) {
-		this.transactionKind = transactionKind;
+
+	public EventType getTransactionKind() {
+		return transactionKind;
 	}
 
-	public String getTransactionKind() {
-		return transactionKind;
+	public void setTransactionKind(EventType transactionKind) {
+		this.transactionKind = transactionKind;
+
 	}
 }
