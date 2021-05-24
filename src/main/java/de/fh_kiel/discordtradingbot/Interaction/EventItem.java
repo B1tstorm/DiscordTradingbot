@@ -15,12 +15,12 @@ public class EventItem {
     private String sellerID; // oder sellerID?
     private String traderID; // String besser zu verarbeiten als int/Integer
     private String auctionId; // Wird nur bei auktionen gebraucht, bei buy und sell wird die logNr verwendet
-    private EventType eventType; // AUCTION, BUY, SELL
 
+    private EventType eventType; // AUCTION, BUY, SELL
     private EventState eventState; // START, BID, WON, CLOSE
 
-    private String product; // Oder char?
-    private String value; // reicht es den aktuellen Preis zu speichern?
+    private char[] product; // Oder char?
+    private Integer value; // reicht es den aktuellen Preis zu speichern?
 
     // protected, weil nur im package vom ChannelInteractor instanziierbar.
     protected EventItem(Integer logNr,
@@ -29,8 +29,8 @@ public class EventItem {
                         String auctionId,
                         EventType eventType,
                         EventState eventState,
-                        String product,
-                        String value) {
+                        char[] product,
+                        Integer value) {
         this.logNr = logNr;
         this.sellerID = sellerID;
         this.traderID = traderID;
@@ -83,11 +83,11 @@ public class EventItem {
         return eventState;
     }
 
-    public String getProduct() {
+    public char[] getProduct() {
         return product;
     }
 
-    public String getValue() {
+    public Integer getValue() {
         return value;
     }
 }
