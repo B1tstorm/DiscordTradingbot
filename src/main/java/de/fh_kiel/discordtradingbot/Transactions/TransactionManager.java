@@ -4,6 +4,7 @@ package de.fh_kiel.discordtradingbot.Transactions;
 import de.fh_kiel.discordtradingbot.Holdings.Cart;
 import de.fh_kiel.discordtradingbot.Holdings.Inventory;
 import de.fh_kiel.discordtradingbot.Holdings.Letter;
+import de.fh_kiel.discordtradingbot.Interaction.EventItem;
 import de.fh_kiel.discordtradingbot.Interaction.EventListener;
 
 import java.util.ArrayList;
@@ -17,9 +18,28 @@ public class TransactionManager implements EventListener {
         return transactions;
     }
 
-    private Boolean checkInventory(String input) {
-        // TODO - implement TransactionManager.checkInventory
-        throw new UnsupportedOperationException();
+    public Boolean checkInventory(String product) {
+        ArrayList<Letter> letters = Inventory.getInstance().getLetters();
+        HashMap<Character,Integer> hashmap = fillHashmap(new HashMap<>());
+        char[] buchstaben = product.toCharArray();
+
+        for (Character buchstabe: buchstaben) {
+                hashmap.put(buchstabe, hashmap.get(buchstabe)+1);
+        }
+        for (Letter letter : letters) {
+            if (!(letter.getAmount()>= hashmap.get(letter.getLetter()))){
+                //* test Zeile
+                System.out.println("Buchstabe "+ letter.getLetter()+" im product: "+hashmap.get(letter.getLetter()) +" und im Inventar:  " + letter.getAmount() );
+                return false;
+            }
+            //* test Zeile
+            System.out.println("Buchstabe "+ letter.getLetter()+" im product: "+hashmap.get(letter.getLetter()) +" und im Inventar:  " + letter.getAmount() );
+        }
+        return true;
+    }
+
+    public Boolean isPriceAffordable(Integer price) {
+       return price <= Inventory.getInstance().getWallet();
     }
 
     public Transaction startTransaction(String eventType) {
@@ -46,6 +66,7 @@ public class TransactionManager implements EventListener {
         // TODO für später: falls tempTotalValue z.B. 5% mehr wäre als das Gebot, trotzdem verkaufen
     }
 
+    //todo unbedingt test schreiben
     public void executeTransaction(String eventType,String eventId, Integer price, String product)   {
         //TODO updateWallet und Letter Methoden sollen positiv und negativ sein!!
         Inventory.getInstance().updateWallet(price);
@@ -88,7 +109,7 @@ public class TransactionManager implements EventListener {
 
 
         //prüfe ob eventId bekannt ist ggf. bidde mit
-        if (eventType.equals("auction") && isProduktWorth(price, product)) {
+        if (eventType.equals("auction") && isProduktWorth(price, product) && isPriceAffordable(price)) {
             if (TransactionManager.getTransactions().get(eventId) != null) {
                 TransactionManager.getTransactions().get(eventId).bid(eventId, price);
               //wenn evenID neu ist erstelle eine neue transaction
@@ -111,8 +132,12 @@ public class TransactionManager implements EventListener {
         }
 
 
-
-
-
+    }
+    //interne Funktion
+    private HashMap<Character,Integer> fillHashmap (HashMap<Character,Integer> hashMap){
+        for (int ascii = 65; ascii < 91; ascii++) {
+            hashMap.put((char)ascii,0);
+        }
+        return hashMap;
     }
 }
