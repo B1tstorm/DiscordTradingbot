@@ -78,7 +78,6 @@ public class ChannelInteracter {
 
     private EventItem createEventItem(Message message) {
         // Pseudo EventItem
-        HashMap<String, String> pseudoEventItem = new HashMap<>();
         String[] messageShards = message.getContent().split(" ");
         EventItem eventItem;
         Integer logNr = 0;
@@ -90,6 +89,8 @@ public class ChannelInteracter {
             case "bid":
                 eventItem = new EventItem(logNr + 1, message.getUserData().id(), messageShards[4], messageShards[3], EventType.AUCTION_BID, null, messageShards[5]);
                 break;
+            default:
+                eventItem = new EventItem();
         }
 
         return eventItem;

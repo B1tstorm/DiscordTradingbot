@@ -56,7 +56,7 @@ public class EventItem {
      }
      * */
 
-    public String getLogNr() {
+    public Integer getLogNr() {
         return logNr;
     }
 
