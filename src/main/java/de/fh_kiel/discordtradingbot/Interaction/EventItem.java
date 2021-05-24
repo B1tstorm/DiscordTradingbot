@@ -11,23 +11,23 @@ public class EventItem {
 
 
 
-    private int logNr;  // chronological item number
-    private int sellerID; // oder sellerID?
-    private int traderID; // String besser zu verarbeiten als int/Integer
-    private int auctionId;
+    private Integer logNr;  // chronological item number
+    private String sellerID; // oder sellerID?
+    private String traderID; // String besser zu verarbeiten als int/Integer
+    private String auctionId; // Wird nur bei auktionen gebraucht, bei buy und sell wird die logNr verwendet
     private EventType eventType; // AUCTION_START, AUCTION_BID, AUCTION_WON, AUCTION_CLOSE, BUY, SELL
 
     private String product; // Oder char?
-    private int value; // reicht es den aktuellen Preis zu speichern?
+    private String value; // reicht es den aktuellen Preis zu speichern?
 
     // protected, weil nur im package vom ChannelInteractor instanziierbar.
-    protected EventItem(int logNr,
-                        int sellerID,
-                        int traderID,
-                        int auctionId,
+    protected EventItem(Integer logNr,
+                        String sellerID,
+                        String traderID,
+                        String auctionId,
                         EventType eventType,
                         String product,
-                        int value) {
+                        String value) {
         this.logNr = logNr;
         this.sellerID = sellerID;
         this.traderID = traderID;
@@ -38,6 +38,10 @@ public class EventItem {
 
     }
 
+    /** Defaultkonstr. da ich im Scope der createEventItem Methode sonst keine zwei Instanzen erstellen kann,
+     so kann ich eine erstellen und je nach EventState entscheide ich was rein kommt */
+    public EventItem() {
+    }
     /*
      LogItem = {
         logNr = 1;
@@ -52,19 +56,19 @@ public class EventItem {
      }
      * */
 
-    public int getLogNr() {
+    public String getLogNr() {
         return logNr;
     }
 
-    public int getSellerID() {
+    public String getSellerID() {
         return sellerID;
     }
 
-    public int getTraderID() {
+    public String getTraderID() {
         return traderID;
     }
 
-    public int getAuctionId() {
+    public String getAuctionId() {
         return auctionId;
     }
 
@@ -76,7 +80,7 @@ public class EventItem {
         return product;
     }
 
-    public int getValue() {
+    public String getValue() {
         return value;
     }
 }

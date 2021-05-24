@@ -9,6 +9,9 @@ import discord4j.core.object.entity.User;
 import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.core.object.presence.Activity;
 import discord4j.core.object.presence.Presence;
+import de.fh_kiel.discordtradingbot.Interaction.EventType;
+import de.fh_kiel.discordtradingbot.Interaction.EventItem;
+import reactor.core.publisher.Flux;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -56,6 +59,7 @@ public class ChannelInteracter {
     public void listenToChannel() {
         client.on(MessageCreateEvent.class).subscribe(event -> {
             final Message message = event.getMessage();
+
             if ("!seg auction start 1 Q 0".equals(message.getContent()) && message.getAuthor().map(user -> !user.isBot()).orElse(false)) {
                 createEventItem(message);
                 final MessageChannel channel = message.getChannel().block();
@@ -72,30 +76,23 @@ public class ChannelInteracter {
 //        events.notify(eventItem);
     }
 
-    private HashMap<String, String> createEventItem(Message message) {
+    private EventItem createEventItem(Message message) {
         // Pseudo EventItem
         HashMap<String, String> pseudoEventItem = new HashMap<>();
         String[] messageShards = message.getContent().split(" ");
-
-        pseudoEventItem.put("author", message.getUserData().username());
-        pseudoEventItem.put("eventType", messageShards[1]);
-        pseudoEventItem.put("state", messageShards[2]);
-        pseudoEventItem.put("eventId", messageShards[3]);
+        EventItem eventItem;
+        Integer logNr = 0;
 
         switch (messageShards[2]) {
             case "start":
-                pseudoEventItem.put("product", messageShards[4]);
-                pseudoEventItem.put("traderId", null);
+                eventItem = new EventItem(logNr + 1, message.getUserData().id(), null, messageShards[3], EventType.AUCTION_START, messageShards[4], messageShards[5]);
                 break;
             case "bid":
-                pseudoEventItem.put("product", null);
-                pseudoEventItem.put("traderId", messageShards[4]);
+                eventItem = new EventItem(logNr + 1, message.getUserData().id(), messageShards[4], messageShards[3], EventType.AUCTION_BID, null, messageShards[5]);
                 break;
         }
 
-        pseudoEventItem.put("price", messageShards[5]);
-
-        return pseudoEventItem;
+        return eventItem;
     }
 
     public void setPresence() {
