@@ -87,10 +87,10 @@ public class ChannelInteracter {
 
         switch (messageShards[2]) {
             case "start":
-                eventItem = new EventItem(logNr + 1, message.getUserData().id(), null, messageShards[3], EventType.AUCTION_START, messageShards[4], messageShards[5]);
+                eventItem = new EventItem(logNr + 1, message.getUserData().id(), null, messageShards[3], EventType.AUCTION, EventState.START,messageShards[4], messageShards[5]);
                 break;
             case "bid":
-                eventItem = new EventItem(logNr + 1, message.getUserData().id(), messageShards[4], messageShards[3], EventType.AUCTION_BID, null, messageShards[5]);
+                eventItem = new EventItem(logNr + 1, message.getUserData().id(), messageShards[4], messageShards[3], EventType.AUCTION, EventState.BID, null, messageShards[5]);
                 break;
             default:
                 eventItem = new EventItem();
