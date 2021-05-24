@@ -15,7 +15,9 @@ public class EventItem {
     private String sellerID; // oder sellerID?
     private String traderID; // String besser zu verarbeiten als int/Integer
     private String auctionId; // Wird nur bei auktionen gebraucht, bei buy und sell wird die logNr verwendet
-    private EventType eventType; // AUCTION_START, AUCTION_BID, AUCTION_WON, AUCTION_CLOSE, BUY, SELL
+    private EventType eventType; // AUCTION, BUY, SELL
+
+    private EventState eventState; // START, BID, WON, CLOSE
 
     private String product; // Oder char?
     private String value; // reicht es den aktuellen Preis zu speichern?
@@ -26,6 +28,7 @@ public class EventItem {
                         String traderID,
                         String auctionId,
                         EventType eventType,
+                        EventState eventState,
                         String product,
                         String value) {
         this.logNr = logNr;
@@ -33,6 +36,7 @@ public class EventItem {
         this.traderID = traderID;
         this.auctionId = auctionId;
         this.eventType = eventType;
+        this.eventState = eventState;
         this.product = product;
         this.value = value;
 
@@ -45,14 +49,13 @@ public class EventItem {
     /*
      LogItem = {
         logNr = 1;
-        from = !SEG
-        AuctionState = START
+        sellerID = !SEG
+        eventType = AUCTION
         auctionId = 123145
         traderId = 123414 / Tom Calvin Haak?
         product = "A"
         currentPrice = 12
-        isActive = true
-
+        eventState = BID
      }
      * */
 
@@ -74,6 +77,10 @@ public class EventItem {
 
     public EventType getEventType() {
         return eventType;
+    }
+
+    public EventState getEventState() {
+        return eventState;
     }
 
     public String getProduct() {
