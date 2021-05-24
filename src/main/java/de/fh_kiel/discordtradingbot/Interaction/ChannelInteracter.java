@@ -57,7 +57,10 @@ public class ChannelInteracter {
 
     // TODO Channel abhören
     public void listenToChannel() {
-        client.on(MessageCreateEvent.class).subscribe(event -> {
+        client.on(MessageCreateEvent.class)
+                // TODO: Bei Auktionen filtern das nur Messages vom SEG Bot gelesen werden (nicht unsere und nicht die anderen, der SEG Antwortet sowieso mit den geboten etc.)
+                //.filter(user -> user.getMember().meMyselfAndI)
+                .subscribe(event -> {
             final Message message = event.getMessage();
 
             if ("!seg auction start 1 Q 0".equals(message.getContent()) && message.getAuthor().map(user -> !user.isBot()).orElse(false)) {
