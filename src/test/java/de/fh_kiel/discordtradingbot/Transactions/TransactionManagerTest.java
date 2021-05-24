@@ -28,7 +28,7 @@ class TransactionManagerTest {
     @Test
     void checkInventory(){
         Inventory inventory = Inventory.getInstance();
-        TransactionManager transactionManager = new TransactionManager();
+        TransactionManager transactionManager =  TransactionManager.getInstance(new ChannelInteracter("token"));
         inventory.updateLetterAmount(EventType.BUY, ("ABCADEMLIIII").toCharArray() );
         boolean b =  transactionManager.checkInventory(("ABCAEIIII").toCharArray() );
         assertThat(b).isTrue();
@@ -37,7 +37,7 @@ class TransactionManagerTest {
     @Test
     void checkWallet(){
         Inventory inventory = Inventory.getInstance();
-        TransactionManager t = new TransactionManager();
+        TransactionManager t =  TransactionManager.getInstance(new ChannelInteracter("token"));
         assertThat(t.isPriceAffordable(0)).isTrue();
         assertThat(t.isPriceAffordable(2)).isFalse();
         Inventory.getInstance().updateWallet(100);
@@ -49,7 +49,7 @@ class TransactionManagerTest {
 
     @Test
     void executeTransaction(){
-        TransactionManager transactionManager = new TransactionManager();
+        TransactionManager transactionManager =  TransactionManager.getInstance(new ChannelInteracter("token"));
         transactionManager.executeTransaction(EventType.AUCTION_WON,"22",200,"ABC".toCharArray());
         assertThat(Inventory.getInstance().getWallet()).isEqualTo(200);
         assertThat(Inventory.getInstance().getLetters().get(0).getAmount()).isEqualTo(1);

@@ -12,11 +12,15 @@ import java.util.HashMap;
 
 public class TransactionManager implements EventListener {
 
+    private static TransactionManager transactionManager;
     private static final HashMap<String, Transaction> transactions = new HashMap<>();
     private  ChannelInteracter channelInteracter ;
 
-    //default Konstruktor Löschen nach der testing Phase
-    public TransactionManager() {
+    public static TransactionManager getInstance(ChannelInteracter channelInteracter){
+        if (transactionManager == null){
+            transactionManager = new TransactionManager(channelInteracter);
+        }
+        return transactionManager;
     }
 
 
@@ -134,6 +138,7 @@ public class TransactionManager implements EventListener {
             case BUY:
                 if (checkInventory(product) && isProduktWorth(price,product,eventType)) {
                     //! Antworte SEG positiv // todo Channelinteractor einschalten
+                    channelInteracter.writeMessage("eine sehr sinnlose Nachricht");
                     TransactionManager.transactions.put(eventId,new Transaction(eventType));
                     executeTransaction(eventType,eventId,price,product);
                 }
