@@ -95,7 +95,8 @@ public class ChannelInteracter {
             case "bid":
                 return new EventItem(logNr + 1, message.getUserData().id(), messageShards[4], messageShards[3], EventType.AUCTION_BID, null, messageShards[5]);
             case "won":
-                return null;
+                return new EventItem(logNr + 1, message.getUserData().id(), messageShards[4], messageShards[3], EventType.AUCTION_WON, null, messageShards[5]);
+
         }
 
         return null;

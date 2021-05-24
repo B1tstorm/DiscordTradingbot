@@ -73,7 +73,7 @@ public class EventItem {
         return eventType;
     }
 
-    public String getProduct() {
+    public char[] getProduct() {
         return product;
     }
 
