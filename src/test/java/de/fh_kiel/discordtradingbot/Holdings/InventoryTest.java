@@ -31,7 +31,7 @@ class InventoryTest {
         assertThat(inventory.getLetters().get(1).getAmount()).isEqualTo(1);
         assertThat(inventory.getLetters().get(2).getAmount()).isEqualTo(1);
 
-        inventory.updateLetterAmount(EventType.AUCTION_asdSTART, "ABC");
+        inventory.updateLetterAmount(EventType.AUCTION_aasddSTART, "ABC");
         assertThat(inventory.getLetters().get(0).getAmount()).isEqualTo(0);
         assertThat(inventory.getLetters().get(1).getAmount()).isEqualTo(0);
         assertThat(inventory.getLetters().get(2).getAmount()).isEqualTo(0);

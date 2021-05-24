@@ -29,12 +29,8 @@ public class TransactionManager implements EventListener {
         }
         for (Letter letter : letters) {
             if (!(letter.getAmount()>= hashmap.get(letter.getLetter()))){
-                //* test Zeile
-                System.out.println("Buchstabe "+ letter.getLetter()+" im product: "+hashmap.get(letter.getLetter()) +" und im Inventar:  " + letter.getAmount() );
                 return false;
             }
-            //* test Zeile
-            System.out.println("Buchstabe "+ letter.getLetter()+" im product: "+hashmap.get(letter.getLetter()) +" und im Inventar:  " + letter.getAmount() );
         }
         return true;
     }
@@ -44,7 +40,6 @@ public class TransactionManager implements EventListener {
     }
 
     public Transaction startTransaction(EventType eventType) {
-
         return new Transaction(eventType);
     }
 
@@ -71,65 +66,67 @@ public class TransactionManager implements EventListener {
     public void executeTransaction(EventType eventType,String eventId, Integer price, String product)   {
         //TODO updateWallet und Letter Methoden sollen positiv und negativ sein!!
         Inventory.getInstance().updateWallet(price);
+        //TODO methodenAufruf
         //Inventory.updateLetterAmount(product)
-        TransactionManager.transactions.get(eventId).setStatus("executed");
+        TransactionManager.transactions.remove(eventId);
     }
 
     public void dismissTransaction(String eventId) {
-        TransactionManager.transactions.remove(eventId).setStatus("dismissed");
+        TransactionManager.transactions.remove(eventId);
     }
 
     //TODO -implement update()
     @Override
     public void update(EventItem eventItem) {
-        //*Methode soll  Infos vom ChannelInteractor bekommen (observer) wie
-        //? tradingPartner //price //transactionKind //eventId //Product und winnerID
-        //*Je nach transactionKind wied eine Methode aufgerufen
-
-        //kind kann folgends sein ?: auction start... auction versteigerung..... auction Ende/gewonnen...... seg will kaufen
-
+        // extract importen attributes form the EventItem
         EventType eventType = eventItem.getEventType();
         Integer price = eventItem.getValue();
         String eventId = Integer.toString(eventItem.getAuctionId());
+        //! else nimm logID TODO
         String product = eventItem.getProduct();
-        String winnerId = Integer.toString(eventItem.getTraderID());
+        String traderId = Integer.toString(eventItem.getTraderID());
 
-        //! +++++++++++++++++++++++++++++++FALL auction +++++++++++++++++++++++++++++++
-        //!falls winnerId eienen Wert hat. und wir der Winner wind sollen wir Überweien
-        //!Falls winner einen Wert hat und wir nicht gewonnen haben soll die transaction geschlossen werden
-
-         if (null !=winnerId){
-            if (winnerId.equals("ZuluId")){
-                //* "price*(-1)" macht die transaktion negativ (wie bezahlen)
-                executeTransaction(eventType,eventId,price*(-1),product);
-            }else{
-                  dismissTransaction(eventId);
-             }
-            return;
-        }
-
-
-        //prüfe ob eventId bekannt ist ggf. bidde mit
-        if (eventType.equals("auction") && isProduktWorth(price, product) && isPriceAffordable(price)) {
-            if (TransactionManager.getTransactions().get(eventId) != null) {
-                TransactionManager.getTransactions().get(eventId).bid(eventId, price);
-              //wenn evenID neu ist erstelle eine neue transaction
-            } else {
-                Transaction auctionTransaction = startTransaction(eventType);
-                TransactionManager.transactions.put(eventId, auctionTransaction);
-                auctionTransaction.bid(eventId, price);
-            }
-        }// ! +++++++++++++++++++++++++++++++ FAll "jemand will Kaufen" +++++++++++++++++++++++++++++++
-        else if (eventType.equals("KundeWillKaufen")){
-            if (!isProduktWorth(price,product) && checkInventory(product)){
+        //* new refactored code
+        switch (eventType){
+            //wenn Transaction neu ist, erstellen, zum Array hinzufügen und beim BID einsteigen
+            case AUCTION_START:
+                if (isProduktWorth(price, product) && isPriceAffordable(price)){
+                    Transaction t = new Transaction(eventType);
+                    TransactionManager.transactions.put(eventId, t);
+                    t.bid(eventId, price);
+                }break;
+                //TODO
+                //!trader ID muss geprüft werden. wir dürfen uns selbst nicht versteigern
+            case AUCTION_BID:
+                if (isProduktWorth(price, product) && isPriceAffordable(price) && traderId != "unsereID"){
+                        TransactionManager.getTransactions().get(eventId).bid(eventId, price);
+                }break;
+            case AUCTION_WON:
+                if (traderId == "unsereId"){
+                    //* "price*(-1)" macht die transaktion negativ (wie bezahlen)
+                    executeTransaction(eventType,eventId,price*(-1),product);
+                }else {
+                    dismissTransaction(eventId);
+                }break;
+            case AUCTION_CLOSE:
+                break;
+            case BUY:
                 //? wie läuft die communikaton mit Kunde? ist es 3 way hand shake? soll man hier execute machen
-                //! Antworte SEG positiv // todo Channelinteractor einschalten
-                TransactionManager.transactions.put(eventId,new Transaction(eventType));
-                executeTransaction(eventType,eventId,price,product);
-            }else{
+                //! bitte das ! in der Mthode behandeln
+                if (checkInventory(product) && !isProduktWorth(price,product)) {
+                    //! Antworte SEG positiv // todo Channelinteractor einschalten
+                    TransactionManager.transactions.put(eventId,new Transaction(eventType));
+                    executeTransaction(eventType,eventId,price,product);
+                }
                 //! lehen Angebot ab todo Channelinteractor einschalten
                 //! mach einen gegen angebot todo Channelinteractor einschalten
-            }
+                break;
+            case SELL:
+
+                break;
+
+
+
         }
 
 
