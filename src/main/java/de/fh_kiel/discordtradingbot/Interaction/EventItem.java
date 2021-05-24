@@ -11,60 +11,67 @@ public class EventItem {
 
 
 
-    private int logNr;  // chronological item number
-    private int sellerID; // oder sellerID?
-    private int traderID; // String besser zu verarbeiten als int/Integer
-    private int auctionId;
-    private EventType eventType; // AUCTION_START, AUCTION_BID, AUCTION_WON, AUCTION_CLOSE, BUY, SELL
+    private Integer logNr;  // chronological item number
+    private String sellerID; // oder sellerID?
+    private String traderID; // String besser zu verarbeiten als int/Integer
+    private String auctionId; // Wird nur bei auktionen gebraucht, bei buy und sell wird die logNr verwendet
+    private EventType eventType; // AUCTION, BUY, SELL
+
+    private EventState eventState; // START, BID, WON, CLOSE
 
     private String product; // Oder char?
-    private int value; // reicht es den aktuellen Preis zu speichern?
+    private String value; // reicht es den aktuellen Preis zu speichern?
 
     // protected, weil nur im package vom ChannelInteractor instanziierbar.
-    protected EventItem(int logNr,
-                        int sellerID,
-                        int traderID,
-                        int auctionId,
+    protected EventItem(Integer logNr,
+                        String sellerID,
+                        String traderID,
+                        String auctionId,
                         EventType eventType,
+                        EventState eventState,
                         String product,
-                        int value) {
+                        String value) {
         this.logNr = logNr;
         this.sellerID = sellerID;
         this.traderID = traderID;
         this.auctionId = auctionId;
         this.eventType = eventType;
+        this.eventState = eventState;
         this.product = product;
         this.value = value;
 
     }
 
+    /** Defaultkonstr. da ich im Scope der createEventItem Methode sonst keine zwei Instanzen erstellen kann,
+     so kann ich eine erstellen und je nach EventState entscheide ich was rein kommt */
+    public EventItem() {
+    }
     /*
      LogItem = {
         logNr = 1;
-        from = !SEG
-        AuctionState = START
+        sellerID = !SEG
+        eventType = AUCTION
         auctionId = 123145
         traderId = 123414 / Tom Calvin Haak?
         product = "A"
         currentPrice = 12
-        isActive = true
-
+        eventState = BID
      }
      * */
 
-    public int getLogNr() {
+    public Integer getLogNr() {
         return logNr;
     }
 
-    public int getSellerID() {
+    public String getSellerID() {
         return sellerID;
     }
 
-    public int getTraderID() {
+    public String getTraderID() {
         return traderID;
     }
 
-    public int getAuctionId() {
+    public String getAuctionId() {
         return auctionId;
     }
 
@@ -72,11 +79,15 @@ public class EventItem {
         return eventType;
     }
 
+    public EventState getEventState() {
+        return eventState;
+    }
+
     public String getProduct() {
         return product;
     }
 
-    public int getValue() {
+    public String getValue() {
         return value;
     }
 }
