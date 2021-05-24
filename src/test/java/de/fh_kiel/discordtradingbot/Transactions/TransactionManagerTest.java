@@ -25,7 +25,7 @@ class TransactionManagerTest {
     void checkInventory(){
         Inventory inventory = Inventory.getInstance();
         TransactionManager transactionManager = new TransactionManager();
-        inventory.updateAmount("auction", "ABCADEMLIIII");
+        inventory.updateLetterAmount("auction", "ABCADEMLIIII");
         boolean b =  transactionManager.checkInventory("ABCAEIIII");
         assertThat(b).isTrue();
     }
