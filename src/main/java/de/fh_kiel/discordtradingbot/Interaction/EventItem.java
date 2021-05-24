@@ -16,7 +16,7 @@ public class EventItem {
     private String traderID; // String besser zu verarbeiten als int/Integer
     private String auctionId; // Wird nur bei auktionen gebraucht, bei buy und sell wird die logNr verwendet
     private EventType eventType; // AUCTION, BUY, SELL
-    private String product; // Oder char?
+    private char[] product; // Oder char?
     private String value; // reicht es den aktuellen Preis zu speichern?
 
     // protected, weil nur im package vom ChannelInteractor instanziierbar.
@@ -25,7 +25,7 @@ public class EventItem {
                         String traderID,
                         String auctionId,
                         EventType eventType,
-                        String product,
+                        char[] product,
                         String value) {
         this.logNr = logNr;
         this.sellerID = sellerID;
@@ -39,8 +39,7 @@ public class EventItem {
 
     /** Defaultkonstr. da ich im Scope der createEventItem Methode sonst keine zwei Instanzen erstellen kann,
      so kann ich eine erstellen und je nach EventState entscheide ich was rein kommt */
-//    public EventItem() {
-//    }
+
     /*
      LogItem = {
         logNr = 1;

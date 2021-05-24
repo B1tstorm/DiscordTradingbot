@@ -14,6 +14,7 @@ import de.fh_kiel.discordtradingbot.Interaction.EventItem;
 import reactor.core.publisher.Flux;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 public class ChannelInteracter {
@@ -83,12 +84,18 @@ public class ChannelInteracter {
     private EventItem createEventItem(Message message) {
         // Pseudo EventItem
         String[] messageShards = message.getContent().split(" ");
+        char[] products = messageShards[4]
+                .replaceAll("\\s+", "") // Entfernt alle Leerzeichen
+                .toUpperCase() // Stellt alle Buchstaben auf Großbuchstaben
+                .toCharArray(); // Erstellt aus dem String einzelne Elemente "products"
 
         switch (messageShards[2]) {
             case "start":
-                return new EventItem(logNr + 1, message.getUserData().id(), null, messageShards[3], EventType.AUCTION_START, messageShards[4], messageShards[5]);
+                return new EventItem(logNr + 1, message.getUserData().id(), null, messageShards[3], EventType.AUCTION_START, products, messageShards[5]);
             case "bid":
                 return new EventItem(logNr + 1, message.getUserData().id(), messageShards[4], messageShards[3], EventType.AUCTION_BID, null, messageShards[5]);
+            case "won":
+                return null;
         }
 
         return null;
