@@ -1,6 +1,8 @@
 package de.fh_kiel.discordtradingbot.Transactions;
 
 import de.fh_kiel.discordtradingbot.Holdings.Inventory;
+import de.fh_kiel.discordtradingbot.Interaction.ChannelInteracter;
+import de.fh_kiel.discordtradingbot.Interaction.EventType;
 import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.*;
 
@@ -13,11 +15,13 @@ class TransactionManagerTest {
         int preis = 2;
         Inventory inventory = Inventory.getInstance();
         String product = "ABC";
-        TransactionManager transactionManager = new TransactionManager();
+        TransactionManager transactionManager = new TransactionManager(new ChannelInteracter("12"));
 
-        Boolean b = transactionManager.isProduktWorth(preis,product );
+        Boolean b = transactionManager.isProduktWorth(preis,product.toCharArray() ,EventType.BUY );
+        Boolean c = transactionManager.isProduktWorth(preis,product.toCharArray() ,EventType.SELL );
 
-        System.out.println(b);
+
+        System.out.println(b + "  "+ c);
 
     }
 
@@ -25,8 +29,8 @@ class TransactionManagerTest {
     void checkInventory(){
         Inventory inventory = Inventory.getInstance();
         TransactionManager transactionManager = new TransactionManager();
-        inventory.updateLetterAmount("auction", "ABCADEMLIIII");
-        boolean b =  transactionManager.checkInventory("ABCAEIIII");
+        inventory.updateLetterAmount(EventType.BUY, ("ABCADEMLIIII").toCharArray() );
+        boolean b =  transactionManager.checkInventory(("ABCAEIIII").toCharArray() );
         assertThat(b).isTrue();
     }
 
@@ -42,6 +46,26 @@ class TransactionManagerTest {
         assertThat(t.isPriceAffordable(200)).isFalse();
 
     }
+
+    @Test
+    void executeTransaction(){
+        TransactionManager transactionManager = new TransactionManager();
+        transactionManager.executeTransaction(EventType.AUCTION_WON,"22",200,"ABC".toCharArray());
+        assertThat(Inventory.getInstance().getWallet()).isEqualTo(200);
+        assertThat(Inventory.getInstance().getLetters().get(0).getAmount()).isEqualTo(1);
+        assertThat(Inventory.getInstance().getLetters().get(1).getAmount()).isEqualTo(1);
+        assertThat(Inventory.getInstance().getLetters().get(2).getAmount()).isEqualTo(1);
+        assertThat(TransactionManager.getTransactions().get("22")).isNull();
+
+
+        }
+
+    /*
+     *         Inventory.getInstance().updateWallet(price);
+     *         Inventory.getInstance().updateLetterAmount(eventType,product);
+     *         TransactionManager.transactions.remove(eventId);
+     */
+
 
 //    @Test
 //    void update(){
