@@ -39,8 +39,8 @@ public class EventItem {
 
     /** Defaultkonstr. da ich im Scope der createEventItem Methode sonst keine zwei Instanzen erstellen kann,
      so kann ich eine erstellen und je nach EventState entscheide ich was rein kommt */
-    public EventItem() {
-    }
+//    public EventItem() {
+//    }
     /*
      LogItem = {
         logNr = 1;

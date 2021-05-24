@@ -22,6 +22,7 @@ public class ChannelInteracter {
     // private EventItem eventItem = new EventItem();
     GatewayDiscordClient client;
     private String channelCommand;
+    static Integer logNr = 0;
 
     public ChannelInteracter(String token) {
         //Bei Discord über Token authentifizieren
@@ -82,21 +83,15 @@ public class ChannelInteracter {
     private EventItem createEventItem(Message message) {
         // Pseudo EventItem
         String[] messageShards = message.getContent().split(" ");
-        EventItem eventItem;
-        Integer logNr = 0;
 
         switch (messageShards[2]) {
             case "start":
-                eventItem = new EventItem(logNr + 1, message.getUserData().id(), null, messageShards[3], EventType.AUCTION_START, messageShards[4], messageShards[5]);
-                break;
+                return new EventItem(logNr + 1, message.getUserData().id(), null, messageShards[3], EventType.AUCTION_START, messageShards[4], messageShards[5]);
             case "bid":
-                eventItem = new EventItem(logNr + 1, message.getUserData().id(), messageShards[4], messageShards[3], EventType.AUCTION_BID, null, messageShards[5]);
-                break;
-            default:
-                eventItem = new EventItem();
+                return new EventItem(logNr + 1, message.getUserData().id(), messageShards[4], messageShards[3], EventType.AUCTION_BID, null, messageShards[5]);
         }
 
-        return eventItem;
+        return null;
     }
 
     public void setPresence() {
