@@ -37,10 +37,9 @@ public class Inventory {
 	}
 
 //	Vermindert oder erhöht den amount der Buchstaben im Array
-	public void updateLetterAmount(EventType eventType, String product){
-		char[] buchstaben = product.toCharArray();
+	public void updateLetterAmount(EventType eventType, char[] product){
 		ArrayList<Letter> letterArray = Inventory.getInstance().getLetters();
-			for (char c : buchstaben) {
+			for (char c : product) {
 				if(eventType == EventType.BUY){
 					letterArray.get((int) c - 65).decrementAmount();
 				}else{
