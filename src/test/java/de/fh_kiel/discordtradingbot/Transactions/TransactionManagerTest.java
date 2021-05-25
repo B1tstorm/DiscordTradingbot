@@ -15,7 +15,7 @@ class TransactionManagerTest {
         int preis = 2;
         Inventory inventory = Inventory.getInstance();
         String product = "ABC";
-        TransactionManager transactionManager = new TransactionManager(new ChannelInteracter("12"));
+        TransactionManager transactionManager =  TransactionManager.getInstance(new ChannelInteracter("12"));
 
         Boolean b = transactionManager.isProduktWorth(preis,product.toCharArray() ,EventType.BUY );
         Boolean c = transactionManager.isProduktWorth(preis,product.toCharArray() ,EventType.SELL );

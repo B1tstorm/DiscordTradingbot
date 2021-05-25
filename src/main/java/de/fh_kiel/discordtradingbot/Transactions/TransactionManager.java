@@ -1,4 +1,5 @@
 package de.fh_kiel.discordtradingbot.Transactions;
+
 import de.fh_kiel.discordtradingbot.Holdings.Inventory;
 import de.fh_kiel.discordtradingbot.Holdings.Letter;
 import de.fh_kiel.discordtradingbot.Interaction.ChannelInteracter;
@@ -10,11 +11,8 @@ import reactor.util.annotation.NonNull;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class TransactionManager implements EventListener {
-
+public class TransactionManager extends TransactionManagerSeineMutter implements EventListener {
     private static TransactionManager transactionManager;
-    private static final HashMap<String, Transaction> transactions = new HashMap<>();
-    private  ChannelInteracter channelInteracter ;
 
     public static TransactionManager getInstance(ChannelInteracter channelInteracter){
         if (transactionManager == null){
@@ -23,46 +21,12 @@ public class TransactionManager implements EventListener {
         return transactionManager;
     }
 
-
-    public TransactionManager(ChannelInteracter channelInteracter) {
+    private TransactionManager(ChannelInteracter channelInteracter) {
     this.channelInteracter = channelInteracter;
     }
 
-    public static HashMap<String, Transaction> getTransactions() {
-        return transactions;
-    }
-
-    public Boolean checkInventory(@NonNull char[] product) {
-        ArrayList<Letter> letters = Inventory.getInstance().getLetters();
-        HashMap<Character,Integer> hashmap = fillHashmap(new HashMap<>());
-
-        for (Character buchstabe: product) {
-                hashmap.put(buchstabe, hashmap.get(buchstabe)+1);
-        }
-        for (Letter letter : letters) {
-            if (!(letter.getAmount()>= hashmap.get(letter.getLetter()))){
-                return false;
-            }
-        }
-        return true;
-    }
-    //interne Funktion, ergänzt ChenInventory
-    private HashMap<Character,Integer> fillHashmap (HashMap<Character,Integer> hashMap){
-        for (int ascii = 65; ascii < 91; ascii++) {
-            hashMap.put((char)ascii,0);
-        }
-        return hashMap;
-    }
-
-    public Boolean isPriceAffordable(Integer price) {
-       return price <= Inventory.getInstance().getWallet();
-    }
-
-    public Transaction startTransaction(EventType eventType) {
-        return new Transaction(eventType);
-    }
-
     //prüft ob produkt einen bestimmten Wert wert ist
+    @Override
     public Boolean isProduktWorth(Integer price,@NonNull char[] product,EventType eventType) {
         //ToDo Method is to be tested
         int totalLocalValue = 0;
@@ -84,17 +48,14 @@ public class TransactionManager implements EventListener {
     }
 
 
-
-    //todo unbedingt test schreiben
+    @Override
     public void executeTransaction(EventType eventType,String eventId, Integer price, char[] product)   {
         Inventory.getInstance().updateWallet(price);
         Inventory.getInstance().updateLetterAmount(eventType,product);
         TransactionManager.transactions.remove(eventId);
     }
 
-    public void dismissTransaction(String eventId) {
-        TransactionManager.transactions.remove(eventId);
-    }
+
 
     //TODO -implement update()
     @Override
@@ -106,7 +67,7 @@ public class TransactionManager implements EventListener {
         String traderId = eventItem.getTraderID();
         String  eventId;
         if (eventItem.getAuctionId() != null){
-          eventId  =    eventItem.getAuctionId();
+            eventId  =    eventItem.getAuctionId();
         }else eventId = eventItem.getLogNr().toString();
 
         //* new refactored code
