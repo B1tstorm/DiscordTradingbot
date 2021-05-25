@@ -1,15 +1,10 @@
 package de.fh_kiel.discordtradingbot.Transactions;
 
 import de.fh_kiel.discordtradingbot.Holdings.Inventory;
-import de.fh_kiel.discordtradingbot.Holdings.Letter;
 import de.fh_kiel.discordtradingbot.Interaction.ChannelInteracter;
 import de.fh_kiel.discordtradingbot.Interaction.EventItem;
 import de.fh_kiel.discordtradingbot.Interaction.EventListener;
 import de.fh_kiel.discordtradingbot.Interaction.EventType;
-import reactor.util.annotation.NonNull;
-
-import java.util.ArrayList;
-import java.util.HashMap;
 
 public class TransactionManager extends TransactionManagerSeineMutter implements EventListener {
     private static TransactionManager transactionManager;
@@ -26,26 +21,26 @@ public class TransactionManager extends TransactionManagerSeineMutter implements
     }
 
     //prüft ob produkt einen bestimmten Wert wert ist
-    @Override
-    public Boolean isProduktWorth(Integer price,@NonNull char[] product,EventType eventType) {
-        //ToDo Method is to be tested
-        int totalLocalValue = 0;
-        ArrayList<Letter> letterArray = Inventory.getInstance().getLetters();
-        //rechne gesamtWert vom product
-        for (char c : product) {
-            //zugriff auf werte im Inventar Letter Array mit ascii index berechnung
-            totalLocalValue += letterArray.get((int) c - 65).getValue();
-        }
-        // Der Fall wenn wir auf einen Buchstaben versteigern können und der Buchstabe bei uns einen Wert von 0 hat, dann bieten wir nicht mit.
-        if (totalLocalValue == 0) return false;
-        // Der Fall wenn wir  Buchstaben verkaufen und unser Value (totalLocalValue) kleiner ist als der angebotene Preis (price)
-        if (eventType == EventType.BUY) {
-            return price >= totalLocalValue;
-        }else
-            // Der Fall wenn wir auf Buchstaben bieten und unser Value (totalLocalValue) größer ist als der Preis (price)
-            return totalLocalValue >= price;
-        // TODO für später: falls TotalLocalValue z.B. 5% mehr wäre als das Gebot, trotzdem verkaufen
-    }
+//    @Override
+//    public Boolean isProduktWorth(Integer price,@NonNull char[] product,EventType eventType) {
+//        //ToDo Method is to be tested
+//        int totalLocalValue = 0;
+//        ArrayList<Letter> letterArray = Inventory.getInstance().getLetters();
+//        //rechne gesamtWert vom product
+//        for (char c : product) {
+//            //zugriff auf werte im Inventar Letter Array mit ascii index berechnung
+//            totalLocalValue += letterArray.get((int) c - 65).getValue();
+//        }
+//        // Der Fall wenn wir auf einen Buchstaben versteigern können und der Buchstabe bei uns einen Wert von 0 hat, dann bieten wir nicht mit.
+//        if (totalLocalValue == 0) return false;
+//        // Der Fall wenn wir  Buchstaben verkaufen und unser Value (totalLocalValue) kleiner ist als der angebotene Preis (price)
+//        if (eventType == EventType.BUY) {
+//            return price >= totalLocalValue;
+//        }else
+//            // Der Fall wenn wir auf Buchstaben bieten und unser Value (totalLocalValue) größer ist als der Preis (price)
+//            return totalLocalValue >= price;
+//        // TODO für später: falls TotalLocalValue z.B. 5% mehr wäre als das Gebot, trotzdem verkaufen
+//    }
 
 
     @Override
@@ -74,7 +69,7 @@ public class TransactionManager extends TransactionManagerSeineMutter implements
         switch (eventType){
             //wenn Transaction neu ist, erstellen, zum Array hinzufügen und beim BID einsteigen
             case AUCTION_START:
-                if (isProduktWorth(price, product,eventType) && isPriceAffordable(price)){
+                if (isProductWorth(price, product) && isPriceAffordable(price)){
                     Transaction t = new Transaction(eventType);
                     TransactionManager.transactions.put(eventId, t);
                     t.bid(eventId, price);
@@ -82,7 +77,7 @@ public class TransactionManager extends TransactionManagerSeineMutter implements
                 //TODO
                 //!trader ID muss geprüft werden. wir dürfen uns selbst nicht versteigern
             case AUCTION_BID:
-                if (isProduktWorth(price, product,eventType) && isPriceAffordable(price) && traderId != "unsereID"){
+                if (isProductWorth(price, product) && isPriceAffordable(price) && traderId != "unsereID"){
                         TransactionManager.getTransactions().get(eventId).bid(eventId, price);
                 }break;
             case AUCTION_WON:
@@ -97,7 +92,7 @@ public class TransactionManager extends TransactionManagerSeineMutter implements
                 //!dieser Fall ist nur wenn Eike von uns kaufen will
                 //TODO Fall BUY im handler Bot
             case BUY:
-                if (checkInventory(product) && isProduktWorth(price,product,eventType)) {
+                if (checkInventory(product) && isProductWorth(price,product)) {
                     //! Antworte SEG positiv // todo Channelinteractor einschalten
                     channelInteracter.writeMessage("eine sehr sinnlose Nachricht");
                     TransactionManager.transactions.put(eventId,new Transaction(eventType));

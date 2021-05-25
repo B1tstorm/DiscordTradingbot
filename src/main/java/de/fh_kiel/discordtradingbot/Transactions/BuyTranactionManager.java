@@ -9,8 +9,10 @@ import de.fh_kiel.discordtradingbot.Interaction.EventType;
 import java.util.ArrayList;
 
 public class BuyTranactionManager extends TransactionManagerSeineMutter implements EventListener {
+    //! we sell
+
     @Override
-    public Boolean isProduktWorth(Integer price, char[] product, EventType eventType) {
+    public Boolean isProductWorth(Integer price, char[] product) {
         //ToDo Method is to be tested
         int totalLocalValue = 0;
         ArrayList<Letter> letterArray = Inventory.getInstance().getLetters();
@@ -20,10 +22,9 @@ public class BuyTranactionManager extends TransactionManagerSeineMutter implemen
             totalLocalValue += letterArray.get((int) c - 65).getValue();
         }
         //* wir verkaufen nur wenn der angebotene price >= unseren internen Wert ist
-            return price >= totalLocalValue;
+        return price >= totalLocalValue;
         // TODO für später: falls TotalLocalValue z.B. 5% mehr wäre als das Gebot, trotzdem verkaufen
     }
-
 
 
     @Override
@@ -32,23 +33,21 @@ public class BuyTranactionManager extends TransactionManagerSeineMutter implemen
         Integer price = Integer.parseInt(eventItem.getValue());
         char[] product = eventItem.getProduct();
         String traderId = eventItem.getTraderID();
-        String  eventId;
-        if (eventItem.getAuctionId() != null){
-            eventId  =    eventItem.getAuctionId();
-        }else eventId = eventItem.getLogNr().toString();
+        String eventId;
+        if (eventItem.getAuctionId() != null) {
+            eventId = eventItem.getAuctionId();
+        } else eventId = eventItem.getLogNr().toString();
 
 
-        switch (eventType){
-            case BUY:
-                if (checkInventory(product) && isProduktWorth(price,product,eventType)) {
-                    //! Antworte SEG positiv // todo Channelinteractor einschalten
-                    channelInteracter.writeMessage("eine sehr sinnlose Nachricht");
-                    TransactionManager.transactions.put(eventId,new Transaction(eventType));
-                    executeTransaction(eventType,eventId,price,product);
-                }
-                //! lehen Angebot ab todo Channelinteractor einschalten
-                //! mach einen gegen angebot todo Channelinteractor einschalten
-                break;
+        if (checkInventory(product) && isProductWorth(price, product)) {
+            //! Antworte SEG positiv // todo Channelinteractor einschalten
+            channelInteracter.writeMessage("eine sehr sinnlose Nachricht");
+            TransactionManager.transactions.put(eventId, new Transaction(eventType));
+            executeTransaction(eventType, eventId, price, product);
         }
+        //! lehen Angebot ab todo Channelinteractor einschalten
+        //! mach einen gegen angebot todo Channelinteractor einschalten
+
+
     }
 }

@@ -3,8 +3,6 @@ package de.fh_kiel.discordtradingbot.Transactions;
 import de.fh_kiel.discordtradingbot.Holdings.Inventory;
 import de.fh_kiel.discordtradingbot.Holdings.Letter;
 import de.fh_kiel.discordtradingbot.Interaction.ChannelInteracter;
-import de.fh_kiel.discordtradingbot.Interaction.EventItem;
-import de.fh_kiel.discordtradingbot.Interaction.EventListener;
 import de.fh_kiel.discordtradingbot.Interaction.EventType;
 import reactor.util.annotation.NonNull;
 import java.util.ArrayList;
@@ -60,7 +58,7 @@ public abstract class TransactionManagerSeineMutter {
         Inventory.getInstance().updateWallet(price);
     }
 
-    public  Boolean isProduktWorth(Integer price,@NonNull char[] product,EventType eventType){
+    public  Boolean isProductWorth(Integer price, @NonNull char[] product){
         //ToDo Method is to be tested
         int totalLocalValue = 0;
         ArrayList<Letter> letterArray = Inventory.getInstance().getLetters();
