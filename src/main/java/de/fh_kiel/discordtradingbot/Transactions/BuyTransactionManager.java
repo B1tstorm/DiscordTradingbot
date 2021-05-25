@@ -8,7 +8,7 @@ import de.fh_kiel.discordtradingbot.Interaction.EventType;
 
 import java.util.ArrayList;
 
-public class BuyTranactionManager extends TransactionManagerSeineMutter implements EventListener {
+public class BuyTransactionManager extends TransactionManagerSeineMutter implements EventListener {
     //! we sell
 
     @Override

@@ -8,7 +8,7 @@ import de.fh_kiel.discordtradingbot.Interaction.EventType;
 
 import java.util.ArrayList;
 
-public class SellTranactionManager extends TransactionManagerSeineMutter implements EventListener {
+public class SellTransactionManager extends TransactionManagerSeineMutter implements EventListener {
     //!we buy
     @Override
     public void executeTransaction(EventType eventType, String eventId, Integer price, char[] product) {

@@ -59,6 +59,6 @@ public class SegTransactionManager extends TransactionManagerSeineMutter impleme
         EventItem newItem = new EventItem(eventItem.getLogNr(),eventItem.getSellerID(),
                 "845410146913747034",eventItem.getAuctionId(),eventItem.getEventType(),
                 eventItem.getProduct(),eventItem.getValue()+1);
-        channelInteracter.writeMessage(newItem);
+        //channelInteracter.writeMessage(newItem);
     }
 }

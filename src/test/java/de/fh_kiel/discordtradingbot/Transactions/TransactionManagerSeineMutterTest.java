@@ -6,7 +6,6 @@ import de.fh_kiel.discordtradingbot.Interaction.EventType;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 class TransactionManagerSeineMutterTest extends TransactionManagerSeineMutter {
 
@@ -46,7 +45,7 @@ class TransactionManagerSeineMutterTest extends TransactionManagerSeineMutter {
 //        assertThat(t2.isPriceAffordable(200)).isFalse();
 
 
-        SellTranactionManager t3 =  new SellTranactionManager();
+        SellTransactionManager t3 =  new SellTransactionManager();
         assertThat(t3.isPriceAffordable(0)).isTrue();
         assertThat(t3.isPriceAffordable(2)).isFalse();
         Inventory.getInstance().updateWallet(100);
