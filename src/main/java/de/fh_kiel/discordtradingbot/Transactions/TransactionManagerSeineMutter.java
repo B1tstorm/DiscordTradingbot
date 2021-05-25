@@ -3,6 +3,7 @@ package de.fh_kiel.discordtradingbot.Transactions;
 import de.fh_kiel.discordtradingbot.Holdings.Inventory;
 import de.fh_kiel.discordtradingbot.Holdings.Letter;
 import de.fh_kiel.discordtradingbot.Interaction.ChannelInteracter;
+import de.fh_kiel.discordtradingbot.Interaction.EventItem;
 import de.fh_kiel.discordtradingbot.Interaction.EventType;
 import reactor.util.annotation.NonNull;
 import java.util.ArrayList;
@@ -73,6 +74,7 @@ public abstract class TransactionManagerSeineMutter {
         return totalLocalValue >= price;
         // TODO für später: falls TotalLocalValue z.B. 5% mehr wäre als das Gebot, trotzdem verkaufen
     }
+
 
 
 }

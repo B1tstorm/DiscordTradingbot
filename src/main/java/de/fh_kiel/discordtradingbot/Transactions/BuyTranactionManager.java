@@ -40,7 +40,7 @@ public class BuyTranactionManager extends TransactionManagerSeineMutter implemen
 
 
         if (checkInventory(product) && isProductWorth(price, product)) {
-            //! Antworte SEG positiv // todo Channelinteractor einschalten
+            //! Antworte EIKE positiv // todo Channelinteractor einschalten
             channelInteracter.writeMessage("eine sehr sinnlose Nachricht");
             TransactionManager.transactions.put(eventId, new Transaction(eventType));
             executeTransaction(eventType, eventId, price, product);

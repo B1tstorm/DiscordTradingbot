@@ -36,12 +36,13 @@ public class SegTransactionManager extends TransactionManagerSeineMutter impleme
             //TODO
             //!trader ID muss geprüft werden. wir dürfen uns selbst nicht versteigern
             case AUCTION_BID:
-                if (isProductWorth(price, product) && isPriceAffordable(price) && traderId != "unsereID") {
-                    TransactionManager.getTransactions().get(eventId).bid(eventId, price);
+                if (isProductWorth(price, product) && isPriceAffordable(price) && traderId.equals("845410146913747034")) {
+                    //TransactionManager.getTransactions().get(eventId).bid(eventId, price);
+                    bid(eventItem);
                 }
                 break;
             case AUCTION_WON:
-                if (traderId == "unsereId") {
+                if (traderId.equals("845410146913747034")) {
                     //* "price*(-1)" macht die transaktion negativ (wie bezahlen)
                     executeTransaction(eventType, eventId, price * (-1), product);
                 } else {
@@ -53,5 +54,11 @@ public class SegTransactionManager extends TransactionManagerSeineMutter impleme
         }
     }
 
-
+    protected void bid(EventItem eventItem){
+    //* SEG auction bid 12 11 -> - - auctionState auctionId value
+        EventItem newItem = new EventItem(eventItem.getLogNr(),eventItem.getSellerID(),
+                "845410146913747034",eventItem.getAuctionId(),eventItem.getEventType(),
+                eventItem.getProduct(),eventItem.getValue()+1);
+        channelInteracter.writeMessage(newItem);
+    }
 }

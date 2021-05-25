@@ -20,7 +20,7 @@ public class EventItem {
     private String value; // reicht es den aktuellen Preis zu speichern?
 
     // protected, weil nur im package vom ChannelInteractor instanziierbar.
-    protected EventItem(Integer logNr,
+    public EventItem(Integer logNr,
                         String sellerID,
                         String traderID,
                         String auctionId,
