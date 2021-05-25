@@ -18,8 +18,7 @@ public class Transaction {
 	}
 
 	public void bid(String eventId, Integer price) {
-		//* zum testen
-		System.out.println("ich bidde gerade");
+		//TODO hier die Implementierung
 	}
 
 	//getter and setter
