@@ -54,8 +54,27 @@ public abstract class TransactionManagerSeineMutter {
         TransactionManager.transactions.remove(eventId);
     }
 
-    public abstract Boolean isProduktWorth(Integer price,@NonNull char[] product,EventType eventType);
+    public  void executeTransaction(EventType eventType,String eventId, Integer price, char[] product){
+        Inventory.getInstance().updateLetterAmount(eventType,product);
+        TransactionManager.transactions.remove(eventId);
+        Inventory.getInstance().updateWallet(price);
+    }
 
-    public abstract void executeTransaction(EventType eventType,String eventId, Integer price, char[] product);
+    public  Boolean isProduktWorth(Integer price,@NonNull char[] product,EventType eventType){
+        //ToDo Method is to be tested
+        int totalLocalValue = 0;
+        ArrayList<Letter> letterArray = Inventory.getInstance().getLetters();
+        //rechne gesamtInternWert vom product
+        for (char c : product) {
+            //zugriff auf werte im Inventar Letter Array mit ascii index berechnung
+            totalLocalValue += letterArray.get((int) c - 65).getValue();
+        }
+        // Der Fall wenn wir auf einen Buchstaben versteigern können und der Buchstabe bei uns einen Wert von 0 hat, dann bieten wir nicht mit.
+        if (totalLocalValue == 0) return false;
+        // * bei Auction: wir bidden immer weiter geld solang der geforderte Price unter unserem internen price legt
+        return totalLocalValue >= price;
+        // TODO für später: falls TotalLocalValue z.B. 5% mehr wäre als das Gebot, trotzdem verkaufen
+    }
+
 
 }
