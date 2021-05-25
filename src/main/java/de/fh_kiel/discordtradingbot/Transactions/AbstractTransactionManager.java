@@ -9,7 +9,7 @@ import reactor.util.annotation.NonNull;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public abstract class TransactionManagerSeineMutter {
+public abstract class AbstractTransactionManager {
     protected static final HashMap<String, Transaction> transactions = new HashMap<>();
     protected ChannelInteracter channelInteracter ;
 
@@ -50,12 +50,12 @@ public abstract class TransactionManagerSeineMutter {
     }
 
     public void dismissTransaction(String eventId) {
-        TransactionManager.transactions.remove(eventId);
+        AbstractTransactionManager.transactions.remove(eventId);
     }
 
     public  void executeTransaction(EventType eventType,String eventId, Integer price, char[] product){
         Inventory.getInstance().updateLetterAmount(eventType,product);
-        TransactionManager.transactions.remove(eventId);
+        AbstractTransactionManager.transactions.remove(eventId);
         Inventory.getInstance().updateWallet(price);
     }
 

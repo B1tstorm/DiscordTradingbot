@@ -1,14 +1,10 @@
 package de.fh_kiel.discordtradingbot.Transactions;
 
-import de.fh_kiel.discordtradingbot.Holdings.Inventory;
-import de.fh_kiel.discordtradingbot.Holdings.Letter;
 import de.fh_kiel.discordtradingbot.Interaction.EventItem;
 import de.fh_kiel.discordtradingbot.Interaction.EventListener;
 import de.fh_kiel.discordtradingbot.Interaction.EventType;
 
-import java.util.ArrayList;
-
-public class SellTransactionManager extends TransactionManagerSeineMutter implements EventListener {
+public class SellTransactionManager extends AbstractTransactionManager implements EventListener {
     //!we buy
     @Override
     public void executeTransaction(EventType eventType, String eventId, Integer price, char[] product) {

@@ -8,7 +8,7 @@ import de.fh_kiel.discordtradingbot.Interaction.EventType;
 
 import java.util.ArrayList;
 
-public class BuyTransactionManager extends TransactionManagerSeineMutter implements EventListener {
+public class BuyTransactionManager extends AbstractTransactionManager implements EventListener {
     //! we sell
 
     @Override
@@ -42,7 +42,7 @@ public class BuyTransactionManager extends TransactionManagerSeineMutter impleme
         if (checkInventory(product) && isProductWorth(price, product)) {
             //! Antworte EIKE positiv // todo Channelinteractor einschalten
             channelInteracter.writeMessage("eine sehr sinnlose Nachricht");
-            TransactionManager.transactions.put(eventId, new Transaction(eventType));
+            BuyTransactionManager.transactions.put(eventId, new Transaction(eventType));
             executeTransaction(eventType, eventId, price, product);
         }
         //! lehen Angebot ab todo Channelinteractor einschalten

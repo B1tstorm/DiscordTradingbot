@@ -4,7 +4,7 @@ import de.fh_kiel.discordtradingbot.Interaction.EventItem;
 import de.fh_kiel.discordtradingbot.Interaction.EventListener;
 import de.fh_kiel.discordtradingbot.Interaction.EventType;
 
-public class SegTransactionManager extends TransactionManagerSeineMutter implements EventListener {
+public class SegTransactionManager extends AbstractTransactionManager implements EventListener {
     //! we buy
 
     @Override
@@ -29,7 +29,7 @@ public class SegTransactionManager extends TransactionManagerSeineMutter impleme
             case AUCTION_START:
                 if (isProductWorth(price, product) && isPriceAffordable(price)) {
                     Transaction t = new Transaction(eventType);
-                    TransactionManager.transactions.put(eventId, t);
+                    SegTransactionManager.transactions.put(eventId, t);
                     t.bid(eventId, price);
                 }
                 break;

@@ -6,7 +6,7 @@ import de.fh_kiel.discordtradingbot.Interaction.EventItem;
 import de.fh_kiel.discordtradingbot.Interaction.EventListener;
 import de.fh_kiel.discordtradingbot.Interaction.EventType;
 
-public class TransactionManager extends TransactionManagerSeineMutter implements EventListener {
+public class TransactionManager extends AbstractTransactionManager implements EventListener {
     private static TransactionManager transactionManager;
 
     public static TransactionManager getInstance(ChannelInteracter channelInteracter){

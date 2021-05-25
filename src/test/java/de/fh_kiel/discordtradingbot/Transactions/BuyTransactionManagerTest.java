@@ -4,7 +4,7 @@ import de.fh_kiel.discordtradingbot.Holdings.Inventory;
 import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 
-class BuyTransactionManagerTest extends TransactionManagerSeineMutter {
+class BuyTransactionManagerTest extends AbstractTransactionManager {
 
     //* Methode rechnet ob das kaufPrice fair?
     @Test

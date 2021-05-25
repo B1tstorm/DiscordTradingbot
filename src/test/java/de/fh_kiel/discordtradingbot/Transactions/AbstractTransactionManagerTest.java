@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class TransactionManagerSeineMutterTest extends TransactionManagerSeineMutter {
+class AbstractTransactionManagerTest extends AbstractTransactionManager {
 
     @Test
     void testGetTransactions() {
