@@ -68,6 +68,7 @@ public class ChannelInteracter {
                 try { //? Evtl. unnötig da der Bot niemals zu wenig Argumente liefert. Nur so stürzt das Programm nicht ab
                     // Setzt die Anzeige auf Auction oder Trading
                     setPresence(EventType.AUCTION_START);
+                    //* EventItem wird generiert und kann ab hier verwendet werden
                     EventItem eventItem = createEventItem(message);
                     events.notify(eventItem);
                     //! Switch-case Ausgaben nur zum testen im Chat
