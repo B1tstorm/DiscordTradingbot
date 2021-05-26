@@ -1,5 +1,7 @@
 package de.fh_kiel.discordtradingbot.Interaction;
 
+import discord4j.core.object.entity.channel.MessageChannel;
+
 public class EventItem {
 
     // Strings to process:
@@ -18,6 +20,7 @@ public class EventItem {
     private EventType eventType; // AUCTION, BUY, SELL
     private char[] product; // Oder char?
     private String value; // reicht es den aktuellen Preis zu speichern?
+    private MessageChannel channel;
 
     // protected, weil nur im package vom ChannelInteractor instanziierbar.
     public EventItem(Integer logNr,
@@ -26,7 +29,8 @@ public class EventItem {
                         String auctionId,
                         EventType eventType,
                         char[] product,
-                        String value) {
+                        String value,
+                     MessageChannel channel) {
         this.logNr = logNr;
         this.sellerID = sellerID;
         this.traderID = traderID;
@@ -34,24 +38,11 @@ public class EventItem {
         this.eventType = eventType;
         this.product = product;
         this.value = value;
-
+        this.channel = channel;
     }
 
     /** Defaultkonstr. da ich im Scope der createEventItem Methode sonst keine zwei Instanzen erstellen kann,
      so kann ich eine erstellen und je nach EventState entscheide ich was rein kommt */
-
-    /*
-     LogItem = {
-        logNr = 1;
-        sellerID = !SEG
-        eventType = AUCTION
-        auctionId = 123145
-        traderId = 123414 / Tom Calvin Haak?
-        product = "A"
-        currentPrice = 12
-        eventState = BID
-     }
-     * */
 
     public Integer getLogNr() {
         return logNr;
@@ -79,5 +70,9 @@ public class EventItem {
 
     public String getValue() {
         return value;
+    }
+
+    public MessageChannel getChannel() {
+        return channel;
     }
 }
