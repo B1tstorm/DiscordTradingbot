@@ -58,7 +58,7 @@ public class SegTransactionManager extends AbstractTransactionManager implements
     //* SEG auction bid 12 11 -> - - auctionState auctionId value
         EventItem newItem = new EventItem(eventItem.getLogNr(),eventItem.getSellerID(),
                 "845410146913747034",eventItem.getAuctionId(),eventItem.getEventType(),
-                eventItem.getProduct(),eventItem.getValue()+1);
+                eventItem.getProduct(),eventItem.getValue()+1, eventItem.getChannel());
         //channelInteracter.writeMessage(newItem);
     }
 }
