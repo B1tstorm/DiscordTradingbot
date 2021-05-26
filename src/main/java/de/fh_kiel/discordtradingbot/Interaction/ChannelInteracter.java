@@ -39,10 +39,24 @@ public class ChannelInteracter {
     }
 
     /**
-     * @param message
+     * @param eventItem
      */
-    public void writeMessage(String message) {
-
+    public void writeMessage(EventItem eventItem) {
+        final MessageChannel channel = eventItem.getChannel();
+        //! Switch-case Ausgaben nur zum testen im Chat, später löschen
+        switch (eventItem.getEventType()) {
+            case AUCTION_START:
+                channel.createMessage("AuctionID " + eventItem.getAuctionId() + ". Für " + Arrays.toString(eventItem.getProduct()) + " wird " + eventItem.getValue() + " von Seller " + eventItem.getSellerID() + " verlangt!").block();
+                break;
+            case AUCTION_BID:
+                channel.createMessage("AuctionID " + eventItem.getAuctionId() + ". Es wird " + eventItem.getValue() + " von Trader " + eventItem.getTraderID() + " geboten!").block();
+                break;
+            case AUCTION_WON:
+                channel.createMessage("AuctionID " + eventItem.getAuctionId() + " gewonnen von " + eventItem.getTraderID()).block();
+                break;
+            default:
+                channel.createMessage("Defaultcase").block();
+        }
     }
 
     /**
@@ -68,20 +82,9 @@ public class ChannelInteracter {
                 try { //? Evtl. unnötig da der Bot niemals zu wenig Argumente liefert. Nur so stürzt das Programm nicht ab
                     // Setzt die Anzeige auf Auction oder Trading
                     setPresence(EventType.AUCTION_START);
-                    //* EventItem wird generiert und kann ab hier verwendet werden
                     EventItem eventItem = createEventItem(message);
-                    events.notify(eventItem);
-                    //! Switch-case Ausgaben nur zum testen im Chat
-                    switch (eventItem.getEventType()) {
-                        case AUCTION_START:
-                            channel.createMessage("AuctionID " + eventItem.getAuctionId() + ". Für " + Arrays.toString(eventItem.getProduct()) + " wird " + eventItem.getValue() + " von Seller " + eventItem.getSellerID() + " verlangt!").block();
-                            break;
-                        case AUCTION_BID:
-                            channel.createMessage("AuctionID " + eventItem.getAuctionId() + ". Es wird " + eventItem.getValue() + " von Trader " + eventItem.getTraderID() + " geboten!").block();
-                            break;
-                        default:
-                            channel.createMessage("Defaultcase").block();
-                    }
+                    //!events.notify(eventItem);
+                    writeMessage(eventItem); //! Nur zum testen, später löschen
                 } catch (ArrayIndexOutOfBoundsException e) {
                     System.err.println("Der Channelcommand enthält zu wenige Zeichen um ein EventItem zu generieren. Fehler: " + e);
                     channel.createMessage("Keine gültige Transaktion!").block();
