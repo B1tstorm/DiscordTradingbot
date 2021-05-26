@@ -9,13 +9,7 @@ import discord4j.core.object.entity.User;
 import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.core.object.presence.Activity;
 import discord4j.core.object.presence.Presence;
-import de.fh_kiel.discordtradingbot.Interaction.EventType;
-import de.fh_kiel.discordtradingbot.Interaction.EventItem;
-import reactor.core.publisher.Flux;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 
 public class ChannelInteracter {
     public EventManager events;
@@ -39,10 +33,32 @@ public class ChannelInteracter {
     }
 
     /**
-     * @param message
+     * @param eventItem
+     * Die Methode antwortet in dem Channel, aus dem die Anfrage kam
      */
-    public void writeMessage(String message) {
-
+    public void writeMessage(EventItem eventItem) {
+        final MessageChannel channel = eventItem.getChannel();
+        switch (eventItem.getEventType()) {
+            // TODO: Switch-case überarbeiten sobald der TransactionManager das eventItem geändert schickt
+            case AUCTION_START:
+                channel.createMessage("!SEG auction bid " + eventItem.getAuctionId() + " " + eventItem.getValue()).block();
+                break;
+            case AUCTION_BID:
+                channel.createMessage("!SEG auction bid " + eventItem.getAuctionId() + " " + eventItem.getValue()).block();
+                break;
+            case AUCTION_WON:
+                //! If() ist ein Test welcher schon im TransactionManager stattfindet.
+                //! Das AUCTION_WON case wird nie ausgeführt da es beim TransactionManager
+                //! endet und writeMessage() nicht aufruft
+                if (eventItem.getTraderID().equals("845410146913747034")) {
+                    channel.createMessage("Wir haben die auctionID " + eventItem.getAuctionId() + " gewonnen!").block();
+                } else {
+                    channel.createMessage("Wir haben die auctionID " + eventItem.getAuctionId() + " verloren!").block();
+                }
+                break;
+            default:
+                channel.createMessage("Default case").block();
+        }
     }
 
     /**
@@ -68,36 +84,26 @@ public class ChannelInteracter {
                 try { //? Evtl. unnötig da der Bot niemals zu wenig Argumente liefert. Nur so stürzt das Programm nicht ab
                     // Setzt die Anzeige auf Auction oder Trading
                     setPresence(EventType.AUCTION_START);
-                    //* EventItem wird generiert und kann ab hier verwendet werden
                     EventItem eventItem = createEventItem(message);
                     events.notify(eventItem);
-                    //! Switch-case Ausgaben nur zum testen im Chat
-                    switch (eventItem.getEventType()) {
-                        case AUCTION_START:
-                            channel.createMessage("AuctionID " + eventItem.getAuctionId() + ". Für " + Arrays.toString(eventItem.getProduct()) + " wird " + eventItem.getValue() + " von Seller " + eventItem.getSellerID() + " verlangt!").block();
-                            break;
-                        case AUCTION_BID:
-                            channel.createMessage("AuctionID " + eventItem.getAuctionId() + ". Es wird " + eventItem.getValue() + " von Trader " + eventItem.getTraderID() + " geboten!").block();
-                            break;
-                        default:
-                            channel.createMessage("Defaultcase").block();
-                    }
+                    //! Nur zum testen, später löschen
+//                    writeMessage(eventItem);
                 } catch (ArrayIndexOutOfBoundsException e) {
-                    System.err.println("Der Channelcommand enthält zu wenige Zeichen um ein EventItem zu generieren. Fehler: " + e);
+                    System.err.println("Der Channel command enthält zu wenige Zeichen um ein EventItem zu generieren. Fehler: " + e);
+                    assert channel != null;
                     channel.createMessage("Keine gültige Transaktion!").block();
                 }
             }
 
             // In unserem Channel auf Präfix !ZULU reagieren
             if (getPrefix(message).equals("!ZULU") && message.getAuthor().map(user -> !user.isBot()).orElse(false)) {
-
+                // TODO: implementieren dass andere auf uns reagieren können
+                setPresence(EventType.SELL);
             }
         });
 
         //Verbindung schließen
         client.onDisconnect().block();
-        //TODO: Auskommentiert bis eventItem existiert
-//        events.notify(eventItem);
     }
 
     private String getPrefix(Message message) {

@@ -94,7 +94,7 @@ public class TransactionManager extends AbstractTransactionManager implements Ev
             case BUY:
                 if (checkInventory(product) && isProductWorth(price,product)) {
                     //! Antworte SEG positiv // todo Channelinteractor einschalten
-                    channelInteracter.writeMessage("eine sehr sinnlose Nachricht");
+                    channelInteracter.writeMessage(eventItem);
                     TransactionManager.transactions.put(eventId,new Transaction(eventType));
                     executeTransaction(eventType,eventId,price,product);
                 }

@@ -41,7 +41,7 @@ public class BuyTransactionManager extends AbstractTransactionManager implements
 
         if (checkInventory(product) && isProductWorth(price, product)) {
             //! Antworte EIKE positiv // todo Channelinteractor einschalten
-            channelInteracter.writeMessage("eine sehr sinnlose Nachricht");
+            channelInteracter.writeMessage(eventItem);
             BuyTransactionManager.transactions.put(eventId, new Transaction(eventType));
             executeTransaction(eventType, eventId, price, product);
         }
