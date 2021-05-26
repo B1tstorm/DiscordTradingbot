@@ -43,16 +43,23 @@ public class ChannelInteracter {
      */
     public void writeMessage(EventItem eventItem) {
         final MessageChannel channel = eventItem.getChannel();
-        //! Switch-case Ausgaben nur zum testen im Chat, später löschen
         switch (eventItem.getEventType()) {
+            // TODO: Switch-case überarbeiten sobald der TransactionManager das eventItem geändert schickt
             case AUCTION_START:
-                channel.createMessage("AuctionID " + eventItem.getAuctionId() + ". Für " + Arrays.toString(eventItem.getProduct()) + " wird " + eventItem.getValue() + " von Seller " + eventItem.getSellerID() + " verlangt!").block();
+                channel.createMessage("!SEG auction bid " + eventItem.getAuctionId() + " " + eventItem.getValue()).block();
                 break;
             case AUCTION_BID:
-                channel.createMessage("AuctionID " + eventItem.getAuctionId() + ". Es wird " + eventItem.getValue() + " von Trader " + eventItem.getTraderID() + " geboten!").block();
+                channel.createMessage("!SEG auction bid " + eventItem.getAuctionId() + " " + eventItem.getValue()).block();
                 break;
             case AUCTION_WON:
-                channel.createMessage("AuctionID " + eventItem.getAuctionId() + " gewonnen von " + eventItem.getTraderID()).block();
+                //! If() ist nur ein Test welcher schon im TransactionManager stattfindet.
+                //! Das AUCTION_WON case wird nie ausgeführt da es beim Transactionmanager
+                //! endet und writeMessage() nicht aufruft
+                if (eventItem.getTraderID().equals("845410146913747034")) {
+                    channel.createMessage("Wir haben die auctionID " + eventItem.getAuctionId() + " gewonnen!").block();
+                } else {
+                    channel.createMessage("Wir haben die auctionID " + eventItem.getAuctionId() + " verloren!").block();
+                }
                 break;
             default:
                 channel.createMessage("Defaultcase").block();
