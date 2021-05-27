@@ -38,13 +38,13 @@ public class TransactionHistory implements EventListener, Publisher {
     }
 
     private Letter extractLetterObject(EventItem item) {
-        return new Letter(item.getProduct()[0], 1, item.getValue());
+        return new Letter(item.getProduct()[0], 1, Integer.parseInt(item.getValue()));
     }
 
     // Builder Pattern
     private TransactionHistoryItem createTransactionHistoryItem(EventItem eventItem) {
         return new TransactionHistoryItemBuilder().setTransactionId(Integer.parseInt(eventItem.getAuctionId()))
-                .setValue(eventItem.getValue())
+                .setValue(Integer.parseInt(eventItem.getValue()))
                 .setSellerId(eventItem.getSellerID())
                 .setTraderId(eventItem.getTraderID())
                 .setProduct(eventItem.getProduct())
