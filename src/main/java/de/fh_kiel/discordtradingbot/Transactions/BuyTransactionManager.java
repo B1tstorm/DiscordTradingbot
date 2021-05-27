@@ -10,6 +10,9 @@ import java.util.ArrayList;
 
 public class BuyTransactionManager extends AbstractTransactionManager implements EventListener {
     //! we sell
+    protected void makeOffer() {
+        //TODO write a BuyOffer message in the channel
+    }
 
     @Override
     public Boolean isProductWorth(Integer price, char[] product) {
@@ -47,6 +50,37 @@ public class BuyTransactionManager extends AbstractTransactionManager implements
         }
         //! lehen Angebot ab todo Channelinteractor einschalten
         //! mach einen gegen angebot todo Channelinteractor einschalten
+
+        //*buyer kann Eike sein oder ein anderer Bot, Im Fall Eike müssen wir
+        //*begründen warum wir nicht verkaufen können und wir müssen ein gegenangebot machen
+
+        switch (eventState) {
+                //! jemand hat was angeboten und wir wollen ihm sagen "geilo, das würde ich gerne kaufen"
+            case "offer":
+                if (isProductWorth(price, product) && checkInventory(product)) {
+                    BuyTransactionManager.transactions.put(eventId, new Transaction(eventType));
+                    //! Antworte mit dem pattern:
+                    //! !step accept @USER ID
+                    channelInteracter.writeAcceptMessage(eventItem);
+                } else if (eventItem.getSellerID().equals("HIER KOMMT EIKES ID")) {
+                    //! begrunde warum wir nicht kaufen können
+                    channelInteracter.writeThisMessage("Wir haben das Produkt -> " + checkInventory(product));
+                    channelInteracter.writeThisMessage("Dein Preis ist fair -> " + isProductWorth(price, product));
+                    //! Ein GegenAngebot TODO GegenAngebot
+                }
+                break;
+            case "confirm":
+                if (traderId.equals("845410146913747034")){
+                executeTransaction(eventType, eventId, price, product);
+                }else dismissTransaction(eventId);
+                break;
+            case "accept": {
+                //!jemand hat unser Angebot angenommen und wir müssen ihm bestätigen "wir machen eine confirm Ansage"
+                channelInteracter.writeConfirmMessage(eventItem);
+                executeTransaction(eventType,eventId,price,product);
+            }
+
+        }
 
 
     }

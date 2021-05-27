@@ -8,6 +8,9 @@ public class SegTransactionManager extends AbstractTransactionManager implements
     //! we buy
 
     @Override
+    protected void makeOffer() {}
+
+    @Override
     public void executeTransaction(EventType eventType, String eventId, Integer price, char[] product) {
         super.executeTransaction(eventType,eventId,(price * (-1)),product);
     }
@@ -36,7 +39,7 @@ public class SegTransactionManager extends AbstractTransactionManager implements
             //TODO
             //!trader ID muss geprüft werden. wir dürfen uns selbst nicht versteigern
             case AUCTION_BID:
-                if (isProductWorth(price, product) && isPriceAffordable(price) && traderId.equals("845410146913747034")) {
+                if (isProductWorth(price, product) && isPriceAffordable(price) && !traderId.equals("845410146913747034")) {
                     //TransactionManager.getTransactions().get(eventId).bid(eventId, price);
                     bid(eventItem);
                 }

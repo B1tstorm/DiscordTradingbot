@@ -18,6 +18,8 @@ public abstract class AbstractTransactionManager {
         return transactions;
     }
 
+    protected abstract void makeOffer();
+
     public Boolean checkInventory(@NonNull char[] product) {
         ArrayList<Letter> letters = Inventory.getInstance().getLetters();
         HashMap<Character,Integer> hashmap = fillHashmap(new HashMap<>());
