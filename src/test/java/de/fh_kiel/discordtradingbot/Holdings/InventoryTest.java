@@ -1,5 +1,6 @@
 package de.fh_kiel.discordtradingbot.Holdings;
 
+import de.fh_kiel.discordtradingbot.Interaction.EventType;
 import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.*;
 
@@ -14,6 +15,7 @@ class InventoryTest {
 
     @Test
     void updateWallet() {
+
     }
 
     @Test
@@ -25,12 +27,12 @@ class InventoryTest {
         //! Alle Amonts im Inventory sollen auf 0 sein sonst kein test
         Inventory inventory = Inventory.getInstance();
 
-        inventory.updateLetterAmount("jemandWillKaufen", "ABC");
+        inventory.updateLetterAmount(EventType.BUY, "ABC".toCharArray());
         assertThat(inventory.getLetters().get(0).getAmount()).isEqualTo(1);
         assertThat(inventory.getLetters().get(1).getAmount()).isEqualTo(1);
         assertThat(inventory.getLetters().get(2).getAmount()).isEqualTo(1);
 
-        inventory.updateLetterAmount("auction", "ABC");
+        inventory.updateLetterAmount(EventType.AUCTION_WON, "ABC".toCharArray());
         assertThat(inventory.getLetters().get(0).getAmount()).isEqualTo(0);
         assertThat(inventory.getLetters().get(1).getAmount()).isEqualTo(0);
         assertThat(inventory.getLetters().get(2).getAmount()).isEqualTo(0);

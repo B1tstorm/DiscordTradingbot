@@ -1,5 +1,7 @@
 package de.fh_kiel.discordtradingbot.Interaction;
 
+import discord4j.core.object.entity.channel.MessageChannel;
+
 public class EventItem {
 
     // Strings to process:
@@ -15,49 +17,32 @@ public class EventItem {
     private String sellerID; // oder sellerID?
     private String traderID; // String besser zu verarbeiten als int/Integer
     private String auctionId; // Wird nur bei auktionen gebraucht, bei buy und sell wird die logNr verwendet
-
     private EventType eventType; // AUCTION, BUY, SELL
-    private EventState eventState; // START, BID, WON, CLOSE
-
     private char[] product; // Oder char?
-    private Integer value; // reicht es den aktuellen Preis zu speichern?
+    private String value; // reicht es den aktuellen Preis zu speichern?
+    private MessageChannel channel;
 
     // protected, weil nur im package vom ChannelInteractor instanziierbar.
-    protected EventItem(Integer logNr,
+    public EventItem(Integer logNr,
                         String sellerID,
                         String traderID,
                         String auctionId,
                         EventType eventType,
-                        EventState eventState,
                         char[] product,
-                        Integer value) {
+                        String value,
+                     MessageChannel channel) {
         this.logNr = logNr;
         this.sellerID = sellerID;
         this.traderID = traderID;
         this.auctionId = auctionId;
         this.eventType = eventType;
-        this.eventState = eventState;
         this.product = product;
         this.value = value;
-
+        this.channel = channel;
     }
 
     /** Defaultkonstr. da ich im Scope der createEventItem Methode sonst keine zwei Instanzen erstellen kann,
      so kann ich eine erstellen und je nach EventState entscheide ich was rein kommt */
-    public EventItem() {
-    }
-    /*
-     LogItem = {
-        logNr = 1;
-        sellerID = !SEG
-        eventType = AUCTION
-        auctionId = 123145
-        traderId = 123414 / Tom Calvin Haak?
-        product = "A"
-        currentPrice = 12
-        eventState = BID
-     }
-     * */
 
     public Integer getLogNr() {
         return logNr;
@@ -79,15 +64,15 @@ public class EventItem {
         return eventType;
     }
 
-    public EventState getEventState() {
-        return eventState;
-    }
-
     public char[] getProduct() {
         return product;
     }
 
-    public Integer getValue() {
+    public String getValue() {
         return value;
+    }
+
+    public MessageChannel getChannel() {
+        return channel;
     }
 }

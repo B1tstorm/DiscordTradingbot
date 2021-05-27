@@ -9,19 +9,12 @@ import discord4j.core.object.entity.User;
 import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.core.object.presence.Activity;
 import discord4j.core.object.presence.Presence;
-import de.fh_kiel.discordtradingbot.Interaction.EventType;
-import de.fh_kiel.discordtradingbot.Interaction.EventItem;
-import reactor.core.publisher.Flux;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 
 public class ChannelInteracter {
     public EventManager events;
-    // TODO: Auskommentiert bis EventItem existiert
-    // private EventItem eventItem = new EventItem();
     GatewayDiscordClient client;
-    private String channelCommand;
+    static Integer logNr = 0;
 
     public ChannelInteracter(String token) {
         //Bei Discord über Token authentifizieren
@@ -40,69 +33,119 @@ public class ChannelInteracter {
     }
 
     /**
-     * @param message
+     * @param eventItem
+     * Die Methode antwortet in dem Channel, aus dem die Anfrage kam
      */
-    public void writeMessage(String message) {
-
+    public void writeMessage(EventItem eventItem) {
+        final MessageChannel channel = eventItem.getChannel();
+        switch (eventItem.getEventType()) {
+            // TODO: Switch-case überarbeiten sobald der TransactionManager das eventItem geändert schickt
+            case AUCTION_START:
+                channel.createMessage("!SEG auction bid " + eventItem.getAuctionId() + " " + eventItem.getValue()).block();
+                break;
+            case AUCTION_BID:
+                channel.createMessage("!SEG auction bid " + eventItem.getAuctionId() + " " + eventItem.getValue()).block();
+                break;
+            case AUCTION_WON:
+                //! If() ist ein Test welcher schon im TransactionManager stattfindet.
+                //! Das AUCTION_WON case wird nie ausgeführt da es beim TransactionManager
+                //! endet und writeMessage() nicht aufruft
+                if (eventItem.getTraderID().equals("845410146913747034")) {
+                    channel.createMessage("Wir haben die auctionID " + eventItem.getAuctionId() + " gewonnen!").block();
+                } else {
+                    channel.createMessage("Wir haben die auctionID " + eventItem.getAuctionId() + " verloren!").block();
+                }
+                break;
+            default:
+                channel.createMessage("Default case").block();
+        }
     }
 
     /**
      * @param emoji
      * @return Boolean
      */
-    public Boolean reactEmoji(String emoji) {
+    private Boolean reactEmoji(String emoji) {
         // TODO - implement ChannelInteracter.reactEmoji
         throw new UnsupportedOperationException();
     }
 
-    // TODO Channel abhören
     public void listenToChannel() {
         client.on(MessageCreateEvent.class)
-                // TODO: Bei Auktionen filtern das nur Messages vom SEG Bot gelesen werden (nicht unsere und nicht die anderen, der SEG Antwortet sowieso mit den geboten etc.)
-                //.filter(user -> user.getMember().meMyselfAndI)
+                .filter(message -> message.getMessage().getAuthor().map(user -> !user.isBot()).orElse(false))
+//                .filter(message -> message.getMessage().getUserData().id().equals("501500923495841792"))
                 .subscribe(event -> {
             final Message message = event.getMessage();
+            final MessageChannel channel = message.getChannel().block();
 
-            if ("!seg auction start 1 Q 0".equals(message.getContent()) && message.getAuthor().map(user -> !user.isBot()).orElse(false)) {
-                createEventItem(message);
-                final MessageChannel channel = message.getChannel().block();
-                channel.createMessage("Pong!").block();
-//                channel.createMessage(message.getContent()).block();
-                // Setzt die Anzeige auf Auction oder Trading
-                setPresence();
+            // Bei Auktionen filtern dass nur Messages vom SEG Bot gelesen werden
+            if (getPrefix(message).equals("!SEG") && message.getUserData().id().equals("501500923495841792")) { //* Hier muss später die ID des SEG Bot stehen!
+                // Für den außergewöhnlichen Fall das der SEG Bot zu wenig Argumente in den Chat schreibt
+                try { //? Evtl. unnötig da der Bot niemals zu wenig Argumente liefert. Nur so stürzt das Programm nicht ab
+                    // Setzt die Anzeige auf Auction oder Trading
+                    setPresence(EventType.AUCTION_START);
+                    EventItem eventItem = createEventItem(message);
+                    events.notify(eventItem);
+                    //! Nur zum testen, später löschen
+//                    writeMessage(eventItem);
+                } catch (ArrayIndexOutOfBoundsException e) {
+                    System.err.println("Der Channel command enthält zu wenige Zeichen um ein EventItem zu generieren. Fehler: " + e);
+                    assert channel != null;
+                    channel.createMessage("Keine gültige Transaktion!").block();
+                }
+            }
+
+            // In unserem Channel auf Präfix !ZULU reagieren
+            if (getPrefix(message).equals("!ZULU") && message.getAuthor().map(user -> !user.isBot()).orElse(false)) {
+                // TODO: implementieren dass andere auf uns reagieren können
+                setPresence(EventType.SELL);
             }
         });
 
         //Verbindung schließen
         client.onDisconnect().block();
-        //TODO: Auskommentiert bis eventItem existiert
-//        events.notify(eventItem);
+    }
+
+    private String getPrefix(Message message) {
+        String[] content = message.getContent().split(" ");
+        return content[0].toUpperCase();
     }
 
     private EventItem createEventItem(Message message) {
-        // Pseudo EventItem
         String[] messageShards = message.getContent().split(" ");
-        EventItem eventItem;
-        Integer logNr = 0;
+        char[] products = null;
+        String traderID = null;
+        EventType eventType = EventType.AUCTION_START;
 
         switch (messageShards[2]) {
             case "start":
-                eventItem = new EventItem(logNr + 1, message.getUserData().id(), null, messageShards[3], EventType.AUCTION, EventState.START,messageShards[4], messageShards[5]);
+                products = messageShards[4]
+                        .replaceAll("\\s+", "") // Entfernt alle Leerzeichen
+                        .toUpperCase() // Stellt alle Buchstaben auf Großbuchstaben
+                        .toCharArray(); // Erstellt aus dem String einzelne Elemente "products"
                 break;
             case "bid":
-                eventItem = new EventItem(logNr + 1, message.getUserData().id(), messageShards[4], messageShards[3], EventType.AUCTION, EventState.BID, null, messageShards[5]);
+                traderID = messageShards[4];
+                eventType = EventType.AUCTION_BID;
+                break;
+            case "won":
+                traderID = messageShards[4];
+                eventType = EventType.AUCTION_WON;
                 break;
             default:
-                eventItem = new EventItem();
+                break;
         }
 
-        return eventItem;
+        return new EventItem(logNr + 1, message.getUserData().id(), traderID, messageShards[3], eventType, products, messageShards[5], message.getChannel().block());
     }
 
-    public void setPresence() {
+    private void setPresence(EventType eventType) {
         //? Status anpassen ob Bot gerade in "auction" oder "trade"
-        client.updatePresence(Presence.online(Activity.watching("Auction"))).block();
-//        client.updatePresence(Presence.online(Activity.playing("Trading"))).block();
+        if (eventType.equals(EventType.AUCTION_START)) {
+            client.updatePresence(Presence.online(Activity.watching("Auction"))).block();
+        } else {
+            client.updatePresence(Presence.online(Activity.playing("Trading"))).block();
+        }
     }
 
 }
