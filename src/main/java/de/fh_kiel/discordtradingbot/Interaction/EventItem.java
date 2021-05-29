@@ -19,7 +19,7 @@ public class EventItem {
     private String auctionId; // Wird nur bei auktionen gebraucht, bei buy und sell wird die logNr verwendet
     private EventType eventType; // AUCTION, BUY, SELL
     private char[] product; // Oder char?
-    private String value; // reicht es den aktuellen Preis zu speichern?
+    private Integer value; // reicht es den aktuellen Preis zu speichern?
     private MessageChannel channel;
 
     // protected, weil nur im package vom ChannelInteractor instanziierbar.
@@ -29,7 +29,7 @@ public class EventItem {
                         String auctionId,
                         EventType eventType,
                         char[] product,
-                        String value,
+                        Integer value,
                      MessageChannel channel) {
         this.logNr = logNr;
         this.sellerID = sellerID;
@@ -68,7 +68,7 @@ public class EventItem {
         return product;
     }
 
-    public String getValue() {
+    public Integer getValue() {
         return value;
     }
 
