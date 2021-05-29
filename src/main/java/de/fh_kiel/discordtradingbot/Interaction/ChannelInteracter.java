@@ -136,7 +136,13 @@ public class ChannelInteracter {
                 break;
         }
 
-        return new EventItem(logNr + 1, message.getUserData().id(), traderID, messageShards[3], eventType, products, messageShards[5], message.getChannel().block());
+        return new EventItem(logNr + 1,
+                              message.getUserData().id(),
+                              traderID,
+                              messageShards[3], eventType,
+                              products,
+                              Integer.parseInt(messageShards[5]),
+                              message.getChannel().block());
     }
 
     private void setPresence(EventType eventType) {
