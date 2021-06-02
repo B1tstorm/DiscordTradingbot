@@ -43,13 +43,21 @@ public class SellTransactionManager extends AbstractTransactionManager implement
                 case SELL_ACCEPT:
                     //! jemand akzeptiert unser Angebot und will von uns kaufen wir sollen mit dem pattern antworten
                     //! !step confirm ourID @USER sell product price
-                    channelInteracter.writeConfirmMessage();
+                    channelInteracter.writeSellConfirmMessage(eventItem);
                     executeTransaction(eventType, eventId, price, product);
                     break;
                 default:
                     break;
             }
         }
+    }
+    private void makeSellOffer(){
+        //todo erstellt ein Verkaufsangebot mit dem Pattern
+        //* !step offer ID buy LETTER PRICE
+        //generiere ein EventItem mit : auctionId ,EventType, price, Produkt, sellerId als ZULU id , Channel: traderChannel
+        //erstellt eine Transaction mit einem EventItem
+
+
     }
 
 }

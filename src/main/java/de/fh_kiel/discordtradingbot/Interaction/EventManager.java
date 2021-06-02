@@ -25,8 +25,10 @@ public class EventManager {
     }
 
     public void notify(EventItem eventItem) {
-        for (EventListener subscriber : subscribers) {
-            subscriber.update(eventItem);
+        if (eventItem != null) {
+            for (EventListener subscriber : subscribers) {
+                subscriber.update(eventItem);
+            }
         }
     }
 }

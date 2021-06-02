@@ -37,14 +37,6 @@ public class BuyTransactionManager extends AbstractTransactionManager implements
             fillAttributes(eventItem);
 
 
-            if (checkInventory(product) && isProductWorth(price, product)) {
-                //! Antworte EIKE positiv // todo Channelinteractor einschalten
-                channelInteracter.writeMessage(eventItem);
-                BuyTransactionManager.transactions.put(eventId, new Transaction(eventType));
-                executeTransaction(eventType, eventId, price, product);
-            }
-            //! lehen Angebot ab todo Channelinteractor einschalten
-            //! mach einen gegen angebot todo Channelinteractor einschalten
 
             //*buyer kann Eike sein oder ein anderer Bot, Im Fall Eike müssen wir
             //*begründen warum wir nicht verkaufen können und wir müssen ein gegenangebot machen
@@ -53,14 +45,14 @@ public class BuyTransactionManager extends AbstractTransactionManager implements
                 //! jemand hat was angeboten und wir wollen ihm sagen "geilo, das würde ich gerne kaufen"
                 case BUY_OFFER:
                     if (isProductWorth(price, product) && checkInventory(product)) {
-                        BuyTransactionManager.transactions.put(eventId, new Transaction(eventType));
+                        BuyTransactionManager.transactions.put(eventId, new Transaction(eventItem));
                         //! Antworte mit dem pattern:
                         //! !step accept @USER ID
                         channelInteracter.writeAcceptMessage(eventItem);
                     } else if (eventItem.getSellerID().equals("HIER KOMMT EIKES ID")) {
                         //! begrunde warum wir nicht kaufen können
-                        channelInteracter.writeThisMessage("Wir haben das Produkt -> " + checkInventory(product));
-                        channelInteracter.writeThisMessage("Dein Preis ist fair -> " + isProductWorth(price, product));
+                        channelInteracter.writeThisMessage(("Wir haben das Produkt -> " + checkInventory(product)).toString(),eventItem);
+                        channelInteracter.writeThisMessage(("Dein Preis ist fair -> " + isProductWorth(price, product)).toString(),eventItem);
                         //! Ein GegenAngebot TODO GegenAngebot
                     }
                     break;
@@ -71,12 +63,21 @@ public class BuyTransactionManager extends AbstractTransactionManager implements
                     break;
                 case BUY_ACCEPT: {
                     //!jemand hat unser Angebot angenommen und wir müssen ihm bestätigen "wir machen eine confirm Ansage"
-                    channelInteracter.writeConfirmMessage(eventItem);
-                    executeTransaction(eventType, eventId, price, product);
+                    channelInteracter.writeBuyConfirmMessage(eventItem);
+                    executeTransaction(eventItem);
                 }
             }
 
         }
+
+
+    }
+
+    private void makeBuyOffer(){
+        //todo erstellt ein Kaufangebot mit dem Pattern
+        //* !step offer ID buy LETTER PRICE
+        //generiere ein EventItem mit : auctionId ,EventType, price, Produkt, sellerId als ZULU id , Channel: traderChannel
+        //erstellt eine Transaction mit einem EventItem
 
 
     }

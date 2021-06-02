@@ -44,6 +44,11 @@ public class TransactionManager extends AbstractTransactionManager implements Ev
 
 
     @Override
+    protected void makeOffer() {
+
+    }
+
+    @Override
     public void executeTransaction(EventType eventType,String eventId, Integer price, char[] product)   {
         Inventory.getInstance().updateWallet(price);
         Inventory.getInstance().updateLetterAmount(eventType,product);
@@ -57,7 +62,7 @@ public class TransactionManager extends AbstractTransactionManager implements Ev
     public void update(EventItem eventItem) {
         // extract importen attributes form the EventItem
         EventType eventType = eventItem.getEventType();
-        Integer price = Integer.parseInt(eventItem.getValue());
+        Integer price = eventItem.getValue();
         char[] product = eventItem.getProduct();
         String traderId = eventItem.getTraderID();
         String  eventId;
@@ -72,13 +77,13 @@ public class TransactionManager extends AbstractTransactionManager implements Ev
                 if (isProductWorth(price, product) && isPriceAffordable(price)){
                     Transaction t = new Transaction(eventType);
                     TransactionManager.transactions.put(eventId, t);
-                    t.bid(eventId, price);
+                    //t.bid(eventId, price);
                 }break;
                 //TODO
                 //!trader ID muss geprüft werden. wir dürfen uns selbst nicht versteigern
             case AUCTION_BID:
                 if (isProductWorth(price, product) && isPriceAffordable(price) && traderId != "unsereID"){
-                        TransactionManager.getTransactions().get(eventId).bid(eventId, price);
+//                        TransactionManager.getTransactions().get(eventId).bid(eventId, price);
                 }break;
             case AUCTION_WON:
                 if (traderId == "unsereId"){
@@ -91,18 +96,18 @@ public class TransactionManager extends AbstractTransactionManager implements Ev
                 break;
                 //!dieser Fall ist nur wenn Eike von uns kaufen will
                 //TODO Fall BUY im handler Bot
-            case BUY:
-                if (checkInventory(product) && isProductWorth(price,product)) {
-                    //! Antworte SEG positiv // todo Channelinteractor einschalten
-                    channelInteracter.writeMessage(eventItem);
-                    TransactionManager.transactions.put(eventId,new Transaction(eventType));
-                    executeTransaction(eventType,eventId,price,product);
-                }
-                //! lehen Angebot ab todo Channelinteractor einschalten
-                //! mach einen gegen angebot todo Channelinteractor einschalten
-                break;
-            case SELL:
-                break;
+//            case BUY:
+//                if (checkInventory(product) && isProductWorth(price,product)) {
+//                    ! Antworte SEG positiv // todo Channelinteractor einschalten
+//                    channelInteracter.writeMessage(eventItem);
+//                    TransactionManager.transactions.put(eventId,new Transaction(eventType));
+//                    executeTransaction(eventType,eventId,price,product);
+//                }
+//                ! lehen Angebot ab todo Channelinteractor einschalten
+//                ! mach einen gegen angebot todo Channelinteractor einschalten
+//                break;
+//            case SELL:
+//                break;
             default:
                 throw new IllegalStateException("Unexpected value: " + eventType);
         }

@@ -78,6 +78,13 @@ public abstract class AbstractTransactionManager {
         Inventory.getInstance().updateWallet(price);
     }
 
+    public  void executeTransaction (EventItem eventItem){
+        Transaction transaction = transactions.get(eventItem.getAuctionId());
+        Inventory.getInstance().updateLetterAmount(eventItem.getEventType(),transaction.getProduct());
+        Inventory.getInstance().updateWallet(transaction.getPrice());
+        AbstractTransactionManager.transactions.remove(eventId);
+    }
+
     public  Boolean isProductWorth(Integer price, @NonNull char[] product){
         //ToDo Method is to be tested
         int totalLocalValue = 0;

@@ -25,4 +25,9 @@ class BuyTransactionManagerTest extends AbstractTransactionManager {
     @Test
     void update() {
     }
+
+    @Override
+    protected void makeOffer() {
+
+    }
 }

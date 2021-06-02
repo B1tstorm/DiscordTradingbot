@@ -1,5 +1,6 @@
 package de.fh_kiel.discordtradingbot.Transactions;
 
+import de.fh_kiel.discordtradingbot.Interaction.EventItem;
 import de.fh_kiel.discordtradingbot.Interaction.EventType;
 
 public class Transaction {
@@ -7,7 +8,8 @@ public class Transaction {
 	private String id;
 	private Integer cartId;
 	private String traidingPartner;
-	private Bidder bidder;
+	private Integer price;
+	private char[] product;
 	private String status;
 	private EventType transactionKind;
 
@@ -17,8 +19,12 @@ public class Transaction {
 		this.status="waiting";
 	}
 
-	public void bid(String eventId, Integer price) {
-		//TODO hier die Implementierung
+	public Transaction(EventItem eventItem) {
+		this.id = (Transaction.IdCounter++).toString();
+		this.transactionKind = eventItem.getEventType();
+		this.status="waiting";
+		this.price = eventItem.getValue();
+		this.product = eventItem.getProduct();
 	}
 
 	//getter and setter
@@ -34,9 +40,6 @@ public class Transaction {
 		this.traidingPartner = traidingPartner;
 	}
 
-	public void setBidder(Bidder bidder) {
-		this.bidder = bidder;
-	}
 
 	public void setStatus(String status) {
 		this.status = status;
@@ -54,8 +57,12 @@ public class Transaction {
 		return traidingPartner;
 	}
 
-	public Bidder getBidder() {
-		return bidder;
+	public Integer getPrice() {
+		return price;
+	}
+
+	public char[] getProduct() {
+		return product;
 	}
 
 	public String getStatus() {
@@ -69,5 +76,13 @@ public class Transaction {
 	public void setTransactionKind(EventType transactionKind) {
 		this.transactionKind = transactionKind;
 
+	}
+
+	public void setPrice(Integer price) {
+		this.price = price;
+	}
+
+	public void setProduct(char[] product) {
+		this.product = product;
 	}
 }

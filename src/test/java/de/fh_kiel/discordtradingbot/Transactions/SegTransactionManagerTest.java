@@ -19,4 +19,8 @@ class SegTransactionManagerTest extends AbstractTransactionManager {
         assertThat(TransactionManager.getTransactions().get("22")).isNull();
     }
 
+    @Override
+    protected void makeOffer() {
+
+    }
 }
