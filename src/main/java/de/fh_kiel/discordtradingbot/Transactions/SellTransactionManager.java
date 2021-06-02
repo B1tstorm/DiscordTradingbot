@@ -20,18 +20,11 @@ public class SellTransactionManager extends AbstractTransactionManager implement
     @Override
     public void update(EventItem eventItem) {
         if (eventItem.getEventType().toString().contains("SELL")) {
-            // extract importen attributes form the EventItem
-            EventType eventType = eventItem.getEventType();
-            Integer price = Integer.parseInt(eventItem.getValue());
-            char[] product = eventItem.getProduct();
-            String traderId = eventItem.getTraderID();
-            String eventId;
-            if (eventItem.getAuctionId() != null) {
-                eventId = eventItem.getAuctionId();
-            } else eventId = eventItem.getLogNr().toString();
-            String eventState = eventItem.getState;
 
-            switch (eventState) {
+            // extract importen attributes form the EventItem
+            fillAttributes(eventItem);
+
+            switch (eventType) {
                 case SELL_OFFER:
                     if (isProductWorth(price, product) && isPriceAffordable(price)) {
                         SegTransactionManager.transactions.put(eventId, new Transaction(eventType));

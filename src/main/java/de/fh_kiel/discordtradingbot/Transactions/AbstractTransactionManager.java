@@ -18,6 +18,23 @@ public abstract class AbstractTransactionManager {
         return transactions;
     }
 
+    //Attributes
+    EventType eventType ;
+    Integer price ;
+    char[] product ;
+    String traderId ;
+    String eventId;
+
+    //methode extrahiert die Attribute aus dem EventItem
+    protected void fillAttributes (EventItem eventItem){
+         this.eventType = eventItem.getEventType();
+         this.price = eventItem.getValue();
+         this.product = eventItem.getProduct();
+         this.traderId = eventItem.getTraderID();
+        if (eventItem.getAuctionId() != null) {
+            this.eventId = eventItem.getAuctionId();
+        } else this.eventId = eventItem.getLogNr().toString();
+    }
     protected abstract void makeOffer();
 
     public Boolean checkInventory(@NonNull char[] product) {

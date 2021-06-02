@@ -33,14 +33,8 @@ public class BuyTransactionManager extends AbstractTransactionManager implements
     @Override
     public void update(EventItem eventItem) {
         if (eventItem.getEventType().toString().contains("BUY")) {
-            EventType eventType = eventItem.getEventType();
-            Integer price = Integer.parseInt(eventItem.getValue());
-            char[] product = eventItem.getProduct();
-            String traderId = eventItem.getTraderID();
-            String eventId;
-            if (eventItem.getAuctionId() != null) {
-                eventId = eventItem.getAuctionId();
-            } else eventId = eventItem.getLogNr().toString();
+            // extract importen attributes form the EventItem
+            fillAttributes(eventItem);
 
 
             if (checkInventory(product) && isProductWorth(price, product)) {
