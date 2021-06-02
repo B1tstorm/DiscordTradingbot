@@ -1,6 +1,7 @@
 package de.fh_kiel.discordtradingbot.Interaction;
 
 import de.fh_kiel.discordtradingbot.Transactions.BuyTransactionManager;
+import de.fh_kiel.discordtradingbot.Transactions.SegTransactionManager;
 import de.fh_kiel.discordtradingbot.Transactions.SellTransactionManager;
 import discord4j.core.DiscordClientBuilder;
 import discord4j.core.GatewayDiscordClient;
@@ -17,6 +18,7 @@ import java.util.Arrays;
 
 
 public class ChannelInteracter {
+    public SegTransactionManager segTransactionManager;
     public EventManager events;
     GatewayDiscordClient client;
     static Integer logNr = 0;
@@ -64,7 +66,7 @@ public class ChannelInteracter {
 //                    events.notify(eventItem);
                     //! Nur zum testen, später löschen
                     //writeMessage(eventItem);
-                    writeBidMessage(eventItem);
+                    segTransactionManager.update(eventItem);
                 } catch (ArrayIndexOutOfBoundsException e) {
                     System.err.println("Der Channel command enthält zu wenige Zeichen um ein EventItem zu generieren. Fehler: " + e);
                     assert channel != null;
@@ -257,7 +259,13 @@ public class ChannelInteracter {
 
     public void writeBidMessage(EventItem eventItem) {
         final MessageChannel channel = eventItem.getChannel();
+    if (eventItem.getValue() != null){
         channel.createMessage("!SEG auction bid " + eventItem.getAuctionId() + " " + (eventItem.getValue()+1) ).block();
+    }
+    else{
+        Integer price = SegTransactionManager.getTransactions().get(eventItem.getAuctionId()).getPrice();
+        channel.createMessage("!SEG auction bid " + eventItem.getAuctionId() + " " + (price+1) ).block();
+    }
     }
 
     public void writeThisMessage(String s , EventItem eventItem) {

@@ -11,30 +11,13 @@ import java.util.HashMap;
 
 public abstract class AbstractTransactionManager {
     protected static final HashMap<String, Transaction> transactions = new HashMap<>();
-    protected ChannelInteracter channelInteracter ;
+    public ChannelInteracter channelInteracter ;
 
 
     public static HashMap<String, Transaction> getTransactions() {
         return transactions;
     }
 
-    //Attributes
-    EventType eventType ;
-    Integer price ;
-    char[] product ;
-    String traderId ;
-    String eventId;
-
-    //methode extrahiert die Attribute aus dem EventItem
-    protected void fillAttributes (EventItem eventItem){
-         this.eventType = eventItem.getEventType();
-         this.price = eventItem.getValue();
-         this.product = eventItem.getProduct();
-         this.traderId = eventItem.getTraderID();
-        if (eventItem.getAuctionId() != null) {
-            this.eventId = eventItem.getAuctionId();
-        } else this.eventId = eventItem.getLogNr().toString();
-    }
     protected abstract void makeOffer();
 
     public Boolean checkInventory(@NonNull char[] product) {
@@ -74,18 +57,19 @@ public abstract class AbstractTransactionManager {
 
     public  void executeTransaction(EventType eventType,String eventId, Integer price, char[] product){
         Inventory.getInstance().updateLetterAmount(eventType,product);
-        AbstractTransactionManager.transactions.remove(eventId);
+        transactions.remove(eventId);
         Inventory.getInstance().updateWallet(price);
+        System.out.println("Tranaction wurde excuted");
     }
 
     public  void executeTransaction (EventItem eventItem){
         Transaction transaction = transactions.get(eventItem.getAuctionId());
         Inventory.getInstance().updateLetterAmount(eventItem.getEventType(),transaction.getProduct());
         Inventory.getInstance().updateWallet(transaction.getPrice());
-        AbstractTransactionManager.transactions.remove(eventId);
+        AbstractTransactionManager.transactions.remove(eventItem.getAuctionId());
     }
 
-    public  Boolean isProductWorth(Integer price, @NonNull char[] product){
+    public  Boolean isProductWorth(Integer price, char[] product){
         //ToDo Method is to be tested
         int totalLocalValue = 0;
         ArrayList<Letter> letterArray = Inventory.getInstance().getLetters();

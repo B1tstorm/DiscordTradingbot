@@ -9,6 +9,11 @@ public class Inventory {
 	private static Inventory inventory;
 
 	private final ArrayList<Letter> letters = new ArrayList<>();
+
+	public void setWallet(Integer wallet) {
+		this.wallet = wallet;
+	}
+
 	private Integer wallet = 0;
 
 	//bei der erstellung eines Objekt, wird das ArrayLetters erstellt und initialisiert
