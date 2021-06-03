@@ -33,8 +33,6 @@ public class BuyTransactionManager extends AbstractTransactionManager implements
     @Override
     public void update(EventItem eventItem) {
         if (eventItem.getEventType().toString().contains("BUY")) {
-            // extract importen attributes form the EventItem
-            //Attributes
             EventType eventType = eventItem.getEventType() ;
             String traderId = eventItem .getTraderID() ;
             String eventId;

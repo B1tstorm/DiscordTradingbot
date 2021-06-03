@@ -19,6 +19,8 @@ import java.util.Arrays;
 
 public class ChannelInteracter {
     public SegTransactionManager segTransactionManager;
+    public BuyTransactionManager buyTransactionManager;
+
     public EventManager events;
     GatewayDiscordClient client;
     static Integer logNr = 0;
@@ -74,6 +76,7 @@ public class ChannelInteracter {
                 }
             }else if (message.getContent().contains("buy")){
                 EventItem eventItem = createBuyEventItem(message);
+                buyTransactionManager.update(eventItem);
                 //                    events.notify(eventItem);
             }else if (message.getContent().contains("sell")){
                 EventItem eventItem = createSellEventItem(message);

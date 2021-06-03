@@ -2,6 +2,7 @@ package de.fh_kiel.discordtradingbot;
 
 import de.fh_kiel.discordtradingbot.Holdings.Inventory;
 import de.fh_kiel.discordtradingbot.Interaction.ChannelInteracter;
+import de.fh_kiel.discordtradingbot.Transactions.BuyTransactionManager;
 import de.fh_kiel.discordtradingbot.Transactions.SegTransactionManager;
 
 public class DemoBot {
@@ -9,8 +10,12 @@ public class DemoBot {
         ChannelInteracter interacter = new ChannelInteracter(args[0]);
         Inventory.getInstance().setWallet(2000);
         SegTransactionManager segTransactionManager = new SegTransactionManager();
+        BuyTransactionManager buyTransactionManager = new BuyTransactionManager();
+
         interacter.segTransactionManager = segTransactionManager;
+        interacter.buyTransactionManager = buyTransactionManager;
         segTransactionManager.channelInteracter = interacter;
+        buyTransactionManager.channelInteracter = interacter;
 
         //meine id Kira 522858078782095364
         interacter.listenToChannel();
