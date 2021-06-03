@@ -25,19 +25,18 @@ public class SellTransactionManager extends AbstractTransactionManager implement
             EventType eventType = eventItem.getEventType() ;
             String traderId = eventItem .getTraderID() ;
             String eventId;
+            char[] product ;
+            Integer price ;
+
             if (eventItem.getAuctionId() != null) {
                 eventId = eventItem.getAuctionId();
             } else eventId = eventItem.getLogNr().toString();
-
-            char[] product ;
-            Integer price ;
 
             if(eventItem.getProduct() == null){
                 product = SegTransactionManager.getTransactions().get(eventId).getProduct();
             }else{
                 product = eventItem.getProduct();
             }
-
 
             if (  eventItem.getValue() == null){
                 price = SegTransactionManager.getTransactions().get(eventId).getPrice();
@@ -48,7 +47,7 @@ public class SellTransactionManager extends AbstractTransactionManager implement
             switch (eventType) {
                 case SELL_OFFER:
                     if (isProductWorth(price, product) && isPriceAffordable(price)) {
-                        SegTransactionManager.transactions.put(eventId, new Transaction(eventType));
+                        SegTransactionManager.transactions.put(eventId, new Transaction(eventItem));
                         //! wenn wir kaufen wollen, sollen wir mit dem Pattern antworten :
                         //! !step accept @USER ID
                         channelInteracter.writeAcceptMessage(eventItem);
@@ -58,7 +57,7 @@ public class SellTransactionManager extends AbstractTransactionManager implement
                     //! jemand hat den den verkauf an uns bestätigt
                     if (traderId.equals("845410146913747034")) {
                         //* "price*(-1)" macht die transaktion negativ (wie bezahlen)
-                        executeTransaction(eventType, eventId, price * (-1), product);
+                        executeTransaction(eventType, eventId, price, product);
                     } else dismissTransaction(eventId);
                     break;
                 case SELL_ACCEPT:

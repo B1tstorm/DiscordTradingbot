@@ -20,6 +20,7 @@ import java.util.Arrays;
 public class ChannelInteracter {
     public SegTransactionManager segTransactionManager;
     public BuyTransactionManager buyTransactionManager;
+    public SellTransactionManager sellTransactionManager;
 
     public EventManager events;
     GatewayDiscordClient client;
@@ -77,10 +78,11 @@ public class ChannelInteracter {
             }else if (message.getContent().contains("buy")){
                 EventItem eventItem = createBuyEventItem(message);
                 buyTransactionManager.update(eventItem);
-                //                    events.notify(eventItem);
+                //events.notify(eventItem);
             }else if (message.getContent().contains("sell")){
                 EventItem eventItem = createSellEventItem(message);
-                events.notify(eventItem);
+                sellTransactionManager.update(eventItem);
+                //events.notify(eventItem);
             }
 
             // In unserem Channel auf Präfix !ZULU reagieren
@@ -179,7 +181,7 @@ public class ChannelInteracter {
         String[] messageShards = message.getContent().split(" ");
         char[] products ;
         String traderID ;
-        String sellerId = message.getUserData().id();
+        String sellerId = message.getUserData().id(); //TODO ID durch name ersetzen???
         switch (messageShards[1]) {
             case "offer": {
                 //* !step offer ID buy|sell LETTER PRICE
