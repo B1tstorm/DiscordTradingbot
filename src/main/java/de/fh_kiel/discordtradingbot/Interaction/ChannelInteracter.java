@@ -11,8 +11,8 @@ import discord4j.core.object.presence.Activity;
 import discord4j.core.object.presence.Presence;
 
 
-public class ChannelInteracter {
-    public EventManager events;
+public class ChannelInteracter implements EventPublisher {
+    //public EventManager events;
     GatewayDiscordClient client;
     static Integer logNr = 0;
 
@@ -85,7 +85,7 @@ public class ChannelInteracter {
                     // Setzt die Anzeige auf Auction oder Trading
                     setPresence(EventType.AUCTION_START);
                     EventItem eventItem = createEventItem(message);
-                    events.notify(eventItem);
+                    notifySubscriber(eventItem);
                     //! Nur zum testen, später löschen
 //                    writeMessage(eventItem);
                 } catch (ArrayIndexOutOfBoundsException e) {
@@ -98,7 +98,8 @@ public class ChannelInteracter {
             // In unserem Channel auf Präfix !ZULU reagieren
             if (getPrefix(message).equals("!ZULU") && message.getAuthor().map(user -> !user.isBot()).orElse(false)) {
                 // TODO: implementieren dass andere auf uns reagieren können
-                setPresence(EventType.SELL);
+                // TODO: von Eventtype.SELL geändert
+                setPresence(EventType.SELL_OFFER);
             }
         });
 
