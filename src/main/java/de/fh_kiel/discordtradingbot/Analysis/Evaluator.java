@@ -41,6 +41,8 @@ public class Evaluator implements Subscriber {
         return letterStatistics.get(index).maxValue;
     }
 
+    // getCurrentAvgValue MaxValue ...
+
     private int charToIndex(char c) {
         return (int) c - 65;
     }
