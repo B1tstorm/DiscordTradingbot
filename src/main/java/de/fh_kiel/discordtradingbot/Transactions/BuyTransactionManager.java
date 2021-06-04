@@ -71,13 +71,13 @@ public class BuyTransactionManager extends AbstractTransactionManager implements
                         channelInteracter.writeAcceptMessage(eventItem);
                     } else if (eventItem.getSellerID().equals("HIER KOMMT EIKES ID")) {
                         //! begrunde warum wir nicht kaufen können
-                        channelInteracter.writeThisMessage(("Wir haben das Produkt -> " + checkInventory(product)).toString(),eventItem);
-                        channelInteracter.writeThisMessage(("Dein Preis ist fair -> " + isProductWorth(price, product)).toString(),eventItem);
+                        channelInteracter.writeThisMessage(("Wir haben das Produkt -> " + checkInventory(product)).toString(),eventItem.getChannel());
+                        channelInteracter.writeThisMessage(("Dein Preis ist fair -> " + isProductWorth(price, product)).toString(),eventItem.getChannel());
                         //! Ein GegenAngebot TODO GegenAngebot
                     }
                     break;
                 case BUY_CONFIRM:
-                    if (traderId.equals("845410146913747034")) {
+                    if (traderId.equals("<@!845410146913747034>")) {
                         executeTransaction(eventType, eventId, price, product);
                     } else dismissTransaction(eventId);
                     break;
@@ -93,12 +93,5 @@ public class BuyTransactionManager extends AbstractTransactionManager implements
 
     }
 
-    private void makeBuyOffer(){
-        //todo erstellt ein Kaufangebot mit dem Pattern
-        //* !step offer ID buy LETTER PRICE
-        //generiere ein EventItem mit : auctionId ,EventType, price, Produkt, sellerId als ZULU id , Channel: traderChannel
-        //erstellt eine Transaction mit einem EventItem
 
-
-    }
 }

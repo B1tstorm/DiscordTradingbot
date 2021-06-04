@@ -18,8 +18,6 @@ public abstract class AbstractTransactionManager {
         return transactions;
     }
 
-    protected abstract void makeOffer();
-
     public Boolean checkInventory(@NonNull char[] product) {
         ArrayList<Letter> letters = Inventory.getInstance().getLetters();
         HashMap<Character,Integer> hashmap = fillHashmap(new HashMap<>());
@@ -84,6 +82,7 @@ public abstract class AbstractTransactionManager {
         return totalLocalValue >= price;
         // TODO für später: falls TotalLocalValue z.B. 5% mehr wäre als das Gebot, trotzdem verkaufen
     }
+
 
 
 

@@ -139,7 +139,9 @@ public class ChannelInteracter {
         String[] messageShards = message.getContent().split(" ");
         char[] products = null;
         String traderID = null;
-        String sellerId = message.getUserData().id();
+        //* message.getAuthor().get().getId().asString() das benutzen wir
+        //*und dann halt das <@ davor und das > dahinter
+        String sellerId ="<@" + message.getAuthor().get().getId().asString() +">";
         switch (messageShards[1]) {
             case "offer": {
                 //* !step offer ID buy|sell LETTER PRICE
@@ -181,7 +183,7 @@ public class ChannelInteracter {
         String[] messageShards = message.getContent().split(" ");
         char[] products ;
         String traderID ;
-        String sellerId = message.getUserData().id(); //TODO ID durch name ersetzen???
+        String sellerId = "<@"+message.getAuthor().get().getId().asString()+">" ; //TODO ID durch name ersetzen???
         switch (messageShards[1]) {
             case "offer": {
                 //* !step offer ID buy|sell LETTER PRICE
@@ -206,7 +208,7 @@ public class ChannelInteracter {
 
             case "accept":
                 //* pattern:  !step accept @USER ID
-                if (messageShards[2].equals("ZULUID")){
+                if (messageShards[2].equals("<@!845410146913747034>")){
                     String auctionId= messageShards[3];
                     Integer price = BuyTransactionManager.getTransactions().get(auctionId).getPrice();
                     char[] product = BuyTransactionManager.getTransactions().get(auctionId).getProduct();
@@ -273,8 +275,7 @@ public class ChannelInteracter {
     }
     }
 
-    public void writeThisMessage(String s , EventItem eventItem) {
-        final MessageChannel channel = eventItem.getChannel();
+    public void writeThisMessage(String s ,  MessageChannel channel) {
         channel.createMessage(s).block();
 
     }
