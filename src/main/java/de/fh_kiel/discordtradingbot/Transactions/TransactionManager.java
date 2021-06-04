@@ -43,10 +43,6 @@ public class TransactionManager extends AbstractTransactionManager implements Ev
 //    }
 
 
-    @Override
-    protected void makeOffer() {
-
-    }
 
     @Override
     public void executeTransaction(EventType eventType,String eventId, Integer price, char[] product)   {

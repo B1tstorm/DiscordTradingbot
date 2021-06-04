@@ -7,9 +7,7 @@ import de.fh_kiel.discordtradingbot.Interaction.EventType;
 public class SegTransactionManager extends AbstractTransactionManager implements EventListener {
     //! we buy
 
-    @Override
-    protected void makeOffer() {
-    }
+
 
     @Override
     public void executeTransaction(EventType eventType, String eventId, Integer price, char[] product) {
@@ -75,6 +73,5 @@ public class SegTransactionManager extends AbstractTransactionManager implements
             }
         }
     }
-
 
 }
