@@ -8,4 +8,11 @@ public class Config {
     }
 
 
+    public static int charToIndex(char c) {
+        return (int) c - 65;
+    }
+
+    public static char indexToChar(int i){
+        return (char) (i + 65);
+    }
 }
