@@ -29,7 +29,7 @@ public class SellTransactionManager extends AbstractTransactionManager implement
 
     @Override
     public void update(EventItem eventItem) {
-        if (eventItem.getEventType().toString().contains("SELL")) {
+        if (eventItem.getEventType().toString().contains("SELL") || eventItem.getEventType().toString().contains("ACCEPT")) {
 
             //Attributes
             EventType eventType = eventItem.getEventType() ;
@@ -43,13 +43,13 @@ public class SellTransactionManager extends AbstractTransactionManager implement
             } else eventId = eventItem.getLogNr().toString();
 
             if(eventItem.getProduct() == null){
-                product = SegTransactionManager.getTransactions().get(eventId).getProduct();
+                product = SellTransactionManager.getTransactions().get(eventId).getProduct();
             }else{
                 product = eventItem.getProduct();
             }
 
             if (  eventItem.getValue() == null){
-                price = SegTransactionManager.getTransactions().get(eventId).getPrice();
+                price = SellTransactionManager.getTransactions().get(eventId).getPrice();
             }else{
                 price = eventItem.getValue();
             }
@@ -57,26 +57,37 @@ public class SellTransactionManager extends AbstractTransactionManager implement
             switch (eventType) {
                 case SELL_OFFER:
                     if (isProductWorth(price, product) && isPriceAffordable(price)) {
-                        SegTransactionManager.transactions.put(eventId, new Transaction(eventItem));
+                        SellTransactionManager.transactions.put(eventId, new Transaction(eventItem));
                         //! wenn wir kaufen wollen, sollen wir mit dem Pattern antworten :
                         //! !step accept @USER ID
-                        channel = eventItem.getChannel();
+
 
                         channelInteracter.writeAcceptMessage(eventItem);
                     }
                     break;
                 case SELL_CONFIRM:
                     //! jemand hat den den verkauf an uns bestätigt
-                    if (traderId.equals("<@!845410146913747034>")) {
-                        //* "price*(-1)" macht die transaktion negativ (wie bezahlen)
+                    if (isItMe(traderId)) {
                         executeTransaction(eventType, eventId, price, product);
-                        channelInteracter.writeThisMessage("OKAY ich habe gekauft",channel);
+                        //Löschen
+                        channelInteracter.writeThisMessage("OKAY ich habe gekauft \n", eventItem.getChannel());
+                        channel = eventItem.getChannel();
                         makeSellOffer(product);
                     } else dismissTransaction(eventId);
                     break;
-                case SELL_ACCEPT:
+                case ACCEPT:
                     //! jemand akzeptiert unser Angebot und will von uns kaufen wir sollen mit dem pattern antworten
-                    //! !step confirm ourID @USER sell product price
+                    //! !trd confirm @USER ourID  wts product price
+                    try{
+                    eventItem.setValue(transactions.get(eventId).getPrice());
+                    }catch (NullPointerException e){
+                        return;
+                    }
+                    eventItem.setProduct(transactions.get(eventId).getProduct());
+                    price = transactions.get(eventId).getPrice();
+                    product = transactions.get(eventId).getProduct();
+                    eventType = EventType.SELL_ACCEPT;
+
                     channelInteracter.writeSellConfirmMessage(eventItem);
                     executeTransaction(eventType, eventId, price, product);
                     break;
@@ -87,22 +98,25 @@ public class SellTransactionManager extends AbstractTransactionManager implement
     }
 
     public void makeSellOffer(char[] product){
-            //todo erstellt ein Kauf- Verkaufsangebot mit dem Pattern
-            //* !step offer ID buy LETTER PRICE
-        String id = UUID.randomUUID().toString();
+        //* !trd wtb ID product PRICE
+        String id = getRandId();
+        //String id = UUID.randomUUID().toString();
         Integer value = 0;
         for (Character c: product) {
             int temp =  Inventory.getInstance().getLetters().get((int)c - 65).getValue();
             value += temp;
         }
-        String s = "!step offer " + id + " sell "+ valueOf(product) + " " + value;
+        String s = "!trd wtb " + id +" "+ valueOf(product) + " " + value;
         channelInteracter.writeThisMessage(s, channel);
-        Transaction put = transactions.put(id, new Transaction(new EventItem(null, "<@!845410146913747034>", null, id
+        transactions.put(id, new Transaction(new EventItem(null, getZuluId(), null, id
                 , EventType.BUY_OFFER, product, value, channel)));
 
         //erstellt eine Transaction mit einem EventItem
 
 
+    }
+    private String  getZuluId(){
+        return "<@!845410146913747034>";
     }
 
 }

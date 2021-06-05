@@ -5,14 +5,15 @@ import de.fh_kiel.discordtradingbot.Holdings.Letter;
 import de.fh_kiel.discordtradingbot.Interaction.EventItem;
 import de.fh_kiel.discordtradingbot.Interaction.EventListener;
 import de.fh_kiel.discordtradingbot.Interaction.EventType;
+import discord4j.core.object.entity.channel.MessageChannel;
 
 import java.util.ArrayList;
 
+import static java.lang.String.valueOf;
+
 public class BuyTransactionManager extends AbstractTransactionManager implements EventListener {
     //! we sell
-    protected void makeOffer() {
-        //TODO write a BuyOffer message in the channel
-    }
+    MessageChannel channel = null;
 
     @Override
     public Boolean isProductWorth(Integer price, char[] product) {
@@ -32,7 +33,7 @@ public class BuyTransactionManager extends AbstractTransactionManager implements
 
     @Override
     public void update(EventItem eventItem) {
-        if (eventItem.getEventType().toString().contains("BUY")) {
+        if (eventItem.getEventType().toString().contains("BUY") || eventItem.getEventType().toString().contains("ACCEPT")) {
             EventType eventType = eventItem.getEventType() ;
             String traderId = eventItem .getTraderID() ;
             String eventId;
@@ -44,14 +45,14 @@ public class BuyTransactionManager extends AbstractTransactionManager implements
             Integer price ;
 
             if(eventItem.getProduct() == null){
-                product = SegTransactionManager.getTransactions().get(eventId).getProduct();
+                product = BuyTransactionManager.getTransactions().get(eventId).getProduct();
             }else{
                 product = eventItem.getProduct();
             }
 
 
             if (  eventItem.getValue() == null){
-                price = SegTransactionManager.getTransactions().get(eventId).getPrice();
+                price = BuyTransactionManager.getTransactions().get(eventId).getPrice();
             }else{
                 price = eventItem.getValue();
             }
@@ -64,6 +65,7 @@ public class BuyTransactionManager extends AbstractTransactionManager implements
             switch (eventType) {
                 //! jemand hat was angeboten und wir wollen ihm sagen "geilo, das würde ich gerne kaufen"
                 case BUY_OFFER:
+                    channel = eventItem.getChannel();
                     if (isProductWorth(price, product) && checkInventory(product)) {
                         BuyTransactionManager.transactions.put(eventId, new Transaction(eventItem));
                         //! Antworte mit dem pattern:
@@ -77,12 +79,25 @@ public class BuyTransactionManager extends AbstractTransactionManager implements
                     }
                     break;
                 case BUY_CONFIRM:
-                    if (traderId.equals("<@!845410146913747034>")) {
+                    if (isItMe(traderId)) {
                         executeTransaction(eventType, eventId, price, product);
+                        channelInteracter.writeThisMessage("OKAY ich habe verkauft \n", eventItem.getChannel());
+                        channel = eventItem.getChannel();
+                        makeBuyOffer(product);
+
+
                     } else dismissTransaction(eventId);
                     break;
-                case BUY_ACCEPT: {
+                case ACCEPT: {
                     //!jemand hat unser Angebot angenommen und wir müssen ihm bestätigen "wir machen eine confirm Ansage"
+                    try {
+                    eventItem.setValue(transactions.get(eventId).getPrice());
+                    }catch (NullPointerException e ){ return;}
+
+                    eventItem.setProduct(transactions.get(eventId).getProduct());
+                    eventItem.setEventType(transactions.get(eventId).getEventType());
+
+
                     channelInteracter.writeBuyConfirmMessage(eventItem);
                     executeTransaction(eventItem);
                 }
@@ -91,6 +106,28 @@ public class BuyTransactionManager extends AbstractTransactionManager implements
         }
 
 
+    }
+
+    public void makeBuyOffer(char[] product){
+        //* !trd wts ID product PRICE
+        String id = getRandId();
+        Integer value = 0;
+        for (Character c: product) {
+            int temp =  Inventory.getInstance().getLetters().get((int)c - 65).getValue();
+            value += temp;
+        }
+        String s = "!trd wts " + id +" "+ valueOf(product) + " " + value;
+        channelInteracter.writeThisMessage(s, channel);
+        transactions.put(id, new Transaction(new EventItem(null, getZuluId(), null, id
+                , EventType.BUY_OFFER, product, value, channel)));
+
+        //erstellt eine Transaction mit einem EventItem
+
+
+    }
+
+    private String  getZuluId(){
+        return "<@!845410146913747034>";
     }
 
 

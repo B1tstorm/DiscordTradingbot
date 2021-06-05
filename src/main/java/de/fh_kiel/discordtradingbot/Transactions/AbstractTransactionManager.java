@@ -6,12 +6,14 @@ import de.fh_kiel.discordtradingbot.Interaction.ChannelInteracter;
 import de.fh_kiel.discordtradingbot.Interaction.EventItem;
 import de.fh_kiel.discordtradingbot.Interaction.EventType;
 import reactor.util.annotation.NonNull;
+
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Random;
 
 public abstract class AbstractTransactionManager {
     protected static final HashMap<String, Transaction> transactions = new HashMap<>();
-    public ChannelInteracter channelInteracter ;
+    public ChannelInteracter channelInteracter;
 
 
     public static HashMap<String, Transaction> getTransactions() {
@@ -20,13 +22,13 @@ public abstract class AbstractTransactionManager {
 
     public Boolean checkInventory(@NonNull char[] product) {
         ArrayList<Letter> letters = Inventory.getInstance().getLetters();
-        HashMap<Character,Integer> hashmap = fillHashmap(new HashMap<>());
+        HashMap<Character, Integer> hashmap = fillHashmap(new HashMap<>());
 
-        for (Character buchstabe: product) {
-            hashmap.put(buchstabe, hashmap.get(buchstabe)+1);
+        for (Character buchstabe : product) {
+            hashmap.put(buchstabe, hashmap.get(buchstabe) + 1);
         }
         for (Letter letter : letters) {
-            if (!(letter.getAmount()>= hashmap.get(letter.getLetter()))){
+            if (!(letter.getAmount() >= hashmap.get(letter.getLetter()))) {
                 return false;
             }
         }
@@ -34,9 +36,9 @@ public abstract class AbstractTransactionManager {
     }
 
     //interne Funktion, ergänzt ChenInventory
-    private HashMap<Character,Integer> fillHashmap (HashMap<Character,Integer> hashMap){
+    private HashMap<Character, Integer> fillHashmap(HashMap<Character, Integer> hashMap) {
         for (int ascii = 65; ascii < 91; ascii++) {
-            hashMap.put((char)ascii,0);
+            hashMap.put((char) ascii, 0);
         }
         return hashMap;
     }
@@ -53,21 +55,21 @@ public abstract class AbstractTransactionManager {
         AbstractTransactionManager.transactions.remove(eventId);
     }
 
-    public  void executeTransaction(EventType eventType,String eventId, Integer price, char[] product){
-        Inventory.getInstance().updateLetterAmount(eventType,product);
+    public void executeTransaction(EventType eventType, String eventId, Integer price, char[] product) {
+        Inventory.getInstance().updateLetterAmount(eventType, product);
         transactions.remove(eventId);
         Inventory.getInstance().updateWallet(price);
         System.out.println("Tranaction wurde excuted");
     }
 
-    public  void executeTransaction (EventItem eventItem){
+    public void executeTransaction(EventItem eventItem) {
         Transaction transaction = transactions.get(eventItem.getAuctionId());
-        Inventory.getInstance().updateLetterAmount(eventItem.getEventType(),transaction.getProduct());
+        Inventory.getInstance().updateLetterAmount(eventItem.getEventType(), transaction.getProduct());
         Inventory.getInstance().updateWallet(transaction.getPrice());
         AbstractTransactionManager.transactions.remove(eventItem.getAuctionId());
     }
 
-    public  Boolean isProductWorth(Integer price, char[] product){
+    public Boolean isProductWorth(Integer price, char[] product) {
         //ToDo Method is to be tested
         int totalLocalValue = 0;
         ArrayList<Letter> letterArray = Inventory.getInstance().getLetters();
@@ -83,6 +85,16 @@ public abstract class AbstractTransactionManager {
         // TODO für später: falls TotalLocalValue z.B. 5% mehr wäre als das Gebot, trotzdem verkaufen
     }
 
+    protected Boolean isItMe(String botId) {
+        String zuluId = "<@!845410146913747034>";
+        return botId.equals(zuluId);
+    }
+
+    protected String getRandId (){
+        Random r = new Random();
+        int i = r.nextInt(9000);
+        return i + 1000+"";
+    }
 
 
 

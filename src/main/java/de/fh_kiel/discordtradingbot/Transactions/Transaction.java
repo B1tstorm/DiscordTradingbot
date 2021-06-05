@@ -11,17 +11,17 @@ public class Transaction {
 	private Integer price;
 	private char[] product;
 	private String status;
-	private EventType transactionKind;
+	private EventType eventType;
 
 	public Transaction(EventType eventType) {
 		this.id = (Transaction.IdCounter++).toString();
-		this.transactionKind = eventType;
+		this.eventType = eventType;
 		this.status="waiting";
 	}
 
 	public Transaction(EventItem eventItem) {
 		this.id = (Transaction.IdCounter++).toString();
-		this.transactionKind = eventItem.getEventType();
+		this.eventType = eventItem.getEventType();
 		this.status="waiting";
 		this.price = eventItem.getValue();
 		this.product = eventItem.getProduct();
@@ -69,12 +69,12 @@ public class Transaction {
 		return status;
 	}
 
-	public EventType getTransactionKind() {
-		return transactionKind;
+	public EventType getEventType() {
+		return eventType;
 	}
 
-	public void setTransactionKind(EventType transactionKind) {
-		this.transactionKind = transactionKind;
+	public void setEventType(EventType eventType) {
+		this.eventType = eventType;
 
 	}
 

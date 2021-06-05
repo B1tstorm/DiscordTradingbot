@@ -12,9 +12,10 @@ import discord4j.core.object.entity.User;
 import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.core.object.presence.Activity;
 import discord4j.core.object.presence.Presence;
-import reactor.util.annotation.NonNull;
-
 import java.util.Arrays;
+
+
+import static java.lang.String.valueOf;
 
 
 public class ChannelInteracter {
@@ -56,41 +57,48 @@ public class ChannelInteracter {
                 .filter(message -> message.getMessage().getAuthor().map(user -> !user.isBot()).orElse(true)) //TODO auf false setzen damit er auf bots reagiert
 //                .filter(message -> message.getMessage().getUserData().id().equals("501500923495841792"))
                 .subscribe(event -> {
-            final Message message = event.getMessage();
-            final MessageChannel channel = message.getChannel().block();
+                    final Message message = event.getMessage();
+                    final MessageChannel channel = message.getChannel().block();
 
-            // Bei Auktionen filtern dass nur Messages vom SEG Bot gelesen werden
-            if (getPrefix(message).equals("!SEG") /*&& message.getUserData().id().equals("501500923495841792")*/) { //* Hier muss später die ID des SEG Bot stehen!
-                // Für den außergewöhnlichen Fall das der SEG Bot zu wenig Argumente in den Chat schreibt
-                try { //? Evtl. unnötig da der Bot niemals zu wenig Argumente liefert. Nur so stürzt das Programm nicht ab
-                    // Setzt die Anzeige auf Auction oder Trading
-                    setPresence(EventType.AUCTION_START);
-                    EventItem eventItem = createEventItem(message);
+                    // Bei Auktionen filtern dass nur Messages vom SEG Bot gelesen werden
+                    if (getPrefix(message).equals("!SEG") /*&& message.getUserData().id().equals("501500923495841792")*/) { //* Hier muss später die ID des SEG Bot stehen!
+                        // Für den außergewöhnlichen Fall das der SEG Bot zu wenig Argumente in den Chat schreibt
+                        try { //? Evtl. unnötig da der Bot niemals zu wenig Argumente liefert. Nur so stürzt das Programm nicht ab
+                            // Setzt die Anzeige auf Auction oder Trading
+                            setPresence(EventType.AUCTION_START);
+                            EventItem eventItem = createEventItem(message);
 //                    events.notify(eventItem);
-                    //! Nur zum testen, später löschen
-                    //writeMessage(eventItem);
-                    segTransactionManager.update(eventItem);
-                } catch (ArrayIndexOutOfBoundsException e) {
-                    System.err.println("Der Channel command enthält zu wenige Zeichen um ein EventItem zu generieren. Fehler: " + e);
-                    assert channel != null;
-                    channel.createMessage("Keine gültige Transaktion!").block();
-                }
-            }else if (message.getContent().contains("buy")){
-                EventItem eventItem = createBuyEventItem(message);
-                buyTransactionManager.update(eventItem);
-                //events.notify(eventItem);
-            }else if (message.getContent().contains("sell")){
-                EventItem eventItem = createSellEventItem(message);
-                sellTransactionManager.update(eventItem);
-                //events.notify(eventItem);
-            }
+                            //! Nur zum testen, später löschen
+                            //writeMessage(eventItem);
+                            segTransactionManager.update(eventItem);
+                        } catch (ArrayIndexOutOfBoundsException e) {
+                            System.err.println("Der Channel command enthält zu wenige Zeichen um ein EventItem zu generieren. Fehler: " + e);
+                            assert channel != null;
+                            channel.createMessage("Keine gültige Transaktion!").block();
+                        }
+                    } else if (message.getContent().contains("wtb")) {
+                        EventItem eventItem = createBuyEventItem(message);
+                        assert eventItem != null;
+                        buyTransactionManager.update(eventItem);
+                        //events.notify(eventItem);
+                    } else if (message.getContent().contains("wts")) {
+                        EventItem eventItem = createSellEventItem(message);
+                        assert eventItem != null;
+                        sellTransactionManager.update(eventItem);
+                        //events.notify(eventItem);
+                    } else if (message.getContent().contains("accept")) {
+                        EventItem eventItem = createAcceptEventItem(message);
+                        assert eventItem != null;
+                        sellTransactionManager.update(eventItem);
+                        buyTransactionManager.update(eventItem);
+                    }
 
-            // In unserem Channel auf Präfix !ZULU reagieren
-            if (getPrefix(message).equals("!ZULU") && message.getAuthor().map(user -> !user.isBot()).orElse(false)) {
-                // TODO: implementieren dass andere auf uns reagieren können
-                setPresence(EventType.SELL_OFFER);
-            }
-        });
+                    // In unserem Channel auf Präfix !ZULU reagieren //todo den gibt es nicht ! (Anas)
+                    if (getPrefix(message).equals("!ZULU") && message.getAuthor().map(user -> !user.isBot()).orElse(false)) {
+                        // TODO: implementieren dass andere auf uns reagieren können
+                        setPresence(EventType.SELL_OFFER);
+                    }
+                });
 
         //Verbindung schließen
         client.onDisconnect().block();
@@ -127,100 +135,99 @@ public class ChannelInteracter {
         }
 
         return new EventItem(logNr + 1,
-                              message.getUserData().id(),
-                              traderID,
-                              messageShards[3], eventType,
-                              products,
-                              Integer.parseInt(messageShards[5]),
-                              message.getChannel().block());
+                message.getUserData().id(),
+                traderID,
+                messageShards[3], eventType,
+                products,
+                Integer.parseInt(messageShards[5]),
+                message.getChannel().block());
     }
 
-    private EventItem createBuyEventItem (Message message){
+    private EventItem createBuyEventItem(Message message) {
         String[] messageShards = message.getContent().split(" ");
         char[] products = null;
         String traderID = null;
         //* message.getAuthor().get().getId().asString() das benutzen wir
         //*und dann halt das <@ davor und das > dahinter
-        String sellerId ="<@" + message.getAuthor().get().getId().asString() +">";
+        String sellerId = "<@" + message.getAuthor().get().getId().asString() + ">";
         switch (messageShards[1]) {
-            case "offer": {
-                //* !step offer ID buy|sell LETTER PRICE
+            case "wtb": {
+                //* !trd wtb ID PRODUCT PRICE
+                //    0   1  2     3       4
                 EventType eventType = EventType.BUY_OFFER;
                 String auctionId = messageShards[2];
-                products = messageShards[4].toCharArray();
-                Integer price = Integer.parseInt(messageShards[5]);
+                products = messageShards[3].toCharArray();
+                Integer price = Integer.parseInt(messageShards[4]);
                 return new EventItem(logNr + 1, sellerId, null,
                         auctionId, eventType, products, price, message.getChannel().block());
             }
 
             case "confirm": {
-                //* pattern !step confirm ID @USER buy|sell LETTER PRICE
+                //* !trd confirm <@USER> ID   wtb PRODUCT PRICE
+                //    0      1      2     3     4    5     6
                 EventType eventType = EventType.BUY_CONFIRM;
-                String auctionId = messageShards[2];
-                traderID = messageShards[3];
+                traderID = messageShards[2];
+                String auctionId = messageShards[3];
                 products = messageShards[5].toCharArray();
                 Integer price = Integer.parseInt(messageShards[6]);
-                return new EventItem(logNr +1 ,sellerId,traderID,auctionId,
-                                    eventType,products,price,message.getChannel().block() );
+                return new EventItem(logNr + 1, sellerId, traderID, auctionId,
+                        eventType, products, price, message.getChannel().block());
             }
-
-            case "accept":
-                //* pattern !step accept @USER ID
-                        if (messageShards[2].equals("ZULUID")){
-                            String auctionId= messageShards[3];
-                            Integer price = BuyTransactionManager.getTransactions().get(auctionId).getPrice();
-                            char[] product = BuyTransactionManager.getTransactions().get(auctionId).getProduct();
-                            //TODO ZULU ID HIER SCHREIBEN
-                            return new EventItem(logNr+1,messageShards[2],message.getUserData().id(),
-                                        auctionId,EventType.BUY_ACCEPT,product,price,message.getChannel().block());
-                        }
-                break;
         }
         return null;
     }
 
-    private EventItem createSellEventItem (Message message){
+    private EventItem createSellEventItem(Message message) {
+
         String[] messageShards = message.getContent().split(" ");
-        char[] products ;
-        String traderID ;
-        String sellerId = "<@"+message.getAuthor().get().getId().asString()+">" ; //TODO ID durch name ersetzen???
+        char[] products;
+        String traderID;
+        String auctionId = messageShards[2];
+        String sellerId = "<@" + message.getAuthor().get().getId().asString() + ">";
         switch (messageShards[1]) {
-            case "offer": {
-                //* !step offer ID buy|sell LETTER PRICE
+            case "wts": {
+                //* !trd wts ID PRODUCT PRICE
+                //   0    1   2    3      4
                 EventType eventType = EventType.SELL_OFFER;
-                String auctionId = messageShards[2];
-                products = messageShards[4].toCharArray();
-                Integer price = Integer.parseInt(messageShards[5]);
+                products = messageShards[3].toCharArray();
+                Integer price = Integer.parseInt(messageShards[4]);
                 return new EventItem(logNr + 1, sellerId, null,
                         auctionId, eventType, products, price, message.getChannel().block());
             }
 
             case "confirm": {
-                //* pattern !step confirm ID @USER buy|sell LETTER PRICE
+                //* !trd confirm <@USER> Gesuch-ID wts LETTER/STRING PRICE
+                //     0    1        2       3      4        5          6
                 EventType eventType = EventType.SELL_CONFIRM;
-                String auctionId = messageShards[2];
-                traderID = messageShards[3];
+                traderID = messageShards[2];
+                auctionId = messageShards[3];
                 products = messageShards[5].toCharArray();
                 Integer price = Integer.parseInt(messageShards[6]);
-                return new EventItem(logNr +1 ,sellerId,traderID,auctionId,
-                        eventType,products,price,message.getChannel().block() );
+                return new EventItem(logNr + 1, sellerId, traderID, auctionId,
+                        eventType, products, price, message.getChannel().block());
             }
 
-            case "accept":
-                //* pattern:  !step accept @USER ID
-                if (messageShards[2].equals("<@!845410146913747034>")){
-                    String auctionId= messageShards[3];
-                    Integer price = BuyTransactionManager.getTransactions().get(auctionId).getPrice();
-                    char[] product = BuyTransactionManager.getTransactions().get(auctionId).getProduct();
-                    //TODO ZULU ID HIER SCHREIBEN
-                    return new EventItem(logNr+1,messageShards[2],message.getUserData().id(),
-                            auctionId,EventType.SELL_ACCEPT,product,price,message.getChannel().block());
-                }
-                break;
         }
         return null;
     }
 
+    private EventItem createAcceptEventItem(Message message) {
+        //* jeamand hat unser Angebot angenommen
+        //* !trd accept <@USER> Gesuch-ID
+      //      0    1       2     3     4
+
+        String[] messageShards = message.getContent().split(" ");
+        if (isItMe(messageShards[2])) {
+            EventType eventType = EventType.ACCEPT;
+            String traderID = "<@" + message.getAuthor().get().getId().asString() + ">";
+            String auctionId = messageShards[3];
+
+
+
+            return new EventItem(logNr + 1, getZuluId(), traderID,
+                    auctionId,eventType, null, null, message.getChannel().block());
+        }return null;
+    }
 
 
     private void setPresence(EventType eventType) {
@@ -233,8 +240,7 @@ public class ChannelInteracter {
     }
 
     /**
-     * @param eventItem
-     * Die Methode antwortet in dem Channel, aus dem die Anfrage kam
+     * @param eventItem Die Methode antwortet in dem Channel, aus dem die Anfrage kam
      */
     public void writeMessage(EventItem eventItem) {
         final MessageChannel channel = eventItem.getChannel();
@@ -261,30 +267,28 @@ public class ChannelInteracter {
         }
     }
 
-    //TODO methoden implementieren
+
 
 
     public void writeBidMessage(EventItem eventItem) {
         final MessageChannel channel = eventItem.getChannel();
-    if (eventItem.getValue() != null){
-        channel.createMessage("!SEG auction bid " + eventItem.getAuctionId() + " " + (eventItem.getValue()+1) ).block();
-    }
-    else{
-        Integer price = SegTransactionManager.getTransactions().get(eventItem.getAuctionId()).getPrice();
-        channel.createMessage("!SEG auction bid " + eventItem.getAuctionId() + " " + (price+1) ).block();
-    }
+        if (eventItem.getValue() != null) {
+            channel.createMessage("!SEG auction bid " + eventItem.getAuctionId() + " " + (eventItem.getValue() + 1)).block();
+        } else {
+            Integer price = SegTransactionManager.getTransactions().get(eventItem.getAuctionId()).getPrice();
+            channel.createMessage("!SEG auction bid " + eventItem.getAuctionId() + " " + (price + 1)).block();
+        }
     }
 
-    public void writeThisMessage(String s ,  MessageChannel channel) {
+    public void writeThisMessage(String s, MessageChannel channel) {
         channel.createMessage(s).block();
-
     }
 
     public void writeAcceptMessage(EventItem eventItem) {
         final MessageChannel channel = eventItem.getChannel();
         //! Antworte mit dem pattern:
         //! !step accept @USER ID
-        channel.createMessage("!step accept "+ eventItem.getSellerID() + " " + eventItem.getAuctionId()).block();
+        channel.createMessage("!trd accept " + eventItem.getSellerID() + " " + eventItem.getAuctionId()).block();
     }
 
     public void writeSellConfirmMessage(EventItem eventItem) {
@@ -293,21 +297,30 @@ public class ChannelInteracter {
         final MessageChannel channel = eventItem.getChannel();
         String id = eventItem.getAuctionId();
         String traderId = eventItem.getTraderID();
-        String product = Arrays.toString(SellTransactionManager.getTransactions().get(id).getProduct()) ;
-        Integer price = SellTransactionManager.getTransactions().get(id).getPrice() ;
-        channel.createMessage("!step confirm "+ id + " " + traderId + " sell "+ product + " " + price).block();
-
+        char[] product = SellTransactionManager.getTransactions().get(id).getProduct();
+        Integer price = SellTransactionManager.getTransactions().get(id).getPrice();
+        channel.createMessage("!trd confirm " + traderId + " " + id + " wts " + valueOf(product) + " " + price).block();
+        //*                    !trd confirm     <@USER>      Gesuch-ID  wts    LETTER/STRING    PRICE
     }
 
     public void writeBuyConfirmMessage(EventItem eventItem) {
-        //* !step confirm ID @USER buy LETTER PRICE
+        //* !trd confirm <@USER> Gesuch-ID wtb PRODUCT PRICE
 
         final MessageChannel channel = eventItem.getChannel();
         String id = eventItem.getAuctionId();
         String traderId = eventItem.getTraderID();
-        String product = Arrays.toString(SellTransactionManager.getTransactions().get(id).getProduct()) ;
-        Integer price = SellTransactionManager.getTransactions().get(id).getPrice() ;
-        channel.createMessage("!step confirm "+ id + " " + traderId + " buy "+ product + " " + price).block();
+        char[] product = SellTransactionManager.getTransactions().get(id).getProduct();
+        Integer price = SellTransactionManager.getTransactions().get(id).getPrice();
+        channel.createMessage("!trd confirm " + traderId + " " + id + " wtb " + valueOf(product) + " " + price).block();
 
     }
+
+    private Boolean isItMe(String botId){
+        String zuluId = "<@!845410146913747034>";
+        return botId.equals(zuluId);
+    }
+
+  private String  getZuluId(){
+        return "<@!845410146913747034>";
+  }
 }

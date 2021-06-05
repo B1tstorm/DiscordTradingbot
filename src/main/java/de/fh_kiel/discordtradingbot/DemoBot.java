@@ -21,9 +21,9 @@ public class DemoBot {
         buyTransactionManager.channelInteracter = interacter;
         sellTransactionManager.channelInteracter = interacter;
 
+
         //meine id Kira 522858078782095364
         interacter.listenToChannel();
-
         //TODO: Nachricht senden, wenn eingeloggt.
         // Wo kann ich jetzt mit dem Bot interagieren?
     }
