@@ -17,7 +17,7 @@ public class TransactionManager extends AbstractTransactionManager implements Ev
     }
 
     private TransactionManager(ChannelInteracter channelInteracter) {
-    this.channelInteracter = channelInteracter;
+        super(channelInteracter);
     }
 
     //prüft ob produkt einen bestimmten Wert wert ist

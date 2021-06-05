@@ -15,6 +15,9 @@ public abstract class AbstractTransactionManager {
     protected static final HashMap<String, Transaction> transactions = new HashMap<>();
     public ChannelInteracter channelInteracter;
 
+    public AbstractTransactionManager(ChannelInteracter channelInteracter) {
+        this.channelInteracter = channelInteracter;
+    }
 
     public static HashMap<String, Transaction> getTransactions() {
         return transactions;

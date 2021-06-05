@@ -18,12 +18,10 @@ import java.util.Arrays;
 import static java.lang.String.valueOf;
 
 
-public class ChannelInteracter {
-    public SegTransactionManager segTransactionManager;
-    public BuyTransactionManager buyTransactionManager;
-    public SellTransactionManager sellTransactionManager;
 
-    public EventManager events;
+public class ChannelInteracter implements EventPublisher {
+    //public EventManager events;
+
     GatewayDiscordClient client;
     static Integer logNr = 0;
 
@@ -57,6 +55,7 @@ public class ChannelInteracter {
                 .filter(message -> message.getMessage().getAuthor().map(user -> !user.isBot()).orElse(true)) //TODO auf false setzen damit er auf bots reagiert
 //                .filter(message -> message.getMessage().getUserData().id().equals("501500923495841792"))
                 .subscribe(event -> {
+
                     final Message message = event.getMessage();
                     final MessageChannel channel = message.getChannel().block();
 
@@ -67,10 +66,8 @@ public class ChannelInteracter {
                             // Setzt die Anzeige auf Auction oder Trading
                             setPresence(EventType.AUCTION_START);
                             EventItem eventItem = createEventItem(message);
-//                    events.notify(eventItem);
                             //! Nur zum testen, später löschen
-                            //writeMessage(eventItem);
-                            segTransactionManager.update(eventItem);
+                            notifySubscriber(eventItem);
                         } catch (ArrayIndexOutOfBoundsException e) {
                             System.err.println("Der Channel command enthält zu wenige Zeichen um ein EventItem zu generieren. Fehler: " + e);
                             assert channel != null;
@@ -79,23 +76,21 @@ public class ChannelInteracter {
                     } else if (message.getContent().contains("wtb")) {
                         EventItem eventItem = createBuyEventItem(message);
                         assert eventItem != null;
-                        buyTransactionManager.update(eventItem);
-                        //events.notify(eventItem);
+                        notifySubscriber(eventItem);
                     } else if (message.getContent().contains("wts")) {
                         EventItem eventItem = createSellEventItem(message);
                         assert eventItem != null;
-                        sellTransactionManager.update(eventItem);
-                        //events.notify(eventItem);
+                        notifySubscriber(eventItem);
                     } else if (message.getContent().contains("accept")) {
                         EventItem eventItem = createAcceptEventItem(message);
                         assert eventItem != null;
-                        sellTransactionManager.update(eventItem);
-                        buyTransactionManager.update(eventItem);
+                        notifySubscriber(eventItem);
                     }
 
-                    // In unserem Channel auf Präfix !ZULU reagieren //todo den gibt es nicht ! (Anas)
+                    // In unserem Channel auf Präfix !ZULU reagieren
                     if (getPrefix(message).equals("!ZULU") && message.getAuthor().map(user -> !user.isBot()).orElse(false)) {
                         // TODO: implementieren dass andere auf uns reagieren können
+                        // TODO: von Eventtype.SELL geändert
                         setPresence(EventType.SELL_OFFER);
                     }
                 });

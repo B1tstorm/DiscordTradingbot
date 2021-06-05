@@ -2,6 +2,7 @@ package de.fh_kiel.discordtradingbot.Transactions;
 
 import de.fh_kiel.discordtradingbot.Holdings.Inventory;
 import de.fh_kiel.discordtradingbot.Holdings.Letter;
+import de.fh_kiel.discordtradingbot.Interaction.ChannelInteracter;
 import de.fh_kiel.discordtradingbot.Interaction.EventItem;
 import de.fh_kiel.discordtradingbot.Interaction.EventListener;
 import de.fh_kiel.discordtradingbot.Interaction.EventType;
@@ -14,6 +15,10 @@ import static java.lang.String.valueOf;
 public class BuyTransactionManager extends AbstractTransactionManager implements EventListener {
     //! we sell
     MessageChannel channel = null;
+
+    public BuyTransactionManager(ChannelInteracter channelInteracter) {
+        super(channelInteracter);
+    }
 
     @Override
     public Boolean isProductWorth(Integer price, char[] product) {

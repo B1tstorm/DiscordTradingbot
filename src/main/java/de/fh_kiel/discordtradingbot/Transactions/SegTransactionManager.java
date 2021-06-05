@@ -1,10 +1,14 @@
 package de.fh_kiel.discordtradingbot.Transactions;
 
+import de.fh_kiel.discordtradingbot.Interaction.ChannelInteracter;
 import de.fh_kiel.discordtradingbot.Interaction.EventItem;
 import de.fh_kiel.discordtradingbot.Interaction.EventListener;
 import de.fh_kiel.discordtradingbot.Interaction.EventType;
 
 public class SegTransactionManager extends AbstractTransactionManager implements EventListener {
+    public SegTransactionManager(ChannelInteracter channelInteracter) {
+        super(channelInteracter);
+    }
     //! we buy
 
 
