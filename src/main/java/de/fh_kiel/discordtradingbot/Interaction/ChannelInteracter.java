@@ -38,7 +38,7 @@ public class ChannelInteracter implements EventPublisher {
 
         //Erfolgreiche Authentifikation nach Stdout loggen
         assert client != null;
-        myId = "<!"+client.getSelfId().asString()+">";
+        myId = "<@!" + client.getSelfId().asString() + ">";
         client.getEventDispatcher().on(ReadyEvent.class)
                 .subscribe(event -> {
                     final User self = event.getSelf();
@@ -62,7 +62,7 @@ public class ChannelInteracter implements EventPublisher {
 
     public void listenToChannel() {
         client.on(MessageCreateEvent.class)
-                .filter(message -> message.getMessage().getAuthor().map(user -> !user.isBot()).orElse(true)) //TODO auf false setzen damit er auf bots reagiert
+                //.filter(message -> message.getMessage().getAuthor().map(user -> !user.isBot()).orElse(false)) //TODO auf false setzen damit er auf bots reagiert
 //                .filter(message -> message.getMessage().getUserData().id().equals("501500923495841792"))
                 .subscribe(event -> {
 
@@ -83,18 +83,6 @@ public class ChannelInteracter implements EventPublisher {
                             assert channel != null;
                             channel.createMessage("Keine gültige Transaktion!").block();
                         }
-                    } else if (message.getContent().contains("wtb")) {
-                        EventItem eventItem = createBuyEventItem(message);
-                        assert eventItem != null;
-                        notifySubscriber(eventItem);
-                    } else if (message.getContent().contains("wts")) {
-                        EventItem eventItem = createSellEventItem(message);
-                        assert eventItem != null;
-                        notifySubscriber(eventItem);
-                    } else if (message.getContent().contains("accept")) {
-                        EventItem eventItem = createAcceptEventItem(message);
-                        assert eventItem != null;
-                        notifySubscriber(eventItem);
                     }
 
                     // In unserem Channel auf Präfix !ZULU reagieren
@@ -102,6 +90,22 @@ public class ChannelInteracter implements EventPublisher {
                         // TODO: implementieren dass andere auf uns reagieren können
                         // TODO: von Eventtype.SELL geändert
                         setPresence(EventType.SELL_OFFER);
+                    }
+
+                    if (getPrefix(message).equals("!TRD")) {
+                        if (message.getContent().contains("wtb")) {
+                            EventItem eventItem = createBuyEventItem(message);
+                            assert eventItem != null;
+                            notifySubscriber(eventItem);
+                        } else if (message.getContent().contains("wts")) {
+                            EventItem eventItem = createSellEventItem(message);
+                            assert eventItem != null;
+                            notifySubscriber(eventItem);
+                        } else if (message.getContent().contains("accept")) {
+                            EventItem eventItem = createAcceptEventItem(message);
+                            assert eventItem != null;
+                            notifySubscriber(eventItem);
+                        }
                     }
                 });
 
@@ -321,8 +325,7 @@ public class ChannelInteracter implements EventPublisher {
     }
 
     private Boolean isItMe(String botId){
-        String zuluId = "<@!845410146913747034>";
-        return botId.equals(zuluId);
+        return botId.equals(myId);
     }
 
     public String getMyId() {
