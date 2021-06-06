@@ -3,9 +3,14 @@ package de.fh_kiel.discordtradingbot.Transactions;
 import de.fh_kiel.discordtradingbot.Interaction.EventItem;
 import de.fh_kiel.discordtradingbot.Interaction.EventListener;
 import de.fh_kiel.discordtradingbot.Interaction.EventType;
+import de.fh_kiel.discordtradingbot.ZuluBot;
 
 public class SegTransactionManager extends AbstractTransactionManager implements EventListener {
     //! we buy
+
+    public SegTransactionManager(ZuluBot bot) {
+        super(bot);
+    }
 
     @Override
     protected void makeOffer() {

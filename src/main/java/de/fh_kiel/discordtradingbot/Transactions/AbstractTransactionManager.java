@@ -5,17 +5,24 @@ import de.fh_kiel.discordtradingbot.Holdings.Letter;
 import de.fh_kiel.discordtradingbot.Interaction.ChannelInteracter;
 import de.fh_kiel.discordtradingbot.Interaction.EventItem;
 import de.fh_kiel.discordtradingbot.Interaction.EventType;
+import de.fh_kiel.discordtradingbot.ZuluBot;
 import reactor.util.annotation.NonNull;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
 public abstract class AbstractTransactionManager {
     protected static final HashMap<String, Transaction> transactions = new HashMap<>();
     protected ChannelInteracter channelInteracter ;
+    private ZuluBot bot;
 
 
     public static HashMap<String, Transaction> getTransactions() {
         return transactions;
+    }
+
+    AbstractTransactionManager(ZuluBot bot) {
+        this.bot = bot;
     }
 
     //Attributes
