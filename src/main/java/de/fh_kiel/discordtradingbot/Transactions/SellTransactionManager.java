@@ -1,17 +1,11 @@
 package de.fh_kiel.discordtradingbot.Transactions;
 
 import de.fh_kiel.discordtradingbot.Holdings.Inventory;
-import de.fh_kiel.discordtradingbot.Interaction.ChannelInteracter;
 import de.fh_kiel.discordtradingbot.Interaction.EventItem;
 import de.fh_kiel.discordtradingbot.Interaction.EventListener;
 import de.fh_kiel.discordtradingbot.Interaction.EventType;
 import de.fh_kiel.discordtradingbot.ZuluBot;
 import discord4j.core.object.entity.channel.MessageChannel;
-
-import java.lang.reflect.Array;
-import java.nio.channels.Channel;
-import java.util.Arrays;
-import java.util.UUID;
 
 import static java.lang.String.valueOf;
 
@@ -46,16 +40,17 @@ public class SellTransactionManager extends AbstractTransactionManager implement
 
             if (eventItem.getAuctionId() != null) {
                 eventId = eventItem.getAuctionId();
+                if (transactions.get(eventId) == null && eventItem.getEventType().toString().contains("ACCEPT")) return;
             } else eventId = eventItem.getLogNr().toString();
 
             if(eventItem.getProduct() == null){
-                product = SellTransactionManager.getTransactions().get(eventId).getProduct();
+                product = transactions.get(eventId).getProduct();
             }else{
                 product = eventItem.getProduct();
             }
 
             if (  eventItem.getValue() == null){
-                price = SellTransactionManager.getTransactions().get(eventId).getPrice();
+                price = transactions.get(eventId).getPrice();
             }else{
                 price = eventItem.getValue();
             }
@@ -63,7 +58,7 @@ public class SellTransactionManager extends AbstractTransactionManager implement
             switch (eventType) {
                 case SELL_OFFER:
                     if (isProductWorth(price, product) && isPriceAffordable(price)) {
-                        SellTransactionManager.transactions.put(eventId, new Transaction(eventItem));
+                        transactions.put(eventId, new Transaction(eventItem));
                         //! wenn wir kaufen wollen, sollen wir mit dem Pattern antworten :
                         //! !step accept @USER ID
 
@@ -78,7 +73,7 @@ public class SellTransactionManager extends AbstractTransactionManager implement
                         //Löschen
                         bot.getChannelInteracter().writeThisMessage("OKAY ich habe gekauft \n", eventItem.getChannel());
                         channel = eventItem.getChannel();
-                        makeSellOffer(product);
+                        makeBuyOffer(product);
                     } else dismissTransaction(eventId);
                     break;
                 case ACCEPT:
@@ -94,7 +89,7 @@ public class SellTransactionManager extends AbstractTransactionManager implement
                     product = transactions.get(eventId).getProduct();
                     eventType = EventType.SELL_ACCEPT;
 
-                    bot.getChannelInteracter().writeSellConfirmMessage(eventItem);
+                    bot.getChannelInteracter().writeBuyConfirmMessage(eventItem);
                     executeTransaction(eventType, eventId, price, product);
                     break;
                 default:
@@ -103,7 +98,7 @@ public class SellTransactionManager extends AbstractTransactionManager implement
         }
     }
 
-    public void makeSellOffer(char[] product){
+    public void makeBuyOffer(char[] product){
         //* !trd wtb ID product PRICE
         String id = getRandId();
         //String id = UUID.randomUUID().toString();

@@ -2,7 +2,6 @@ package de.fh_kiel.discordtradingbot.Transactions;
 
 import de.fh_kiel.discordtradingbot.Holdings.Inventory;
 import de.fh_kiel.discordtradingbot.Holdings.Letter;
-import de.fh_kiel.discordtradingbot.Interaction.ChannelInteracter;
 import de.fh_kiel.discordtradingbot.Interaction.EventItem;
 import de.fh_kiel.discordtradingbot.Interaction.EventListener;
 import de.fh_kiel.discordtradingbot.ZuluBot;
@@ -47,20 +46,21 @@ public class BuyTransactionManager extends AbstractTransactionManager implements
             String eventId;
             if (eventItem.getAuctionId() != null) {
                 eventId = eventItem.getAuctionId();
+                if (transactions.get(eventId) == null && eventItem.getEventType().toString().contains("ACCEPT")) return;
             } else eventId = eventItem.getLogNr().toString();
 
             char[] product ;
             Integer price ;
 
             if(eventItem.getProduct() == null){
-                product = BuyTransactionManager.getTransactions().get(eventId).getProduct();
+                product = transactions.get(eventId).getProduct();
             }else{
                 product = eventItem.getProduct();
             }
 
 
             if (  eventItem.getValue() == null){
-                price = BuyTransactionManager.getTransactions().get(eventId).getPrice();
+                price = transactions.get(eventId).getPrice();
             }else{
                 price = eventItem.getValue();
             }
@@ -75,7 +75,7 @@ public class BuyTransactionManager extends AbstractTransactionManager implements
                 case BUY_OFFER:
                     channel = eventItem.getChannel();
                     if (isProductWorth(price, product) && checkInventory(product)) {
-                        BuyTransactionManager.transactions.put(eventId, new Transaction(eventItem));
+                        transactions.put(eventId, new Transaction(eventItem));
                         //! Antworte mit dem pattern:
                         //! !step accept @USER ID
                         bot.getChannelInteracter().writeAcceptMessage(eventItem);
@@ -91,7 +91,7 @@ public class BuyTransactionManager extends AbstractTransactionManager implements
                         executeTransaction(eventType, eventId, price, product);
                         bot.getChannelInteracter().writeThisMessage("OKAY ich habe verkauft \n", eventItem.getChannel());
                         channel = eventItem.getChannel();
-                        makeBuyOffer(product);
+                        makeSellOffer(product);
 
 
                     } else dismissTransaction(eventId);
@@ -106,7 +106,7 @@ public class BuyTransactionManager extends AbstractTransactionManager implements
                     eventItem.setEventType(transactions.get(eventId).getEventType());
 
 
-                    bot.getChannelInteracter().writeBuyConfirmMessage(eventItem);
+                    bot.getChannelInteracter().writeSellConfirmMessage(eventItem);
                     executeTransaction(eventItem);
                 }
             }
@@ -116,7 +116,7 @@ public class BuyTransactionManager extends AbstractTransactionManager implements
 
     }
 
-    public void makeBuyOffer(char[] product){
+    public void makeSellOffer(char[] product){
         //* !trd wts ID product PRICE
         String id = getRandId();
         Integer value = 0;

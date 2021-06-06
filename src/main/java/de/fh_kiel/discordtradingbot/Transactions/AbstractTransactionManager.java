@@ -13,12 +13,12 @@ import java.util.HashMap;
 import java.util.Random;
 
 public abstract class AbstractTransactionManager {
-    protected static final HashMap<String, Transaction> transactions = new HashMap<>();
+
     protected ZuluBot bot;
 
 
-
-    public static HashMap<String, Transaction> getTransactions() {
+    protected  final HashMap<String, Transaction> transactions = new HashMap<>();
+    public  HashMap<String, Transaction> getTransactions() {
         return transactions;
     }
 
@@ -76,13 +76,14 @@ public abstract class AbstractTransactionManager {
     }
 
     public void dismissTransaction(String eventId) {
-        AbstractTransactionManager.transactions.remove(eventId);
+        transactions.remove(eventId);
     }
 
     public void executeTransaction(EventType eventType, String eventId, Integer price, char[] product) {
         Inventory.getInstance().updateLetterAmount(eventType, product);
-        transactions.remove(eventId);
         Inventory.getInstance().updateWallet(price);
+        transactions.remove(eventId);
+        //TODO delete
         System.out.println("Tranaction wurde excuted");
     }
 
@@ -90,7 +91,9 @@ public abstract class AbstractTransactionManager {
         Transaction transaction = transactions.get(eventItem.getAuctionId());
         Inventory.getInstance().updateLetterAmount(eventItem.getEventType(), transaction.getProduct());
         Inventory.getInstance().updateWallet(transaction.getPrice());
-        AbstractTransactionManager.transactions.remove(eventItem.getAuctionId());
+        transactions.remove(eventItem.getAuctionId());
+        //TODO delete
+        System.out.println("Tranaction wurde excuted");
     }
 
     public Boolean isProductWorth(Integer price, char[] product) {

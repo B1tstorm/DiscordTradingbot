@@ -278,7 +278,7 @@ public class ChannelInteracter implements EventPublisher {
         if (eventItem.getValue() != null) {
             channel.createMessage("!SEG auction bid " + eventItem.getAuctionId() + " " + (eventItem.getValue() + 1)).block();
         } else {
-            Integer price = SegTransactionManager.getTransactions().get(eventItem.getAuctionId()).getPrice();
+            Integer price = zuluBot.getSegTransactionManager().getTransactions().get(eventItem.getAuctionId()).getPrice();
             channel.createMessage("!SEG auction bid " + eventItem.getAuctionId() + " " + (price + 1)).block();
         }
     }
@@ -300,8 +300,8 @@ public class ChannelInteracter implements EventPublisher {
         final MessageChannel channel = eventItem.getChannel();
         String id = eventItem.getAuctionId();
         String traderId = eventItem.getTraderID();
-        char[] product = SellTransactionManager.getTransactions().get(id).getProduct();
-        Integer price = SellTransactionManager.getTransactions().get(id).getPrice();
+        char[] product = zuluBot.getBuyTransactionManager().getTransactions().get(id).getProduct();
+        Integer price = zuluBot.getBuyTransactionManager().getTransactions().get(id).getPrice();
         channel.createMessage("!trd confirm " + traderId + " " + id + " wts " + valueOf(product) + " " + price).block();
         //*                    !trd confirm     <@USER>      Gesuch-ID  wts    LETTER/STRING    PRICE
     }
@@ -312,8 +312,8 @@ public class ChannelInteracter implements EventPublisher {
         final MessageChannel channel = eventItem.getChannel();
         String id = eventItem.getAuctionId();
         String traderId = eventItem.getTraderID();
-        char[] product = SellTransactionManager.getTransactions().get(id).getProduct();
-        Integer price = SellTransactionManager.getTransactions().get(id).getPrice();
+        char[] product = zuluBot.getSellTransactionManager().getTransactions().get(id).getProduct();
+        Integer price = zuluBot.getSellTransactionManager().getTransactions().get(id).getPrice();
         channel.createMessage("!trd confirm " + traderId + " " + id + " wtb " + valueOf(product) + " " + price).block();
 
     }

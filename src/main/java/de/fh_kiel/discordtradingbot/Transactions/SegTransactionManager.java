@@ -37,14 +37,14 @@ public class SegTransactionManager extends AbstractTransactionManager implements
             Integer price ;
 
             if(eventItem.getProduct() == null){
-               product = SegTransactionManager.getTransactions().get(eventId).getProduct();
+               product = transactions.get(eventId).getProduct();
             }else{
                 product = eventItem.getProduct();
             }
 
 
             if (  eventItem.getValue() == null){
-                price = SegTransactionManager.getTransactions().get(eventId).getPrice();
+                price = transactions.get(eventId).getPrice();
             }else{
                 price = eventItem.getValue();
             }
