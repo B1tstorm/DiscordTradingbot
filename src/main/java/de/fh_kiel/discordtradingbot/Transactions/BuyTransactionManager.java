@@ -86,7 +86,7 @@ public class BuyTransactionManager extends AbstractTransactionManager implements
                         //TODO LÖSCHEN
                         channelInteracter.writeThisMessage("OKAY ich habe verkauft \n", eventItem.getChannel());
                         channel = eventItem.getChannel();
-                        makeBuyOffer(product);
+                        makeSellOffer(product);
                     } else dismissTransaction(eventId);
                     break;
                 case ACCEPT: {
@@ -106,7 +106,7 @@ public class BuyTransactionManager extends AbstractTransactionManager implements
 
     }
 
-    public void makeBuyOffer(char[] product){
+    public void makeSellOffer(char[] product){
         //* !trd wts ID product PRICE
         String id = getRandId();
         int value = 0;

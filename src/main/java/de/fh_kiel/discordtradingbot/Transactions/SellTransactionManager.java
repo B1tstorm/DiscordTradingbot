@@ -7,11 +7,6 @@ import de.fh_kiel.discordtradingbot.Interaction.EventListener;
 import de.fh_kiel.discordtradingbot.Interaction.EventType;
 import discord4j.core.object.entity.channel.MessageChannel;
 
-import java.lang.reflect.Array;
-import java.nio.channels.Channel;
-import java.util.Arrays;
-import java.util.UUID;
-
 import static java.lang.String.valueOf;
 
 public class SellTransactionManager extends AbstractTransactionManager implements EventListener {
@@ -77,7 +72,7 @@ public class SellTransactionManager extends AbstractTransactionManager implement
                         //Löschen
                         channelInteracter.writeThisMessage("OKAY ich habe gekauft \n", eventItem.getChannel());
                         channel = eventItem.getChannel();
-                        makeSellOffer(product);
+                        makeBuyOffer(product);
                     } else dismissTransaction(eventId);
                     break;
                 case ACCEPT:
@@ -102,7 +97,7 @@ public class SellTransactionManager extends AbstractTransactionManager implement
         }
     }
 
-    public void makeSellOffer(char[] product){
+    public void makeBuyOffer(char[] product){
         //* !trd wtb ID product PRICE
         String id = getRandId();
         //String id = UUID.randomUUID().toString();
