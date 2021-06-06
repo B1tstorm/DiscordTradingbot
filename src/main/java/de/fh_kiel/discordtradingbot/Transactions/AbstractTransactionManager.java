@@ -62,7 +62,6 @@ public abstract class AbstractTransactionManager {
         Inventory.getInstance().updateLetterAmount(eventType, product);
         transactions.remove(eventId);
         Inventory.getInstance().updateWallet(price);
-        //TODO DELETE
         System.out.println("Tranaction wurde excuted");
     }
 
@@ -98,10 +97,6 @@ public abstract class AbstractTransactionManager {
         Random r = new Random();
         int i = r.nextInt(9000);
         return i + 1000+"";
-    }
-
-    protected String  getZuluId(){
-        return "<@!845410146913747034>";
     }
 
 

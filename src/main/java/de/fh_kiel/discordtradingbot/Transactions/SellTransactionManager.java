@@ -7,6 +7,11 @@ import de.fh_kiel.discordtradingbot.Interaction.EventListener;
 import de.fh_kiel.discordtradingbot.Interaction.EventType;
 import discord4j.core.object.entity.channel.MessageChannel;
 
+import java.lang.reflect.Array;
+import java.nio.channels.Channel;
+import java.util.Arrays;
+import java.util.UUID;
+
 import static java.lang.String.valueOf;
 
 public class SellTransactionManager extends AbstractTransactionManager implements EventListener {
@@ -72,7 +77,7 @@ public class SellTransactionManager extends AbstractTransactionManager implement
                         //Löschen
                         channelInteracter.writeThisMessage("OKAY ich habe gekauft \n", eventItem.getChannel());
                         channel = eventItem.getChannel();
-                        makeBuyOffer(product);
+                        makeSellOffer(product);
                     } else dismissTransaction(eventId);
                     break;
                 case ACCEPT:
@@ -88,7 +93,7 @@ public class SellTransactionManager extends AbstractTransactionManager implement
                     product = transactions.get(eventId).getProduct();
                     eventType = EventType.SELL_ACCEPT;
 
-                    channelInteracter.writeBuyConfirmMessage(eventItem);
+                    channelInteracter.writeSellConfirmMessage(eventItem);
                     executeTransaction(eventType, eventId, price, product);
                     break;
                 default:
@@ -97,7 +102,7 @@ public class SellTransactionManager extends AbstractTransactionManager implement
         }
     }
 
-    public void makeBuyOffer(char[] product){
+    public void makeSellOffer(char[] product){
         //* !trd wtb ID product PRICE
         String id = getRandId();
         //String id = UUID.randomUUID().toString();
@@ -115,6 +120,8 @@ public class SellTransactionManager extends AbstractTransactionManager implement
 
 
     }
-
+    private String  getZuluId(){
+        return "<@!845410146913747034>";
+    }
 
 }
