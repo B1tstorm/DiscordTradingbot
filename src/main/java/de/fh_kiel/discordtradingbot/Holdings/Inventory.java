@@ -20,7 +20,7 @@ public class Inventory {
 	private Inventory() {
 		// Alle 26 Buchstaben von A - Z werden mittels ascii initial gespeichert
 		for (int ascii = 65; ascii < 91; ascii++) {
-		letters.add(new Letter((char)ascii, 2, 10));
+		letters.add(new Letter((char)ascii, 10, 10));
 		}
 	}
 

@@ -5,6 +5,7 @@ import de.fh_kiel.discordtradingbot.Holdings.Letter;
 import de.fh_kiel.discordtradingbot.Interaction.ChannelInteracter;
 import de.fh_kiel.discordtradingbot.Interaction.EventItem;
 import de.fh_kiel.discordtradingbot.Interaction.EventListener;
+import de.fh_kiel.discordtradingbot.ZuluBot;
 import de.fh_kiel.discordtradingbot.Interaction.EventType;
 import discord4j.core.object.entity.channel.MessageChannel;
 
@@ -16,8 +17,10 @@ public class BuyTransactionManager extends AbstractTransactionManager implements
     //! we sell
     MessageChannel channel = null;
 
-    public BuyTransactionManager(ChannelInteracter channelInteracter) {
-        super(channelInteracter);
+
+
+    public BuyTransactionManager(ZuluBot bot) {
+        super(bot);
     }
 
     @Override
@@ -75,18 +78,18 @@ public class BuyTransactionManager extends AbstractTransactionManager implements
                         BuyTransactionManager.transactions.put(eventId, new Transaction(eventItem));
                         //! Antworte mit dem pattern:
                         //! !step accept @USER ID
-                        channelInteracter.writeAcceptMessage(eventItem);
+                        bot.getChannelInteracter().writeAcceptMessage(eventItem);
                     } else if (eventItem.getSellerID().equals("HIER KOMMT EIKES ID")) {
                         //! begrunde warum wir nicht kaufen können
-                        channelInteracter.writeThisMessage(("Wir haben das Produkt -> " + checkInventory(product)).toString(),eventItem.getChannel());
-                        channelInteracter.writeThisMessage(("Dein Preis ist fair -> " + isProductWorth(price, product)).toString(),eventItem.getChannel());
+                        bot.getChannelInteracter().writeThisMessage(("Wir haben das Produkt -> " + checkInventory(product)).toString(),eventItem.getChannel());
+                        bot.getChannelInteracter().writeThisMessage(("Dein Preis ist fair -> " + isProductWorth(price, product)).toString(),eventItem.getChannel());
                         //! Ein GegenAngebot TODO GegenAngebot
                     }
                     break;
                 case BUY_CONFIRM:
                     if (isItMe(traderId)) {
                         executeTransaction(eventType, eventId, price, product);
-                        channelInteracter.writeThisMessage("OKAY ich habe verkauft \n", eventItem.getChannel());
+                        bot.getChannelInteracter().writeThisMessage("OKAY ich habe verkauft \n", eventItem.getChannel());
                         channel = eventItem.getChannel();
                         makeBuyOffer(product);
 
@@ -103,7 +106,7 @@ public class BuyTransactionManager extends AbstractTransactionManager implements
                     eventItem.setEventType(transactions.get(eventId).getEventType());
 
 
-                    channelInteracter.writeBuyConfirmMessage(eventItem);
+                    bot.getChannelInteracter().writeBuyConfirmMessage(eventItem);
                     executeTransaction(eventItem);
                 }
             }
@@ -122,7 +125,7 @@ public class BuyTransactionManager extends AbstractTransactionManager implements
             value += temp;
         }
         String s = "!trd wts " + id +" "+ valueOf(product) + " " + value;
-        channelInteracter.writeThisMessage(s, channel);
+        bot.getChannelInteracter().writeThisMessage(s, channel);
         transactions.put(id, new Transaction(new EventItem(null, getZuluId(), null, id
                 , EventType.BUY_OFFER, product, value, channel)));
 

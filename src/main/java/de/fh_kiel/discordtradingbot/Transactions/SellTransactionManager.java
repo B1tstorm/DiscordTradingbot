@@ -5,6 +5,7 @@ import de.fh_kiel.discordtradingbot.Interaction.ChannelInteracter;
 import de.fh_kiel.discordtradingbot.Interaction.EventItem;
 import de.fh_kiel.discordtradingbot.Interaction.EventListener;
 import de.fh_kiel.discordtradingbot.Interaction.EventType;
+import de.fh_kiel.discordtradingbot.ZuluBot;
 import discord4j.core.object.entity.channel.MessageChannel;
 
 import java.lang.reflect.Array;
@@ -18,8 +19,8 @@ public class SellTransactionManager extends AbstractTransactionManager implement
     //!we buy
     MessageChannel channel = null;
 
-    public SellTransactionManager(ChannelInteracter channelInteracter) {
-        super(channelInteracter);
+    public SellTransactionManager(ZuluBot bot) {
+        super(bot);
     }
 
     protected void makeOffer() {
@@ -67,7 +68,7 @@ public class SellTransactionManager extends AbstractTransactionManager implement
                         //! !step accept @USER ID
 
 
-                        channelInteracter.writeAcceptMessage(eventItem);
+                        bot.getChannelInteracter().writeAcceptMessage(eventItem);
                     }
                     break;
                 case SELL_CONFIRM:
@@ -75,7 +76,7 @@ public class SellTransactionManager extends AbstractTransactionManager implement
                     if (isItMe(traderId)) {
                         executeTransaction(eventType, eventId, price, product);
                         //Löschen
-                        channelInteracter.writeThisMessage("OKAY ich habe gekauft \n", eventItem.getChannel());
+                        bot.getChannelInteracter().writeThisMessage("OKAY ich habe gekauft \n", eventItem.getChannel());
                         channel = eventItem.getChannel();
                         makeSellOffer(product);
                     } else dismissTransaction(eventId);
@@ -93,7 +94,7 @@ public class SellTransactionManager extends AbstractTransactionManager implement
                     product = transactions.get(eventId).getProduct();
                     eventType = EventType.SELL_ACCEPT;
 
-                    channelInteracter.writeSellConfirmMessage(eventItem);
+                    bot.getChannelInteracter().writeSellConfirmMessage(eventItem);
                     executeTransaction(eventType, eventId, price, product);
                     break;
                 default:
@@ -112,7 +113,8 @@ public class SellTransactionManager extends AbstractTransactionManager implement
             value += temp;
         }
         String s = "!trd wtb " + id +" "+ valueOf(product) + " " + value;
-        channelInteracter.writeThisMessage(s, channel);
+
+        bot.getChannelInteracter().writeThisMessage(s, channel);
         transactions.put(id, new Transaction(new EventItem(null, getZuluId(), null, id
                 , EventType.BUY_OFFER, product, value, channel)));
 

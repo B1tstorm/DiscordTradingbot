@@ -5,6 +5,7 @@ import de.fh_kiel.discordtradingbot.Holdings.Letter;
 import de.fh_kiel.discordtradingbot.Interaction.ChannelInteracter;
 import de.fh_kiel.discordtradingbot.Interaction.EventItem;
 import de.fh_kiel.discordtradingbot.Interaction.EventType;
+import de.fh_kiel.discordtradingbot.ZuluBot;
 import reactor.util.annotation.NonNull;
 
 import java.util.ArrayList;
@@ -13,14 +14,34 @@ import java.util.Random;
 
 public abstract class AbstractTransactionManager {
     protected static final HashMap<String, Transaction> transactions = new HashMap<>();
-    public ChannelInteracter channelInteracter;
+    protected ZuluBot bot;
 
-    public AbstractTransactionManager(ChannelInteracter channelInteracter) {
-        this.channelInteracter = channelInteracter;
-    }
+
 
     public static HashMap<String, Transaction> getTransactions() {
         return transactions;
+    }
+
+    AbstractTransactionManager(ZuluBot bot) {
+        this.bot = bot;
+    }
+
+    //Attributes
+    EventType eventType ;
+    Integer price ;
+    char[] product ;
+    String traderId ;
+    String eventId;
+
+    //methode extrahiert die Attribute aus dem EventItem
+    protected void fillAttributes (EventItem eventItem){
+         this.eventType = eventItem.getEventType();
+         this.price = eventItem.getValue();
+         this.product = eventItem.getProduct();
+         this.traderId = eventItem.getTraderID();
+        if (eventItem.getAuctionId() != null) {
+            this.eventId = eventItem.getAuctionId();
+        } else this.eventId = eventItem.getLogNr().toString();
     }
 
     public Boolean checkInventory(@NonNull char[] product) {

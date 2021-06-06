@@ -9,27 +9,25 @@ import de.fh_kiel.discordtradingbot.Transactions.SegTransactionManager;
 import de.fh_kiel.discordtradingbot.Transactions.SellTransactionManager;
 
 public class ZuluBot {
- //   private final ChannelInteracter channelInteracter;
+    private ChannelInteracter channelInteracter;
+    private BuyTransactionManager buyTransactionManager;
+    private SegTransactionManager segTransactionManager;
+    private SellTransactionManager sellTransactionManager;
+    private TransactionHistory transactionHistory;
 
     public ZuluBot() {
-       // this.channelInteracter = new ChannelInteracter(Config.getToken());
     }
 
-
-
-
-
-
-
     public void launch() {
-        ChannelInteracter channelInteracter = new ChannelInteracter(Config.getToken());
+        this.channelInteracter = new ChannelInteracter(Config.getToken(), this);
 
-        TransactionHistory transactionHistory = TransactionHistory.getInstance();
-        BuyTransactionManager buyTransactionManager = new BuyTransactionManager(channelInteracter);
-        SellTransactionManager sellTransactionManager = new SellTransactionManager(channelInteracter);
-        SegTransactionManager segTransactionManager = new SegTransactionManager(channelInteracter);
 
-        channelInteracter.subscribe(transactionHistory);
+        this.transactionHistory = TransactionHistory.getInstance();
+        this.buyTransactionManager = new BuyTransactionManager(this);
+        this.sellTransactionManager = new SellTransactionManager(this);
+        this.segTransactionManager = new SegTransactionManager(this);
+
+        channelInteracter.subscribe(TransactionHistory.getInstance());
         channelInteracter.subscribe(buyTransactionManager);
         channelInteracter.subscribe(sellTransactionManager);
         channelInteracter.subscribe(segTransactionManager);
@@ -37,8 +35,28 @@ public class ZuluBot {
         Evaluator evaluator = Evaluator.getInstance();
         transactionHistory.registerSubscriber(evaluator);
 
-        //todo löschen (test bedingt)
+        //TODO DELETE
         Inventory.getInstance().setWallet(2000);
         channelInteracter.listenToChannel();
+    }
+
+    public ChannelInteracter getChannelInteracter() {
+        return channelInteracter;
+    }
+
+    public BuyTransactionManager getBuyTransactionManager() {
+        return buyTransactionManager;
+    }
+
+    public SegTransactionManager getSegTransactionManager() {
+        return segTransactionManager;
+    }
+
+    public SellTransactionManager getSellTransactionManager() {
+        return sellTransactionManager;
+    }
+
+    public TransactionHistory getTransactionHistory() {
+        return transactionHistory;
     }
 }

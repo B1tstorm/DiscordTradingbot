@@ -1,5 +1,6 @@
 package de.fh_kiel.discordtradingbot.Interaction;
 
+import de.fh_kiel.discordtradingbot.ZuluBot;
 import de.fh_kiel.discordtradingbot.Transactions.BuyTransactionManager;
 import de.fh_kiel.discordtradingbot.Transactions.SegTransactionManager;
 import de.fh_kiel.discordtradingbot.Transactions.SellTransactionManager;
@@ -20,12 +21,14 @@ import static java.lang.String.valueOf;
 
 
 public class ChannelInteracter implements EventPublisher {
+    private ZuluBot zuluBot;
     //public EventManager events;
 
     GatewayDiscordClient client;
     static Integer logNr = 0;
 
-    public ChannelInteracter(String token) {
+    public ChannelInteracter(String token, ZuluBot bot) {
+        this.zuluBot = bot;
         //Bei Discord über Token authentifizieren
         client = DiscordClientBuilder.create(token)
                 .build()
@@ -40,6 +43,11 @@ public class ChannelInteracter implements EventPublisher {
                     System.out.printf("Logged in as %s#%s%n", self.getUsername(), self.getDiscriminator());
                 });
     }
+
+    /**
+     * @param eventItem
+     * Die Methode antwortet in dem Channel, aus dem die Anfrage kam
+     */
 
     /**
      * @param emoji

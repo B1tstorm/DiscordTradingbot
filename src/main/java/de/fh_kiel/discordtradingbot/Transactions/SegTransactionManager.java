@@ -4,12 +4,15 @@ import de.fh_kiel.discordtradingbot.Interaction.ChannelInteracter;
 import de.fh_kiel.discordtradingbot.Interaction.EventItem;
 import de.fh_kiel.discordtradingbot.Interaction.EventListener;
 import de.fh_kiel.discordtradingbot.Interaction.EventType;
+import de.fh_kiel.discordtradingbot.ZuluBot;
 
 public class SegTransactionManager extends AbstractTransactionManager implements EventListener {
-    public SegTransactionManager(ChannelInteracter channelInteracter) {
-        super(channelInteracter);
-    }
+
     //! we buy
+
+    public SegTransactionManager(ZuluBot bot) {
+        super(bot);
+    }
 
 
 
@@ -53,7 +56,7 @@ public class SegTransactionManager extends AbstractTransactionManager implements
                     if (isProductWorth(price, product) && isPriceAffordable(price)) {
                         Transaction transaction = new Transaction(eventItem);
                         transactions.put(eventId, transaction);
-                        channelInteracter.writeBidMessage(eventItem);
+                        bot.getChannelInteracter().writeBidMessage(eventItem);
                     }
                     break;
                 //TODO
@@ -61,7 +64,7 @@ public class SegTransactionManager extends AbstractTransactionManager implements
                 case AUCTION_BID:
                     if (isProductWorth(price, product) && isPriceAffordable(price) && !traderId.equals("<!845410146913747034>")) {
                         //TransactionManager.getTransactions().get(eventId).bid(eventId, price);
-                        channelInteracter.writeBidMessage(eventItem);
+                        bot.getChannelInteracter().writeBidMessage(eventItem);
                     }
                     break;
                 case AUCTION_WON:
