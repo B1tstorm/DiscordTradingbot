@@ -115,8 +115,6 @@ public class SellTransactionManager extends AbstractTransactionManager implement
 
 
     }
-    private String  getZuluId(){
-        return "<@!845410146913747034>";
-    }
+
 
 }

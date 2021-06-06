@@ -100,6 +100,10 @@ public abstract class AbstractTransactionManager {
         return i + 1000+"";
     }
 
+    protected String  getZuluId(){
+        return "<@!845410146913747034>";
+    }
+
 
 
 }
