@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import static java.lang.String.valueOf;
 
 public class BuyTransactionManager extends AbstractTransactionManager implements EventListener {
-    //! we sell
+    //* we sell
     MessageChannel channel = null;
 
     public BuyTransactionManager(ChannelInteracter channelInteracter) {
@@ -38,8 +38,8 @@ public class BuyTransactionManager extends AbstractTransactionManager implements
 
     @Override
     public void update(EventItem eventItem) {
-        if (eventItem.getEventType().toString().contains("BUY") || eventItem.getEventType().toString().contains("ACCEPT")) {
-            EventType eventType = eventItem.getEventType() ;
+        EventType eventType = eventItem.getEventType() ;
+        if (eventType.toString().contains("BUY") || eventType.toString().contains("ACCEPT")) {
             String traderId = eventItem .getTraderID() ;
             String eventId;
             if (eventItem.getAuctionId() != null) {
@@ -68,13 +68,10 @@ public class BuyTransactionManager extends AbstractTransactionManager implements
             //*begründen warum wir nicht verkaufen können und wir müssen ein gegenangebot machen
 
             switch (eventType) {
-                //! jemand hat was angeboten und wir wollen ihm sagen "geilo, das würde ich gerne kaufen"
                 case BUY_OFFER:
                     channel = eventItem.getChannel();
                     if (isProductWorth(price, product) && checkInventory(product)) {
                         BuyTransactionManager.transactions.put(eventId, new Transaction(eventItem));
-                        //! Antworte mit dem pattern:
-                        //! !step accept @USER ID
                         channelInteracter.writeAcceptMessage(eventItem);
                     } else if (eventItem.getSellerID().equals("HIER KOMMT EIKES ID")) {
                         //! begrunde warum wir nicht kaufen können
@@ -86,25 +83,21 @@ public class BuyTransactionManager extends AbstractTransactionManager implements
                 case BUY_CONFIRM:
                     if (isItMe(traderId)) {
                         executeTransaction(eventType, eventId, price, product);
+                        //TODO LÖSCHEN
                         channelInteracter.writeThisMessage("OKAY ich habe verkauft \n", eventItem.getChannel());
                         channel = eventItem.getChannel();
                         makeBuyOffer(product);
-
-
                     } else dismissTransaction(eventId);
                     break;
                 case ACCEPT: {
                     //!jemand hat unser Angebot angenommen und wir müssen ihm bestätigen "wir machen eine confirm Ansage"
                     try {
-                    eventItem.setValue(transactions.get(eventId).getPrice());
+                        eventItem.setValue(transactions.get(eventId).getPrice());
+                        eventItem.setProduct(transactions.get(eventId).getProduct());
+                        eventItem.setEventType(EventType.BUY_CONFIRM);
                     }catch (NullPointerException e ){ return;}
-
-                    eventItem.setProduct(transactions.get(eventId).getProduct());
-                    eventItem.setEventType(transactions.get(eventId).getEventType());
-
-
-                    channelInteracter.writeBuyConfirmMessage(eventItem);
                     executeTransaction(eventItem);
+                    channelInteracter.writeSellConfirmMessage(eventItem);
                 }
             }
 
@@ -116,7 +109,7 @@ public class BuyTransactionManager extends AbstractTransactionManager implements
     public void makeBuyOffer(char[] product){
         //* !trd wts ID product PRICE
         String id = getRandId();
-        Integer value = 0;
+        int value = 0;
         for (Character c: product) {
             int temp =  Inventory.getInstance().getLetters().get((int)c - 65).getValue();
             value += temp;

@@ -93,7 +93,7 @@ public class SellTransactionManager extends AbstractTransactionManager implement
                     product = transactions.get(eventId).getProduct();
                     eventType = EventType.SELL_ACCEPT;
 
-                    channelInteracter.writeSellConfirmMessage(eventItem);
+                    channelInteracter.writeBuyConfirmMessage(eventItem);
                     executeTransaction(eventType, eventId, price, product);
                     break;
                 default:

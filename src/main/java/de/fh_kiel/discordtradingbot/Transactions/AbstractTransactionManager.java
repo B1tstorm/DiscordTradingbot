@@ -62,6 +62,7 @@ public abstract class AbstractTransactionManager {
         Inventory.getInstance().updateLetterAmount(eventType, product);
         transactions.remove(eventId);
         Inventory.getInstance().updateWallet(price);
+        //TODO DELETE
         System.out.println("Tranaction wurde excuted");
     }
 
