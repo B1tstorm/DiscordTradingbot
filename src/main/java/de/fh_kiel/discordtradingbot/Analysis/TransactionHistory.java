@@ -3,7 +3,7 @@ package de.fh_kiel.discordtradingbot.Analysis;
 import de.fh_kiel.discordtradingbot.Holdings.Letter;
 import de.fh_kiel.discordtradingbot.Interaction.EventItem;
 import de.fh_kiel.discordtradingbot.Interaction.EventListener;
-import reactor.util.annotation.NonNull;
+import de.fh_kiel.discordtradingbot.Interaction.EventType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,13 +34,24 @@ public class TransactionHistory implements EventListener, Publisher {
 
     @Override
     public void update(EventItem eventItem) {
-      //TODO konflikt lösen
-       // this.transactionHistory.add(createTransactionHistoryItem(eventItem));
-       // this.notifySubscribers(extractLetterObject(eventItem));
+        if(eventItem.getEventType() == EventType.AUCTION_CLOSE
+            || eventItem.getEventType() == EventType.AUCTION_WON) {
+            this.transactionHistory.add(createTransactionHistoryItem(eventItem));
+            this.notifySubscribers(extractLetterObject(eventItem));
+        }
     }
 
-    private Letter extractLetterObject( EventItem item) {
-        return new  Letter(item.getProduct()[0], 1, item.getValue());
+    private Letter extractLetterObject(EventItem item) {
+        return new Letter(item.getProduct()[0], 1, item.getValue());
+    }
+    // Test
+    // Does not work as intended since it requires a value per letter, String only has combined val.
+    private List<Letter> extractLetterObjectList(EventItem item) {
+        List <Letter> letterObjectList = new ArrayList<>();
+        for(char chars : item.getProduct()){
+            letterObjectList.add(new Letter(chars, 1, item.getValue()));
+        }
+        return letterObjectList;
     }
 
     // Builder Pattern
