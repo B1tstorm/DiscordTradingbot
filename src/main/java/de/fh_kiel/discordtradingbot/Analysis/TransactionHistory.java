@@ -44,7 +44,7 @@ public class TransactionHistory implements EventListener, Publisher {
     private Letter extractLetterObject(EventItem item) {
         return new Letter(item.getProduct()[0], 1, item.getValue());
     }
-
+    // Test
     // Does not work as intended since it requires a value per letter, String only has combined val.
     private List<Letter> extractLetterObjectList(EventItem item) {
         List <Letter> letterObjectList = new ArrayList<>();
