@@ -13,5 +13,7 @@ public enum EventType {
     AUCTION_START,
     AUCTION_BID,
     AUCTION_WON,
-    AUCTION_CLOSE
+    AUCTION_CLOSE,
+
+    HELP;
 }
