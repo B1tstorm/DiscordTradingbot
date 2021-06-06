@@ -1,5 +1,6 @@
 package de.fh_kiel.discordtradingbot.Interaction;
 
+import de.fh_kiel.discordtradingbot.Analysis.Visualizer;
 import de.fh_kiel.discordtradingbot.ZuluBot;
 import discord4j.core.DiscordClientBuilder;
 import discord4j.core.GatewayDiscordClient;
@@ -81,7 +82,7 @@ public class ChannelInteracter implements EventPublisher {
             final MessageChannel channel = message.getChannel().block();
 
             // Bei Auktionen filtern dass nur Messages vom SEG Bot gelesen werden
-            if (getPrefix(message).equals("!SEG") && message.getUserData().id().equals("501500923495841792")) { //* Hier muss später die ID des SEG Bot stehen!
+            if (getPrefix(message).equals("!SEG") && message.getUserData().id().equals("501500923495841792")) { //* Hier muss später die ID des SEG Bot stehen! (Globale statische Variable in der Config Klasse!)
                 // Für den außergewöhnlichen Fall das der SEG Bot zu wenig Argumente in den Chat schreibt
                 try { //? Evtl. unnötig da der Bot niemals zu wenig Argumente liefert. Nur so stürzt das Programm nicht ab
                     // Setzt die Anzeige auf Auction oder Trading
@@ -99,6 +100,8 @@ public class ChannelInteracter implements EventPublisher {
 
             // In unserem Channel auf Präfix !ZULU reagieren
             if (getPrefix(message).equals("!ZULU") && message.getAuthor().map(user -> !user.isBot()).orElse(false)) {
+                Visualizer.getInstance().notify(message);
+
                 // TODO: implementieren dass andere auf uns reagieren können
                 // TODO: von Eventtype.SELL geändert
                 setPresence(EventType.SELL_OFFER);
@@ -110,8 +113,8 @@ public class ChannelInteracter implements EventPublisher {
     }
 
     private String getPrefix(Message message) {
-        String[] content = message.getContent().split(" ");
-        return content[0].toUpperCase();
+        String[] messageShards = message.getContent().split(" ");
+        return messageShards[0].toUpperCase();
     }
 
     private EventItem createEventItem(Message message) {
