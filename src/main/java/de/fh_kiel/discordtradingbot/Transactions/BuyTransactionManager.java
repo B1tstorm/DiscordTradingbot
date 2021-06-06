@@ -4,7 +4,7 @@ import de.fh_kiel.discordtradingbot.Holdings.Inventory;
 import de.fh_kiel.discordtradingbot.Holdings.Letter;
 import de.fh_kiel.discordtradingbot.Interaction.EventItem;
 import de.fh_kiel.discordtradingbot.Interaction.EventListener;
-import de.fh_kiel.discordtradingbot.Interaction.EventType;
+import de.fh_kiel.discordtradingbot.ZuluBot;
 
 import java.util.ArrayList;
 
@@ -12,6 +12,10 @@ public class BuyTransactionManager extends AbstractTransactionManager implements
     //! we sell
     protected void makeOffer() {
         //TODO write a BuyOffer message in the channel
+    }
+
+    public BuyTransactionManager(ZuluBot bot) {
+        super(bot);
     }
 
     @Override

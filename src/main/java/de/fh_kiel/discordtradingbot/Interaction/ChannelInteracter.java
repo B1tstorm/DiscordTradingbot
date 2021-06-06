@@ -1,5 +1,6 @@
 package de.fh_kiel.discordtradingbot.Interaction;
 
+import de.fh_kiel.discordtradingbot.ZuluBot;
 import discord4j.core.DiscordClientBuilder;
 import discord4j.core.GatewayDiscordClient;
 import discord4j.core.event.domain.lifecycle.ReadyEvent;
@@ -12,11 +13,12 @@ import discord4j.core.object.presence.Presence;
 
 
 public class ChannelInteracter implements EventPublisher {
-    //public EventManager events;
+    private ZuluBot zuluBot;
     GatewayDiscordClient client;
     static Integer logNr = 0;
 
-    public ChannelInteracter(String token) {
+    public ChannelInteracter(String token, ZuluBot bot) {
+        this.zuluBot = bot;
         //Bei Discord über Token authentifizieren
         client = DiscordClientBuilder.create(token)
                 .build()

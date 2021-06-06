@@ -3,9 +3,15 @@ package de.fh_kiel.discordtradingbot.Transactions;
 import de.fh_kiel.discordtradingbot.Interaction.EventItem;
 import de.fh_kiel.discordtradingbot.Interaction.EventListener;
 import de.fh_kiel.discordtradingbot.Interaction.EventType;
+import de.fh_kiel.discordtradingbot.ZuluBot;
 
 public class SellTransactionManager extends AbstractTransactionManager implements EventListener {
     //!we buy
+
+
+    public SellTransactionManager(ZuluBot bot) {
+        super(bot);
+    }
 
     protected void makeOffer() {
         //TODO write a sell Offer message in the channel

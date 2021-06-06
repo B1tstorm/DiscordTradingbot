@@ -8,33 +8,50 @@ import de.fh_kiel.discordtradingbot.Transactions.SegTransactionManager;
 import de.fh_kiel.discordtradingbot.Transactions.SellTransactionManager;
 
 public class ZuluBot {
-    //private final ChannelInteracter channelInteracter;
+    private ChannelInteracter channelInteracter;
+    private BuyTransactionManager buyTransactionManager;
+    private SegTransactionManager segTransactionManager;
+    private SellTransactionManager sellTransactionManager;
+    private TransactionHistory transactionHistory;
 
     public ZuluBot() {
-        //this.channelInteracter = new ChannelInteracter(Config.getToken());
     }
 
-
-
-
-
-
-
     public void launch() {
-        ChannelInteracter channelInteracter = new ChannelInteracter(Config.getToken());
+        this.channelInteracter = new ChannelInteracter(Config.getToken(), this);
         channelInteracter.listenToChannel();
 
-        TransactionHistory transactionHistory = TransactionHistory.getInstance();
-        BuyTransactionManager buyTransactionManager = new BuyTransactionManager();
-        SellTransactionManager sellTransactionManager = new SellTransactionManager();
-        SegTransactionManager segTransactionManager = new SegTransactionManager();
+        this.transactionHistory = TransactionHistory.getInstance();
+        this.buyTransactionManager = new BuyTransactionManager(this);
+        this.sellTransactionManager = new SellTransactionManager(this);
+        this.segTransactionManager = new SegTransactionManager(this);
 
-        channelInteracter.subscribe(transactionHistory);
+        channelInteracter.subscribe(TransactionHistory.getInstance());
         channelInteracter.subscribe(buyTransactionManager);
         channelInteracter.subscribe(sellTransactionManager);
         channelInteracter.subscribe(segTransactionManager);
 
         Evaluator evaluator = Evaluator.getInstance();
         transactionHistory.registerSubscriber(evaluator);
+    }
+
+    public ChannelInteracter getChannelInteracter() {
+        return channelInteracter;
+    }
+
+    public BuyTransactionManager getBuyTransactionManager() {
+        return buyTransactionManager;
+    }
+
+    public SegTransactionManager getSegTransactionManager() {
+        return segTransactionManager;
+    }
+
+    public SellTransactionManager getSellTransactionManager() {
+        return sellTransactionManager;
+    }
+
+    public TransactionHistory getTransactionHistory() {
+        return transactionHistory;
     }
 }
