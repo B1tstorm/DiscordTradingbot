@@ -113,8 +113,7 @@ public abstract class AbstractTransactionManager {
     }
 
     protected Boolean isItMe(String botId) {
-        String zuluId = "<@!845410146913747034>";
-        return botId.equals(zuluId);
+        return botId.equals(bot.getChannelInteracter().getMyId());
     }
 
     protected String getRandId (){

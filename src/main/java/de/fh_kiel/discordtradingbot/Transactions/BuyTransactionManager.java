@@ -126,7 +126,7 @@ public class BuyTransactionManager extends AbstractTransactionManager implements
         }
         String s = "!trd wts " + id +" "+ valueOf(product) + " " + value;
         bot.getChannelInteracter().writeThisMessage(s, channel);
-        transactions.put(id, new Transaction(new EventItem(null, getZuluId(), null, id
+        transactions.put(id, new Transaction(new EventItem(null, bot.getChannelInteracter().getMyId(), null, id
                 , EventType.BUY_OFFER, product, value, channel)));
 
         //erstellt eine Transaction mit einem EventItem
@@ -134,9 +134,6 @@ public class BuyTransactionManager extends AbstractTransactionManager implements
 
     }
 
-    private String  getZuluId(){
-        return "<@!845410146913747034>";
-    }
 
 
 }

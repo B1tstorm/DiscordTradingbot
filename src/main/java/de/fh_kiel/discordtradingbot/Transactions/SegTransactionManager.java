@@ -62,13 +62,13 @@ public class SegTransactionManager extends AbstractTransactionManager implements
                 //TODO
                 //!trader ID muss geprüft werden. wir dürfen uns selbst nicht versteigern
                 case AUCTION_BID:
-                    if (isProductWorth(price, product) && isPriceAffordable(price) && !traderId.equals("<!845410146913747034>")) {
+                    if (isProductWorth(price, product) && isPriceAffordable(price) && !isItMe(traderId)) {
                         //TransactionManager.getTransactions().get(eventId).bid(eventId, price);
                         bot.getChannelInteracter().writeBidMessage(eventItem);
                     }
                     break;
                 case AUCTION_WON:
-                    if (traderId.equals("<!845410146913747034>")) {
+                    if (isItMe(traderId)) {
                         //* "price*(-1)" macht die transaktion negativ (wir bezahlen)
                         executeTransaction(eventType, eventId, price, product);
                     } else {

@@ -38,6 +38,7 @@ public class ZuluBot {
         //TODO DELETE
         Inventory.getInstance().setWallet(2000);
         channelInteracter.listenToChannel();
+
     }
 
     public ChannelInteracter getChannelInteracter() {

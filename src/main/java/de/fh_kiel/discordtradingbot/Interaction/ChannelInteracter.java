@@ -21,7 +21,8 @@ import static java.lang.String.valueOf;
 
 
 public class ChannelInteracter implements EventPublisher {
-    private ZuluBot zuluBot;
+    private final ZuluBot zuluBot;
+    private final String myId;
     //public EventManager events;
 
     GatewayDiscordClient client;
@@ -37,6 +38,7 @@ public class ChannelInteracter implements EventPublisher {
 
         //Erfolgreiche Authentifikation nach Stdout loggen
         assert client != null;
+        myId = "<!"+client.getSelfId().asString()+">";
         client.getEventDispatcher().on(ReadyEvent.class)
                 .subscribe(event -> {
                     final User self = event.getSelf();
@@ -227,7 +229,7 @@ public class ChannelInteracter implements EventPublisher {
 
 
 
-            return new EventItem(logNr + 1, getZuluId(), traderID,
+            return new EventItem(logNr + 1, myId, traderID,
                     auctionId,eventType, null, null, message.getChannel().block());
         }return null;
     }
@@ -323,7 +325,7 @@ public class ChannelInteracter implements EventPublisher {
         return botId.equals(zuluId);
     }
 
-  private String  getZuluId(){
-        return "<@!845410146913747034>";
-  }
+    public String getMyId() {
+        return myId;
+    }
 }
