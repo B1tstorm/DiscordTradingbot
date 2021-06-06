@@ -2,6 +2,7 @@ package de.fh_kiel.discordtradingbot;
 
 import de.fh_kiel.discordtradingbot.Analysis.Evaluator;
 import de.fh_kiel.discordtradingbot.Analysis.TransactionHistory;
+import de.fh_kiel.discordtradingbot.Holdings.Inventory;
 import de.fh_kiel.discordtradingbot.Interaction.ChannelInteracter;
 import de.fh_kiel.discordtradingbot.Transactions.BuyTransactionManager;
 import de.fh_kiel.discordtradingbot.Transactions.SegTransactionManager;
@@ -19,7 +20,7 @@ public class ZuluBot {
 
     public void launch() {
         this.channelInteracter = new ChannelInteracter(Config.getToken(), this);
-        channelInteracter.listenToChannel();
+
 
         this.transactionHistory = TransactionHistory.getInstance();
         this.buyTransactionManager = new BuyTransactionManager(this);
@@ -33,6 +34,11 @@ public class ZuluBot {
 
         Evaluator evaluator = Evaluator.getInstance();
         transactionHistory.registerSubscriber(evaluator);
+
+        //TODO DELETE
+        Inventory.getInstance().setWallet(2000);
+        channelInteracter.listenToChannel();
+
     }
 
     public ChannelInteracter getChannelInteracter() {

@@ -17,7 +17,7 @@ class AbstractTransactionManagerTest extends AbstractTransactionManager {
     void testCheckInventory() {
         Inventory inventory = Inventory.getInstance();
         TransactionManager transactionManager =  TransactionManager.getInstance(new ChannelInteracter("token"));
-        inventory.updateLetterAmount(EventType.BUY, ("ABCADEMLIIII").toCharArray() );
+        inventory.updateLetterAmount(EventType.BUY_CONFIRM, ("ABCADEMLIIII").toCharArray() );
         boolean b =  transactionManager.checkInventory(("ABCAEIIII").toCharArray() );
         assertThat(b).isTrue();
     }
@@ -83,6 +83,11 @@ class AbstractTransactionManagerTest extends AbstractTransactionManager {
         assertThat(transactionManager.isProductWorth(preis+1,product.toCharArray())).
                 isEqualTo(transactionManager.isProductWorth(preis+1,product.toCharArray()))
                 .isFalse();
+
+    }
+
+    @Override
+    protected void makeOffer() {
 
     }
 }

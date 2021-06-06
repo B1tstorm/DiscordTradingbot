@@ -10,14 +10,15 @@ import reactor.util.annotation.NonNull;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Random;
 
 public abstract class AbstractTransactionManager {
-    protected static final HashMap<String, Transaction> transactions = new HashMap<>();
-    protected ChannelInteracter channelInteracter ;
-    private ZuluBot bot;
+
+    protected ZuluBot bot;
 
 
-    public static HashMap<String, Transaction> getTransactions() {
+    protected  final HashMap<String, Transaction> transactions = new HashMap<>();
+    public  HashMap<String, Transaction> getTransactions() {
         return transactions;
     }
 
@@ -42,17 +43,16 @@ public abstract class AbstractTransactionManager {
             this.eventId = eventItem.getAuctionId();
         } else this.eventId = eventItem.getLogNr().toString();
     }
-    protected abstract void makeOffer();
 
     public Boolean checkInventory(@NonNull char[] product) {
         ArrayList<Letter> letters = Inventory.getInstance().getLetters();
-        HashMap<Character,Integer> hashmap = fillHashmap(new HashMap<>());
+        HashMap<Character, Integer> hashmap = fillHashmap(new HashMap<>());
 
-        for (Character buchstabe: product) {
-            hashmap.put(buchstabe, hashmap.get(buchstabe)+1);
+        for (Character buchstabe : product) {
+            hashmap.put(buchstabe, hashmap.get(buchstabe) + 1);
         }
         for (Letter letter : letters) {
-            if (!(letter.getAmount()>= hashmap.get(letter.getLetter()))){
+            if (!(letter.getAmount() >= hashmap.get(letter.getLetter()))) {
                 return false;
             }
         }
@@ -60,9 +60,9 @@ public abstract class AbstractTransactionManager {
     }
 
     //interne Funktion, ergänzt ChenInventory
-    private HashMap<Character,Integer> fillHashmap (HashMap<Character,Integer> hashMap){
+    private HashMap<Character, Integer> fillHashmap(HashMap<Character, Integer> hashMap) {
         for (int ascii = 65; ascii < 91; ascii++) {
-            hashMap.put((char)ascii,0);
+            hashMap.put((char) ascii, 0);
         }
         return hashMap;
     }
@@ -76,16 +76,27 @@ public abstract class AbstractTransactionManager {
     }
 
     public void dismissTransaction(String eventId) {
-        AbstractTransactionManager.transactions.remove(eventId);
+        transactions.remove(eventId);
     }
 
-    public  void executeTransaction(EventType eventType,String eventId, Integer price, char[] product){
-        Inventory.getInstance().updateLetterAmount(eventType,product);
-        AbstractTransactionManager.transactions.remove(eventId);
+    public void executeTransaction(EventType eventType, String eventId, Integer price, char[] product) {
+        Inventory.getInstance().updateLetterAmount(eventType, product);
         Inventory.getInstance().updateWallet(price);
+        transactions.remove(eventId);
+        //TODO delete
+        System.out.println("Tranaction wurde excuted");
     }
 
-    public  Boolean isProductWorth(Integer price, @NonNull char[] product){
+    public void executeTransaction(EventItem eventItem) {
+        Transaction transaction = transactions.get(eventItem.getAuctionId());
+        Inventory.getInstance().updateLetterAmount(eventItem.getEventType(), transaction.getProduct());
+        Inventory.getInstance().updateWallet(transaction.getPrice());
+        transactions.remove(eventItem.getAuctionId());
+        //TODO delete
+        System.out.println("Tranaction wurde excuted");
+    }
+
+    public Boolean isProductWorth(Integer price, char[] product) {
         //ToDo Method is to be tested
         int totalLocalValue = 0;
         ArrayList<Letter> letterArray = Inventory.getInstance().getLetters();
@@ -99,6 +110,16 @@ public abstract class AbstractTransactionManager {
         // * bei Auction: wir bidden immer weiter geld solang der geforderte Price unter unserem internen price legt
         return totalLocalValue >= price;
         // TODO für später: falls TotalLocalValue z.B. 5% mehr wäre als das Gebot, trotzdem verkaufen
+    }
+
+    protected Boolean isItMe(String botId) {
+        return botId.equals(bot.getChannelInteracter().getMyId());
+    }
+
+    protected String getRandId (){
+        Random r = new Random();
+        int i = r.nextInt(9000);
+        return i + 1000+"";
     }
 
 
