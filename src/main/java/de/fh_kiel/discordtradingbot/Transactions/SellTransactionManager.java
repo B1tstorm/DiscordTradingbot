@@ -110,7 +110,7 @@ public class SellTransactionManager extends AbstractTransactionManager implement
         String s = "!trd wtb " + id +" "+ valueOf(product) + " " + value;
 
         bot.getChannelInteracter().writeThisMessage(s, channel);
-        transactions.put(id, new Transaction(new EventItem(null, bot.getChannelInteracter().getMyId(), null, id
+        transactions.put(id, new Transaction(new EventItem(null, bot.getChannelInteracter().getMentionId(), null, id
                 , EventType.BUY_OFFER, product, value, channel)));
 
         //erstellt eine Transaction mit einem EventItem

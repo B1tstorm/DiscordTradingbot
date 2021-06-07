@@ -33,7 +33,7 @@ public class ChannelInteracter implements EventPublisher {
 
         //Erfolgreiche Authentifikation nach Stdout loggen
         assert client != null;
-        myId = "<@!" + client.getSelfId().asString() + ">";
+        myId = client.getSelfId().asString();
         client.getEventDispatcher().on(ReadyEvent.class)
                 .subscribe(event -> {
                     final User self = event.getSelf();
@@ -209,10 +209,9 @@ public class ChannelInteracter implements EventPublisher {
             EventType eventType = EventType.ACCEPT;
             String traderID = "<@" + message.getAuthor().get().getId().asString() + ">";
             String auctionId = messageShards[3];
+            String mentionId = "<@!" + myId + ">";
 
-
-
-            return new EventItem(logNr + 1, myId, traderID,
+            return new EventItem(logNr + 1, mentionId, traderID,
                     auctionId,eventType, null, null, message.getChannel().block());
         }
         return null;
@@ -222,10 +221,10 @@ public class ChannelInteracter implements EventPublisher {
         //* metriken, analysen
         //* !zulu visualize/wallet/inventory  [letter]
         //    0        1             2
-
         String[] messageShards = message.getContent().split(" ");
+        String mentionId = "<@!" + myId + ">";
 
-        EventItem item = new EventItem(null, myId, null,
+        EventItem item = new EventItem(null, mentionId, null,
                 null, null , messageShards[2].toCharArray(), null, message.getChannel().block());
 
         if (messageShards[1].equalsIgnoreCase("visualize")) {
@@ -270,7 +269,7 @@ public class ChannelInteracter implements EventPublisher {
                 //! If() ist ein Test welcher schon im TransactionManager stattfindet.
                 //! Das AUCTION_WON case wird nie ausgeführt da es beim TransactionManager
                 //! endet und writeMessage() nicht aufruft
-                if (eventItem.getTraderID().equals(getMyId())) {
+                if (eventItem.getTraderID().equals(getMentionId())) {
                     channel.createMessage("Wir haben die auctionID " + eventItem.getAuctionId() + " gewonnen!").block();
                 } else {
                     channel.createMessage("Wir haben die auctionID " + eventItem.getAuctionId() + " verloren!").block();
@@ -344,10 +343,11 @@ public class ChannelInteracter implements EventPublisher {
     }
 
     private Boolean isItMe(String botId){
-        return botId.equals(myId);
+        String mentionId = "<@!" + myId + ">";
+        return botId.equals(mentionId);
     }
 
-    public String getMyId() {
-        return myId;
+    public String getMentionId() {
+        return "<@!" + myId + ">";
     }
 }
