@@ -17,7 +17,6 @@ public class Evaluator implements Subscriber {
         for(int i = 0 ; i < 26; i++) {
             letterStatistics.add(new LetterStatisticsItem(Config.indexToChar(i)));
         }
-
     }
 
     public List<LetterStatisticsItem> getLetterStatistics() {

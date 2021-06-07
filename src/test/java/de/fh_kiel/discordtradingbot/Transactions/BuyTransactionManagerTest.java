@@ -11,7 +11,7 @@ class BuyTransactionManagerTest extends AbstractTransactionManager {
     void testIsProductWorth() {
         //der statische price des Strings ist 30
         int kaufPrice = 29;
-        Inventory inventory = Inventory.getInstance();
+        Inventory inventory = bot.getInventory();
         String product = "ABC";
         BuyTransactionManager transactionManager =  new BuyTransactionManager();
 

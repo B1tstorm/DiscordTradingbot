@@ -221,7 +221,7 @@ public class ChannelInteracter implements EventPublisher {
     private EventItem createZuluEventItem(Message message) {
         //* metriken, analysen
         //* !zulu visualize/wallet/inventory  [letter]
-        //    0        1             2
+        //    0        1                         2
 
         String[] messageShards = message.getContent().split(" ");
 

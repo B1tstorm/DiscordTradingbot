@@ -104,7 +104,7 @@ public class SellTransactionManager extends AbstractTransactionManager implement
         //String id = UUID.randomUUID().toString();
         Integer value = 0;
         for (Character c: product) {
-            int temp =  Inventory.getInstance().getLetters().get((int)c - 65).getValue();
+            int temp =  bot.getInventory().getLetters().get((int)c - 65).getValue();
             value += temp;
         }
         String s = "!trd wtb " + id +" "+ valueOf(product) + " " + value;

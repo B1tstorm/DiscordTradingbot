@@ -48,7 +48,7 @@ class AbstractTransactionManagerTest extends AbstractTransactionManager {
         SellTransactionManager t3 =  new SellTransactionManager();
         assertThat(t3.isPriceAffordable(0)).isTrue();
         assertThat(t3.isPriceAffordable(2)).isFalse();
-        Inventory.getInstance().updateWallet(100);
+        bot.getInventory().updateWallet(100);
         assertThat(t3.isPriceAffordable(100)).isTrue();
         assertThat(t3.isPriceAffordable(90)).isTrue();
         assertThat(t3.isPriceAffordable(200)).isFalse();
@@ -73,7 +73,7 @@ class AbstractTransactionManagerTest extends AbstractTransactionManager {
     void testIsProductWorth() {
         //interner Wert ist in der Klasse Inventory statisch auf 10 gesetzt
         int preis = 30;
-        Inventory inventory = Inventory.getInstance();
+        Inventory inventory = bot.getInventory();
         String product = "ABC";
         SegTransactionManager transactionManager =  new SegTransactionManager();
 

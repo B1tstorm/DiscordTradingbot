@@ -15,10 +15,10 @@ class CartManagerTest {
     void createCart() {
         CartManager testManager = new CartManager();
         ArrayList<Letter> buchstabenssollTest = new ArrayList<>();
-        Inventory inventory = Inventory.getInstance();
-        Letter letter1 =  Inventory.getInstance().getLetters().get(0);
-        Letter letter2 =  Inventory.getInstance().getLetters().get(1);
-        Letter letter3 =  Inventory.getInstance().getLetters().get(2);
+        Inventory inventory = bot.getInventory();
+        Letter letter1 =  bot.getInventory().getLetters().get(0);
+        Letter letter2 =  bot.getInventory().getLetters().get(1);
+        Letter letter3 =  bot.getInventory().getLetters().get(2);
         buchstabenssollTest.add(letter1);
         buchstabenssollTest.add(letter2);
         buchstabenssollTest.add(letter3);

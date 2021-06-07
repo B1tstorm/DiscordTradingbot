@@ -28,7 +28,7 @@ public class BuyTransactionManager extends AbstractTransactionManager implements
     public Boolean isProductWorth(Integer price, char[] product) {
         //ToDo Method is to be tested
         int totalLocalValue = 0;
-        ArrayList<Letter> letterArray = Inventory.getInstance().getLetters();
+        ArrayList<Letter> letterArray = bot.getInventory().getLetters();
         //rechne gesamtWert vom product
         for (char c : product) {
             //zugriff auf werte im Inventar Letter Array mit ascii index berechnung
@@ -133,7 +133,7 @@ public class BuyTransactionManager extends AbstractTransactionManager implements
         String id = getRandId();
         Integer value = 0;
         for (Character c: product) {
-            int temp =  Inventory.getInstance().getLetters().get((int)c - 65).getValue();
+            int temp =  bot.getInventory().getLetters().get((int)c - 65).getValue();
             value += temp;
         }
         String s = "!trd wts " + id +" "+ valueOf(product) + " " + value;
@@ -154,7 +154,7 @@ public class BuyTransactionManager extends AbstractTransactionManager implements
      */
     private String getCounterString(char[] product){
         HashMap<Character, Integer> hashmap = fillHashmap(new HashMap<>());
-        ArrayList<Letter> letters = Inventory.getInstance().getLetters();
+        ArrayList<Letter> letters = bot.getInventory().getLetters();
         StringBuilder counterOffer = new StringBuilder();
 
         // Hashmap mit angeforderten Buchstaben (Buchstabe , Angeforderte Anzahl)

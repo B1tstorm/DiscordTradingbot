@@ -45,7 +45,7 @@ public abstract class AbstractTransactionManager {
     }
 
     public Boolean checkInventory(@NonNull char[] product) {
-        ArrayList<Letter> letters = Inventory.getInstance().getLetters();
+        ArrayList<Letter> letters = bot.getInventory().getLetters();
         HashMap<Character, Integer> hashmap = fillHashmap(new HashMap<>());
 
         for (Character buchstabe : product) {
@@ -68,7 +68,7 @@ public abstract class AbstractTransactionManager {
     }
 
     public Boolean isPriceAffordable(Integer price) {
-        return price <= Inventory.getInstance().getWallet();
+        return price <= bot.getInventory().getWallet();
     }
 
     public Transaction startTransaction(EventType eventType) {
@@ -80,8 +80,8 @@ public abstract class AbstractTransactionManager {
     }
 
     public void executeTransaction(EventType eventType, String eventId, Integer price, char[] product) {
-        Inventory.getInstance().updateLetterAmount(eventType, product);
-        Inventory.getInstance().updateWallet(price);
+        bot.getInventory().updateLetterAmount(eventType, product);
+        bot.getInventory().updateWallet(price);
         transactions.remove(eventId);
         //TODO delete
         System.out.println("Tranaction wurde excuted");
@@ -90,11 +90,11 @@ public abstract class AbstractTransactionManager {
     public void executeTransaction(EventItem eventItem) {
             Transaction transaction = transactions.get(eventItem.getAuctionId());
             if (transaction != null){
-            Inventory.getInstance().updateLetterAmount(eventItem.getEventType(), transaction.getProduct());
-            Inventory.getInstance().updateWallet(transaction.getPrice());
-            transactions.remove(eventItem.getAuctionId());
-            //TODO delete
-            System.out.println("Tranaction wurde excuted");
+                bot.getInventory().updateLetterAmount(eventItem.getEventType(), transaction.getProduct());
+                bot.getInventory().updateWallet(transaction.getPrice());
+                transactions.remove(eventItem.getAuctionId());
+                //TODO delete
+                System.out.println("Tranaction wurde excuted");
         }
     }
 
@@ -121,7 +121,7 @@ public abstract class AbstractTransactionManager {
 
     protected int calculateProductValue(char[] product){
         int totalLocalValue = 0;
-        ArrayList<Letter> letterArray = Inventory.getInstance().getLetters();
+        ArrayList<Letter> letterArray = bot.getInventory().getLetters();
         //rechne gesamtInternWert vom product
         for (char c : product) {
             //zugriff auf werte im Inventar Letter Array mit ascii index berechnung
