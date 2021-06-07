@@ -1,5 +1,6 @@
 package de.fh_kiel.discordtradingbot.Analysis;
 
+import de.fh_kiel.discordtradingbot.Config;
 import de.fh_kiel.discordtradingbot.Holdings.Letter;
 
 import java.util.ArrayList;
@@ -14,9 +15,13 @@ public class Evaluator implements Subscriber {
     Evaluator() {
         letterStatistics = new ArrayList<>();
         for(int i = 0 ; i < 26; i++) {
-            letterStatistics.add(new LetterStatisticsItem(indexToChar(i)));
+            letterStatistics.add(new LetterStatisticsItem(Config.indexToChar(i)));
         }
 
+    }
+
+    public List<LetterStatisticsItem> getLetterStatistics() {
+        return letterStatistics;
     }
 
     public static Evaluator getInstance() {
@@ -32,26 +37,18 @@ public class Evaluator implements Subscriber {
 
     @Override
     public void update(Letter l) {
-        int index = charToIndex(l.getLetter());
+        int index = Config.charToIndex(l.getLetter());
         this.letterStatistics.get(index).updateValues(l);
     }
 
     public Integer getCurrentLetterValue(Letter l) {
-        int index = charToIndex(l.getLetter());
+        int index = Config.charToIndex(l.getLetter());
         return letterStatistics.get(index).maxValue;
     }
 
     // getCurrentAvgValue MaxValue ...
 
-    private int charToIndex(char c) {
-        return (int) c - 65;
-    }
-
-    private char indexToChar(int i){
-        return (char) (i + 65);
-    }
-
-    private class LetterStatisticsItem {
+    public class LetterStatisticsItem {
         private char letter;
         private final List<Integer> tradedLetterValues = new ArrayList<>();
         private Integer amountTraded = 0;
@@ -86,6 +83,17 @@ public class Evaluator implements Subscriber {
             return ((double) newValue) / tradedLetterValues.get(0);
         }
 
+        public char getLetter() {
+            return letter;
+        }
+
+        public List<Integer> getTradedLetterValues() {
+            return tradedLetterValues;
+        }
+
+        public Integer getMaxValue() {
+            return maxValue;
+        }
     }
 
 }
