@@ -62,13 +62,10 @@ public class ChannelInteracter implements EventPublisher {
 
     public void listenToChannel() {
         client.on(MessageCreateEvent.class)
-                //.filter(message -> message.getMessage().getAuthor().map(user -> !user.isBot()).orElse(false)) //TODO auf false setzen damit er auf bots reagiert
-//                .filter(message -> message.getMessage().getUserData().id().equals("501500923495841792"))
                 .subscribe(event -> {
-
                     final Message message = event.getMessage();
                     final MessageChannel channel = message.getChannel().block();
-
+                    if (message.getAuthor().get().getId().equals("845410146913747034")) return;
                     // Bei Auktionen filtern dass nur Messages vom SEG Bot gelesen werden
                     if (getPrefix(message).equals("!SEG") /*&& message.getUserData().id().equals("501500923495841792")*/) { //* Hier muss später die ID des SEG Bot stehen!
                         // Für den außergewöhnlichen Fall das der SEG Bot zu wenig Argumente in den Chat schreibt
@@ -92,7 +89,7 @@ public class ChannelInteracter implements EventPublisher {
                         setPresence(EventType.SELL_OFFER);
                     }
 
-                    if (getPrefix(message).equals("!TRD")) {
+                    if (getPrefix(message).equals("!TRD") && !message.getUserData().id().equals("845410146913747034")) {
                         if (message.getContent().contains("wtb")) {
                             EventItem eventItem = createBuyEventItem(message);
                             assert eventItem != null;
@@ -103,8 +100,9 @@ public class ChannelInteracter implements EventPublisher {
                             notifySubscriber(eventItem);
                         } else if (message.getContent().contains("accept")) {
                             EventItem eventItem = createAcceptEventItem(message);
-                            assert eventItem != null;
-                            notifySubscriber(eventItem);
+                            if (eventItem != null) {
+                                notifySubscriber(eventItem);
+                            }
                         }
                     }
                 });
@@ -235,7 +233,8 @@ public class ChannelInteracter implements EventPublisher {
 
             return new EventItem(logNr + 1, myId, traderID,
                     auctionId,eventType, null, null, message.getChannel().block());
-        }return null;
+        }
+        return null;
     }
 
 
