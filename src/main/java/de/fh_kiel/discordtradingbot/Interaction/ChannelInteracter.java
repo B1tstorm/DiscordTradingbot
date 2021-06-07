@@ -6,17 +6,27 @@ import discord4j.core.DiscordClientBuilder;
 import discord4j.core.GatewayDiscordClient;
 import discord4j.core.event.domain.lifecycle.ReadyEvent;
 import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.object.entity.Attachment;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.User;
 import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.core.object.presence.Activity;
 import discord4j.core.object.presence.Presence;
+import discord4j.core.spec.MessageCreateSpec;
+
+import javax.imageio.ImageIO;
+import javax.imageio.stream.FileImageInputStream;
+import java.awt.image.BufferedImage;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.function.Consumer;
 
 
 public class ChannelInteracter implements EventPublisher {
     private ZuluBot zuluBot;
-    GatewayDiscordClient client;
-    static Integer logNr = 0;
+    GatewayDiscordClient client; //not private?
+    static Integer logNr = 0; //not private?
 
     public ChannelInteracter(String token, ZuluBot bot) {
         this.zuluBot = bot;
@@ -73,6 +83,18 @@ public class ChannelInteracter implements EventPublisher {
         throw new UnsupportedOperationException();
     }
 
+    public void uploadFile(File file, MessageChannel channel) {
+        try {
+            InputStream stream = new FileInputStream(file);
+            channel.createMessage(messageCreateSpec -> {
+                messageCreateSpec.setContent("Visualization of letter value history:");
+                messageCreateSpec.addFile("File.svg", stream);
+            }).block();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void listenToChannel() {
         client.on(MessageCreateEvent.class)
                 .filter(message -> message.getMessage().getAuthor().map(user -> !user.isBot()).orElse(false))
@@ -82,7 +104,7 @@ public class ChannelInteracter implements EventPublisher {
             final MessageChannel channel = message.getChannel().block();
 
             // Bei Auktionen filtern dass nur Messages vom SEG Bot gelesen werden
-            if (getPrefix(message).equals("!SEG") && message.getUserData().id().equals("501500923495841792")) { //* Hier muss später die ID des SEG Bot stehen! (Globale statische Variable in der Config Klasse!)
+            if (getPrefix(message).equalsIgnoreCase("!SEG") && message.getUserData().id().equals("501500923495841792")) { //* Hier muss später die ID des SEG Bot stehen!
                 // Für den außergewöhnlichen Fall das der SEG Bot zu wenig Argumente in den Chat schreibt
                 try { //? Evtl. unnötig da der Bot niemals zu wenig Argumente liefert. Nur so stürzt das Programm nicht ab
                     // Setzt die Anzeige auf Auction oder Trading
@@ -99,7 +121,7 @@ public class ChannelInteracter implements EventPublisher {
             }
 
             // In unserem Channel auf Präfix !ZULU reagieren
-            if (getPrefix(message).equals("!ZULU") && message.getAuthor().map(user -> !user.isBot()).orElse(false)) {
+            if (getPrefix(message).equalsIgnoreCase("!ZULU") && message.getAuthor().map(user -> !user.isBot()).orElse(false)) {
                 Visualizer.getInstance().notify(message);
 
                 // TODO: implementieren dass andere auf uns reagieren können

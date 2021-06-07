@@ -7,7 +7,6 @@ public class Config {
         return token;
     }
 
-
     public static int charToIndex(char c) {
         return (int) c - 65;
     }

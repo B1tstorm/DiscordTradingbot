@@ -1,14 +1,15 @@
 package de.fh_kiel.discordtradingbot.Analysis;
 
 import de.fh_kiel.discordtradingbot.Config;
+import de.fh_kiel.discordtradingbot.Interaction.ChannelInteracter;
 import discord4j.core.object.entity.Message;
+import discord4j.core.object.entity.channel.MessageChannel;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Locale;
 
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
@@ -32,9 +33,9 @@ public class Visualizer {
 		return Instance;
 	}
 
-	public void visualizeHistory(char c) throws IOException {
+	public void visualizeHistory(Message message) throws IOException {
 
-		Evaluator.LetterStatisticsItem data = Evaluator.getInstance().getLetterStatistics().get(Config.charToIndex(c));
+		Evaluator.LetterStatisticsItem data = Evaluator.getInstance().getLetterStatistics().get(Config.charToIndex(message.getContent().split(" ")[2].toCharArray()[0]));
 
 		final File file = new File("src\\main\\svg\\svgbase.svg");
 		File newfile = new File("src\\main\\svg\\temp.svg");
@@ -62,19 +63,27 @@ public class Visualizer {
 		fw.write("</g></svg>");
 		fw.close();
 
-		//svg an channelinteracter senden
-		//todo
+
+
+
+
+		//todo svg an channelinteracter senden
+		ChannelInteracter channelInteracter = null; //dummy, todo
+		//!!!!!!!!!!
+
+
+
+		channelInteracter.uploadFile(newfile, message.getChannel().block());
 
 	}
 
 	public void notify(Message message) {
-		String[] messageShards = message.getContent().split(" ");
-		if (!messageShards[1].toLowerCase().equals("visualize")) return;
+		if (!message.getContent().split(" ")[1].equalsIgnoreCase("visualize")) return;
 
 		try {
-			visualizeHistory(messageShards[2].toCharArray()[0]);
+			visualizeHistory(message);
 		} catch (IOException e) {
-			System.err.println("could not parse visualization");
+			System.err.println("could not access local filesystem - error" + e);
 		}
 	}
 }
