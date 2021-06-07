@@ -35,10 +35,10 @@ public abstract class AbstractTransactionManager {
 
     //methode extrahiert die Attribute aus dem EventItem
     protected void fillAttributes (EventItem eventItem){
-         this.eventType = eventItem.getEventType();
-         this.price = eventItem.getValue();
-         this.product = eventItem.getProduct();
-         this.traderId = eventItem.getTraderID();
+        this.eventType = eventItem.getEventType();
+        this.price = eventItem.getValue();
+        this.product = eventItem.getProduct();
+        this.traderId = eventItem.getTraderID();
         if (eventItem.getAuctionId() != null) {
             this.eventId = eventItem.getAuctionId();
         } else this.eventId = eventItem.getLogNr().toString();
@@ -60,7 +60,7 @@ public abstract class AbstractTransactionManager {
     }
 
     //interne Funktion, ergänzt ChenInventory
-    private HashMap<Character, Integer> fillHashmap(HashMap<Character, Integer> hashMap) {
+    protected HashMap<Character, Integer> fillHashmap(HashMap<Character, Integer> hashMap) {
         for (int ascii = 65; ascii < 91; ascii++) {
             hashMap.put((char) ascii, 0);
         }
@@ -98,13 +98,8 @@ public abstract class AbstractTransactionManager {
 
     public Boolean isProductWorth(Integer price, char[] product) {
         //ToDo Method is to be tested
-        int totalLocalValue = 0;
-        ArrayList<Letter> letterArray = Inventory.getInstance().getLetters();
-        //rechne gesamtInternWert vom product
-        for (char c : product) {
-            //zugriff auf werte im Inventar Letter Array mit ascii index berechnung
-            totalLocalValue += letterArray.get((int) c - 65).getValue();
-        }
+        int totalLocalValue = calculateProductValue(product);
+
         // Der Fall wenn wir auf einen Buchstaben versteigern können und der Buchstabe bei uns einen Wert von 0 hat, dann bieten wir nicht mit.
         if (totalLocalValue == 0) return false;
         // * bei Auction: wir bidden immer weiter geld solang der geforderte Price unter unserem internen price legt
@@ -122,6 +117,15 @@ public abstract class AbstractTransactionManager {
         return i + 1000+"";
     }
 
-
+    private int calculateProductValue(char[] product){
+        int totalLocalValue = 0;
+        ArrayList<Letter> letterArray = Inventory.getInstance().getLetters();
+        //rechne gesamtInternWert vom product
+        for (char c : product) {
+            //zugriff auf werte im Inventar Letter Array mit ascii index berechnung
+            totalLocalValue += letterArray.get((int) c - 65).getValue();
+        }
+        return totalLocalValue;
+    }
 
 }
