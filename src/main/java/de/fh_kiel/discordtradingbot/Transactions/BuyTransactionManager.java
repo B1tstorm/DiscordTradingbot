@@ -42,15 +42,18 @@ public class BuyTransactionManager extends AbstractTransactionManager implements
 
     @Override
     public void update(EventItem eventItem) {
-        if (eventItem.getEventType().toString().contains("BUY") || eventItem.getEventType().toString().contains("ACCEPT")) {
+        if (eventItem.getEventType().toString().contains("BUY") || eventItem.getEventType().toString().contains("ACCEPT") || eventItem.getEventType().toString().contains("ZULU") ) {
             EventType eventType = eventItem.getEventType() ;
             String traderId = eventItem .getTraderID() ;
             channel = eventItem.getChannel();
             String eventId;
             if (eventItem.getAuctionId() != null) {
                 eventId = eventItem.getAuctionId();
+                //bei Accept fälle von anderen klassen soll das programm diese Methode verlassen
                 if (transactions.get(eventId) == null && eventItem.getEventType().toString().contains("ACCEPT")) return;
-            } else eventId = eventItem.getLogNr().toString();
+            } else {
+                eventId = eventItem.getLogNr().toString();
+            }
 
             char[] product ;
             Integer price ;
@@ -75,18 +78,21 @@ public class BuyTransactionManager extends AbstractTransactionManager implements
                         transactions.put(eventId, new Transaction(eventItem));
                         executeTransaction(EventType.BUY_CONFIRM,eventId,price,product);
                         bot.getChannelInteracter().writeThisMessage("Danke für deinen Kauf. Transaktion war erfolgreich", channel);
-                    }else if (eventItem.getSellerID().equals("HIER KOMMT EIKES ID")) {
+                    }else {
                         //! begründe warum wir nicht verkaufen können
                         bot.getChannelInteracter().writeThisMessage(("Wir haben das Produkt -> " + checkInventory(product)).toString(),eventItem.getChannel());
                         bot.getChannelInteracter().writeThisMessage(("Dein Preis ist fair -> " + isProductWorth(price, product)).toString(),eventItem.getChannel());
                         makeCounterOffer(eventItem);
+                        bot.getChannelInteracter().writeThisMessage("zum Bestätigen schreib: !ZULU confirm "+eventItem.getLogNr(), channel);
+                        bot.getChannelInteracter().writeThisMessage("zum Ablehnen schreib:   !ZULU deny "+eventItem.getLogNr(), channel);
                     }
                     break;
-                case ZULU_ACCEP:
+                case ZULU_CONFIRM:
                     executeTransaction(eventItem);
                     bot.getChannelInteracter().writeThisMessage("Danke für deinen Kauf. Transaktion war erfolgreich", channel);
                     break;
                 case ZULU_DENY:
+                    bot.getChannelInteracter().writeThisMessage("Schade! \n Du kannst uns jeder Zeit gerne ein Gegenangebot machen", channel);
                     dismissTransaction(eventId);
                     break;
                 //! jemand hat was angeboten und wir wollen ihm sagen "geilo, das würde ich gerne kaufen"
@@ -180,10 +186,11 @@ public class BuyTransactionManager extends AbstractTransactionManager implements
         //* !ZULU counterOffer <ID> <String> [Preis]
         char[] product = eventItem.getProduct();
         channel= eventItem.getChannel();
-        String counterOfferMessage = "!ZULU counterOffer " + eventItem.getAuctionId() + " " + getCounterString(product) + " "
-                + (int)(calculateProductValue(product)*1.2) ;
+        String counterOfferMessage = "!ZULU counterOffer " + eventItem.getLogNr() + " " + getCounterString(product) + " "
+                + (int)(calculateProductValue(getCounterString(product).toCharArray())*1.2) ;
         bot.getChannelInteracter().writeThisMessage(counterOfferMessage, channel);
-        transactions.put(eventItem.getAuctionId(),new Transaction(eventItem));
+        eventItem.setValue((int)(calculateProductValue(getCounterString(product).toCharArray())*1.2));
+        transactions.put(eventItem.getLogNr().toString(),new Transaction(eventItem));
     }
 
 }

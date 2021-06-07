@@ -17,7 +17,7 @@ public enum EventType {
     AUCTION_CLOSE,
 
     ZULU_BUY,
-    ZULU_ACCEPT,
+    ZULU_CONFIRM,
     ZULU_DENY,
 
     HELP;

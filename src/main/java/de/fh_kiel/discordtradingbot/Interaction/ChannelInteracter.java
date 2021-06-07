@@ -1,6 +1,7 @@
 package de.fh_kiel.discordtradingbot.Interaction;
 
 import de.fh_kiel.discordtradingbot.Analysis.Visualizer;
+import de.fh_kiel.discordtradingbot.Transactions.Transaction;
 import de.fh_kiel.discordtradingbot.ZuluBot;
 import discord4j.core.DiscordClientBuilder;
 import discord4j.core.GatewayDiscordClient;
@@ -11,6 +12,9 @@ import discord4j.core.object.entity.User;
 import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.core.object.presence.Activity;
 import discord4j.core.object.presence.Presence;
+
+import javax.xml.crypto.dsig.TransformService;
+
 import static java.lang.String.valueOf;
 import java.io.*;
 
@@ -80,7 +84,6 @@ public class ChannelInteracter implements EventPublisher {
                             // Setzt die Anzeige auf Auction oder Trading
                             setPresence(EventType.AUCTION_START);
                             EventItem eventItem = createEventItem(message);
-                            //! Nur zum testen, später löschen
                             notifySubscriber(eventItem);
                         } catch (ArrayIndexOutOfBoundsException e) {
                             System.err.println("Der Channel command enthält zu wenige Zeichen um ein EventItem zu generieren. Fehler: " + e);
@@ -92,6 +95,7 @@ public class ChannelInteracter implements EventPublisher {
                     // In unserem Channel auf Präfix !ZULU reagieren
                     if (getPrefix(message).equalsIgnoreCase("!ZULU") && message.getAuthor().map(user -> !user.isBot()).orElse(false)) {
                         Visualizer.getInstance().notify(message);
+                        notifySubscriber(createZuluEventItem(message));
 
                         // TODO: implementieren dass andere auf uns reagieren können
                         // TODO: von Eventtype.SELL geändert
@@ -125,6 +129,45 @@ public class ChannelInteracter implements EventPublisher {
         return messageShards[0].toUpperCase();
     }
 
+    private EventItem createZuluEventItem(Message message){
+
+
+
+        String[] messageShards = message.getContent().split(" ");
+        char[] product = null ;
+        EventType eventType;
+        Integer price = null ;
+        String id = null;
+
+        switch (messageShards[1]){
+            case "wtb":
+                //*        !ZULU wtb HALLO 50
+                eventType = EventType.ZULU_BUY ;
+                product = messageShards[2].toUpperCase().toCharArray() ;
+                price = Integer.parseInt(messageShards[3]);
+                break;
+            case"confirm":
+                //*        !ZULU confirm <ID>
+                eventType = EventType.ZULU_CONFIRM ;
+                Transaction transaction = zuluBot.getBuyTransactionManager().getTransactions().get(messageShards[2]);
+                if (transaction == null) return null ;
+                product = transaction.getProduct();
+                price = transaction.getPrice();
+                id = messageShards[2];
+                break;
+            case"deny":
+                Transaction transaction2 = zuluBot.getBuyTransactionManager().getTransactions().get(messageShards[2]);
+                if (transaction2 == null) return null ;
+                //*        !ZULU deny <ID>
+                eventType = EventType.ZULU_DENY ;
+                id = messageShards[2];
+                break;
+            default:return null;
+        }
+
+        return new EventItem(++logNr ,  message.getUserData().id() , null, id, eventType,product, price, message.getChannel().block());
+    }
+
     private EventItem createEventItem(Message message) {
         String[] messageShards = message.getContent().split(" ");
         char[] products = null;
@@ -150,7 +193,7 @@ public class ChannelInteracter implements EventPublisher {
                 break;
         }
 
-        return new EventItem(logNr + 1,
+        return new EventItem(++logNr ,
                 message.getUserData().id(),
                 traderID,
                 messageShards[3], eventType,
@@ -174,7 +217,7 @@ public class ChannelInteracter implements EventPublisher {
                 String auctionId = messageShards[2];
                 products = messageShards[3].toCharArray();
                 Integer price = Integer.parseInt(messageShards[4]);
-                return new EventItem(logNr + 1, sellerId, null,
+                return new EventItem(++logNr, sellerId, null,
                         auctionId, eventType, products, price, message.getChannel().block());
             }
 
@@ -186,7 +229,7 @@ public class ChannelInteracter implements EventPublisher {
                 String auctionId = messageShards[3];
                 products = messageShards[5].toCharArray();
                 Integer price = Integer.parseInt(messageShards[6]);
-                return new EventItem(logNr + 1, sellerId, traderID, auctionId,
+                return new EventItem(++logNr, sellerId, traderID, auctionId,
                         eventType, products, price, message.getChannel().block());
             }
         }
@@ -207,7 +250,7 @@ public class ChannelInteracter implements EventPublisher {
                 EventType eventType = EventType.SELL_OFFER;
                 products = messageShards[3].toCharArray();
                 Integer price = Integer.parseInt(messageShards[4]);
-                return new EventItem(logNr + 1, sellerId, null,
+                return new EventItem(++logNr, sellerId, null,
                         auctionId, eventType, products, price, message.getChannel().block());
             }
 
@@ -219,7 +262,7 @@ public class ChannelInteracter implements EventPublisher {
                 auctionId = messageShards[3];
                 products = messageShards[5].toCharArray();
                 Integer price = Integer.parseInt(messageShards[6]);
-                return new EventItem(logNr + 1, sellerId, traderID, auctionId,
+                return new EventItem(++logNr, sellerId, traderID, auctionId,
                         eventType, products, price, message.getChannel().block());
             }
 
@@ -240,7 +283,7 @@ public class ChannelInteracter implements EventPublisher {
 
 
 
-            return new EventItem(logNr + 1, myId, traderID,
+            return new EventItem(++logNr, myId, traderID,
                     auctionId,eventType, null, null, message.getChannel().block());
         }
         return null;
