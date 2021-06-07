@@ -82,7 +82,7 @@ public class BuyTransactionManager extends AbstractTransactionManager implements
                         makeCounterOffer(eventItem);
                     }
                     break;
-                case ZULU_ACCEP:
+                case ZULU_ACCEPT:
                     executeTransaction(eventItem);
                     bot.getChannelInteracter().writeThisMessage("Danke für deinen Kauf. Transaktion war erfolgreich", channel);
                     break;

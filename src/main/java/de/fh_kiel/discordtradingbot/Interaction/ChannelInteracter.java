@@ -46,8 +46,8 @@ public class ChannelInteracter implements EventPublisher {
                 .subscribe(event -> {
                     final Message message = event.getMessage();
                     final MessageChannel channel = message.getChannel().block();
-                    if (message.getAuthor().get().getId().equals("845410146913747034")) return;
-
+                    // Der Bot soll nicht auf eigene Commands reagieren
+                    if (message.getAuthor().get().getId().equals(myId)) return;
 
                     EventItem eventItem = null;
                     // Bei Auktionen filtern dass nur Messages vom SEG Bot gelesen werden
@@ -57,24 +57,26 @@ public class ChannelInteracter implements EventPublisher {
                             // Setzt die Anzeige auf Auction oder Trading
                             setPresence(EventType.AUCTION_START);
                             eventItem = createEventItem(message);
-
                         } catch (ArrayIndexOutOfBoundsException e) {
                             System.err.println("Der Channel command enthält zu wenige Zeichen um ein EventItem zu generieren. Fehler: " + e);
                             assert channel != null;
                             channel.createMessage("Keine gültige Transaktion!").block();
+                            return;
                         }
                     }
 
                     // In unserem Channel auf Präfix !ZULU reagieren
                     if (getPrefix(message).equalsIgnoreCase("!ZULU") && message.getAuthor().map(user -> !user.isBot()).orElse(false)) {
-                        eventItem = createZuluEventItem(message);
+                        setPresence(EventType.SELL_OFFER);
 
-                        // TODO: implementieren dass andere auf uns reagieren können
-                        // TODO: von Eventtype.SELL geändert
-                        // setPresence(EventType.SELL_OFFER);
+                        if (message.getContent().contains("help")) {
+                            eventItem = createHelpEventItem(message);
+                        } else {
+                            eventItem = createZuluEventItem(message);
+                        }
                     }
 
-                    if (getPrefix(message).equals("!TRD") && !message.getUserData().id().equals("845410146913747034")) {
+                    if (getPrefix(message).equals("!TRD") && !message.getUserData().id().equals(myId)) {
                         if (message.getContent().contains("wtb")) {
                             eventItem = createBuyEventItem(message);
                         } else if (message.getContent().contains("wts")) {
@@ -236,6 +238,10 @@ public class ChannelInteracter implements EventPublisher {
         return item;
     }
 
+    private EventItem createHelpEventItem(Message message) {
+        return new EventItem(null, null, null, null, EventType.HELP, null, null, message.getChannel().block());
+    }
+
     //Outbound Communication
 
     private void setPresence(EventType eventType) {
@@ -264,7 +270,7 @@ public class ChannelInteracter implements EventPublisher {
                 //! If() ist ein Test welcher schon im TransactionManager stattfindet.
                 //! Das AUCTION_WON case wird nie ausgeführt da es beim TransactionManager
                 //! endet und writeMessage() nicht aufruft
-                if (eventItem.getTraderID().equals("845410146913747034")) {
+                if (eventItem.getTraderID().equals(getMyId())) {
                     channel.createMessage("Wir haben die auctionID " + eventItem.getAuctionId() + " gewonnen!").block();
                 } else {
                     channel.createMessage("Wir haben die auctionID " + eventItem.getAuctionId() + " verloren!").block();
