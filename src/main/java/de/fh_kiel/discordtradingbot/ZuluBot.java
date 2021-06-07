@@ -26,20 +26,19 @@ public class ZuluBot implements EventListener {
 
     public void launch() {
         this.channelInteracter = new ChannelInteracter(Config.getToken(), this);
-
-
         this.transactionHistory = TransactionHistory.getInstance();
         this.buyTransactionManager = new BuyTransactionManager(this);
         this.sellTransactionManager = new SellTransactionManager(this);
         this.segTransactionManager = new SegTransactionManager(this);
         this.visualizer = new Visualizer (this);
 
-
         channelInteracter.subscribe(TransactionHistory.getInstance());
         channelInteracter.subscribe(buyTransactionManager);
         channelInteracter.subscribe(sellTransactionManager);
         channelInteracter.subscribe(segTransactionManager);
         channelInteracter.subscribe(visualizer);
+        // Der ZuluBot subscribed sich selbst für die Help funktion
+        channelInteracter.subscribe(this);
 
         Evaluator evaluator = Evaluator.getInstance();
         transactionHistory.registerSubscriber(evaluator);
@@ -47,7 +46,6 @@ public class ZuluBot implements EventListener {
         //TODO DELETE
         Inventory.getInstance().setWallet(2000);
         channelInteracter.listenToChannel();
-
     }
 
     public ChannelInteracter getChannelInteracter() {
@@ -78,7 +76,6 @@ public class ZuluBot implements EventListener {
     public void update(EventItem eventItem) {
         if(eventItem.getEventType() != EventType.HELP) return;
         provideHelp(eventItem.getChannel());
-
     }
 
     private void provideHelp(MessageChannel channel) {
