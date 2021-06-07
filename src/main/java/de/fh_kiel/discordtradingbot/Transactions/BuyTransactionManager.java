@@ -7,6 +7,7 @@ import de.fh_kiel.discordtradingbot.Interaction.EventListener;
 import de.fh_kiel.discordtradingbot.ZuluBot;
 import de.fh_kiel.discordtradingbot.Interaction.EventType;
 import discord4j.core.object.entity.channel.MessageChannel;
+import io.netty.handler.codec.compression.JdkZlibEncoder;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -44,6 +45,7 @@ public class BuyTransactionManager extends AbstractTransactionManager implements
         if (eventItem.getEventType().toString().contains("BUY") || eventItem.getEventType().toString().contains("ACCEPT")) {
             EventType eventType = eventItem.getEventType() ;
             String traderId = eventItem .getTraderID() ;
+            channel = eventItem.getChannel();
             String eventId;
             if (eventItem.getAuctionId() != null) {
                 eventId = eventItem.getAuctionId();
@@ -67,28 +69,37 @@ public class BuyTransactionManager extends AbstractTransactionManager implements
             }
 
 
-
-            //*buyer kann Eike sein oder ein anderer Bot, Im Fall Eike müssen wir
-            //*begründen warum wir nicht verkaufen können und wir müssen ein gegenangebot machen
-
             switch (eventType) {
+                case ZULU_BUY:
+                    if (isProductWorth(price, product) && checkInventory(product)) {
+                        transactions.put(eventId, new Transaction(eventItem));
+                        executeTransaction(EventType.BUY_CONFIRM,eventId,price,product);
+                        bot.getChannelInteracter().writeThisMessage("Danke für deinen Kauf. Transaktion war erfolgreich", channel);
+                    }else if (eventItem.getSellerID().equals("HIER KOMMT EIKES ID")) {
+                        //! begründe warum wir nicht verkaufen können
+                        bot.getChannelInteracter().writeThisMessage(("Wir haben das Produkt -> " + checkInventory(product)).toString(),eventItem.getChannel());
+                        bot.getChannelInteracter().writeThisMessage(("Dein Preis ist fair -> " + isProductWorth(price, product)).toString(),eventItem.getChannel());
+                        makeCounterOffer(eventItem);
+                    }
+                    break;
+                case ZULU_ACCEP:
+                    executeTransaction(eventItem);
+                    bot.getChannelInteracter().writeThisMessage("Danke für deinen Kauf. Transaktion war erfolgreich", channel);
+                    break;
+                case ZULU_DENY:
+                    dismissTransaction(eventId);
+                    break;
                 //! jemand hat was angeboten und wir wollen ihm sagen "geilo, das würde ich gerne kaufen"
                 case BUY_OFFER:
-                    channel = eventItem.getChannel();
                     if (isProductWorth(price, product) && checkInventory(product)) {
                         transactions.put(eventId, new Transaction(eventItem));
                         //! Antworte mit dem pattern:
                         //! !step accept @USER ID
                         bot.getChannelInteracter().writeAcceptMessage(eventItem);
-                    } else if (eventItem.getSellerID().equals("HIER KOMMT EIKES ID")) {
-                        //! begrunde warum wir nicht kaufen können
-                        bot.getChannelInteracter().writeThisMessage(("Wir haben das Produkt -> " + checkInventory(product)).toString(),eventItem.getChannel());
-                        bot.getChannelInteracter().writeThisMessage(("Dein Preis ist fair -> " + isProductWorth(price, product)).toString(),eventItem.getChannel());
-                        //! Ein GegenAngebot TODO GegenAngebot
                     }
                     break;
                 case BUY_CONFIRM:
-                    if (isItMe(traderId)) {
+                    if (isItMe(traderId) && transactions.get(eventId) != null) {
                         executeTransaction(eventType, eventId, price, product);
                         bot.getChannelInteracter().writeThisMessage("OKAY ich habe verkauft \n", eventItem.getChannel());
                         channel = eventItem.getChannel();
@@ -141,7 +152,7 @@ public class BuyTransactionManager extends AbstractTransactionManager implements
      * @param product das product zum gegenAngebot
      * @return ein product den wir stattdessen anbieten
      */
-    private String getCounterOffer(char[] product){
+    private String getCounterString(char[] product){
         HashMap<Character, Integer> hashmap = fillHashmap(new HashMap<>());
         ArrayList<Letter> letters = Inventory.getInstance().getLetters();
         StringBuilder counterOffer = new StringBuilder();
@@ -163,6 +174,16 @@ public class BuyTransactionManager extends AbstractTransactionManager implements
         }
 
         return counterOffer.toString();
+    }
+
+    private void  makeCounterOffer( EventItem eventItem){
+        //* !ZULU counterOffer <ID> <String> [Preis]
+        char[] product = eventItem.getProduct();
+        channel= eventItem.getChannel();
+        String counterOfferMessage = "!ZULU counterOffer " + eventItem.getAuctionId() + " " + getCounterString(product) + " "
+                + (int)(calculateProductValue(product)*1.2) ;
+        bot.getChannelInteracter().writeThisMessage(counterOfferMessage, channel);
+        transactions.put(eventItem.getAuctionId(),new Transaction(eventItem));
     }
 
 }

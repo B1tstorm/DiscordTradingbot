@@ -88,12 +88,14 @@ public abstract class AbstractTransactionManager {
     }
 
     public void executeTransaction(EventItem eventItem) {
-        Transaction transaction = transactions.get(eventItem.getAuctionId());
-        Inventory.getInstance().updateLetterAmount(eventItem.getEventType(), transaction.getProduct());
-        Inventory.getInstance().updateWallet(transaction.getPrice());
-        transactions.remove(eventItem.getAuctionId());
-        //TODO delete
-        System.out.println("Tranaction wurde excuted");
+            Transaction transaction = transactions.get(eventItem.getAuctionId());
+            if (transaction != null){
+            Inventory.getInstance().updateLetterAmount(eventItem.getEventType(), transaction.getProduct());
+            Inventory.getInstance().updateWallet(transaction.getPrice());
+            transactions.remove(eventItem.getAuctionId());
+            //TODO delete
+            System.out.println("Tranaction wurde excuted");
+        }
     }
 
     public Boolean isProductWorth(Integer price, char[] product) {
@@ -117,7 +119,7 @@ public abstract class AbstractTransactionManager {
         return i + 1000+"";
     }
 
-    private int calculateProductValue(char[] product){
+    protected int calculateProductValue(char[] product){
         int totalLocalValue = 0;
         ArrayList<Letter> letterArray = Inventory.getInstance().getLetters();
         //rechne gesamtInternWert vom product

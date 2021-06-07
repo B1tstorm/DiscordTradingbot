@@ -80,6 +80,8 @@ public class ZuluBot implements EventListener {
                 .append("Pattern: !ZULU wtb <String> [Preis]\n")
                 .append("Beispiel 1: !ZULU wtb HALLO 50\n")
                 //.append("Beispiel 2: !ZULU wtb HALLO \n")
+                .append("Im Fall eines GegebAngebot antworten mir mit \n")
+                .append("!ZULU counterOffer <ID> <String> [Preis] \n")
                 .append("Bestätige ein Gegenangebot \n")
                 .append("Pattern: !ZULU confirm <ID> \n")
                 .append("Beispiel 3: !ZULU confirm 01 \n")
