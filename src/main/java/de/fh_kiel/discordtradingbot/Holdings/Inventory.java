@@ -9,13 +9,18 @@ public class Inventory {
 	private static Inventory inventory;
 
 	private final ArrayList<Letter> letters = new ArrayList<>();
+
+	public void setWallet(Integer wallet) {
+		this.wallet = wallet;
+	}
+
 	private Integer wallet = 0;
 
 	//bei der erstellung eines Objekt, wird das ArrayLetters erstellt und initialisiert
 	private Inventory() {
 		// Alle 26 Buchstaben von A - Z werden mittels ascii initial gespeichert
 		for (int ascii = 65; ascii < 91; ascii++) {
-		letters.add(new Letter((char)ascii, 0, 10));
+		letters.add(new Letter((char)ascii, 10, 10));
 		}
 	}
 
@@ -40,7 +45,7 @@ public class Inventory {
 	public void updateLetterAmount(EventType eventType, char[] product){
 		ArrayList<Letter> letterArray = Inventory.getInstance().getLetters();
 			for (char c : product) {
-				if(eventType == EventType.BUY){
+				if(eventType == EventType.BUY_CONFIRM){
 					letterArray.get((int) c - 65).decrementAmount();
 				}else{
 					letterArray.get((int) c - 65).incrementAmount();

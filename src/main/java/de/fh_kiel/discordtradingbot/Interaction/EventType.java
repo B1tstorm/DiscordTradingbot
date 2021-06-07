@@ -9,9 +9,12 @@ public enum EventType {
     SELL_ACCEPT,
     SELL_CONFIRM,
 
+    ACCEPT,
 
     AUCTION_START,
     AUCTION_BID,
     AUCTION_WON,
-    AUCTION_CLOSE
+    AUCTION_CLOSE,
+
+    HELP;
 }

@@ -1,20 +1,20 @@
 package de.fh_kiel.discordtradingbot.Transactions;
 
+import de.fh_kiel.discordtradingbot.Interaction.ChannelInteracter;
 import de.fh_kiel.discordtradingbot.Interaction.EventItem;
 import de.fh_kiel.discordtradingbot.Interaction.EventListener;
 import de.fh_kiel.discordtradingbot.Interaction.EventType;
 import de.fh_kiel.discordtradingbot.ZuluBot;
 
 public class SegTransactionManager extends AbstractTransactionManager implements EventListener {
+
     //! we buy
 
     public SegTransactionManager(ZuluBot bot) {
         super(bot);
     }
 
-    @Override
-    protected void makeOffer() {
-    }
+
 
     @Override
     public void executeTransaction(EventType eventType, String eventId, Integer price, char[] product) {
@@ -25,31 +25,52 @@ public class SegTransactionManager extends AbstractTransactionManager implements
     public void update(EventItem eventItem) {
         if (eventItem.getEventType().toString().contains("AUCTION")) {
 
-            // extract importen attributes form the EventItem
-            fillAttributes(eventItem);
+            //Attributes
+            EventType eventType = eventItem.getEventType() ;
+            String traderId = eventItem .getTraderID() ;
+            String eventId;
+            if (eventItem.getAuctionId() != null) {
+                eventId = eventItem.getAuctionId();
+            } else eventId = eventItem.getLogNr().toString();
+
+            char[] product ;
+            Integer price ;
+
+            if(eventItem.getProduct() == null){
+               product = transactions.get(eventId).getProduct();
+            }else{
+                product = eventItem.getProduct();
+            }
+
+
+            if (  eventItem.getValue() == null){
+                price = transactions.get(eventId).getPrice();
+            }else{
+                price = eventItem.getValue();
+            }
 
 
             switch (eventType) {
                 //wenn Transaction neu ist, erstellen, zum Array hinzufügen und beim BID einsteigen
                 case AUCTION_START:
                     if (isProductWorth(price, product) && isPriceAffordable(price)) {
-                        Transaction t = new Transaction(eventType);
-                        SegTransactionManager.transactions.put(eventId, t);
-                        t.bid(eventId, price);
+                        Transaction transaction = new Transaction(eventItem);
+                        transactions.put(eventId, transaction);
+                        bot.getChannelInteracter().writeBidMessage(eventItem);
                     }
                     break;
                 //TODO
                 //!trader ID muss geprüft werden. wir dürfen uns selbst nicht versteigern
                 case AUCTION_BID:
-                    if (isProductWorth(price, product) && isPriceAffordable(price) && !traderId.equals("845410146913747034")) {
+                    if (isProductWorth(price, product) && isPriceAffordable(price) && !isItMe(traderId)) {
                         //TransactionManager.getTransactions().get(eventId).bid(eventId, price);
-                        bid(eventItem);
+                        bot.getChannelInteracter().writeBidMessage(eventItem);
                     }
                     break;
                 case AUCTION_WON:
-                    if (traderId.equals("845410146913747034")) {
-                        //* "price*(-1)" macht die transaktion negativ (wie bezahlen)
-                        executeTransaction(eventType, eventId, price * (-1), product);
+                    if (isItMe(traderId)) {
+                        //* "price*(-1)" macht die transaktion negativ (wir bezahlen)
+                        executeTransaction(eventType, eventId, price, product);
                     } else {
                         dismissTransaction(eventId);
                     }
@@ -60,11 +81,4 @@ public class SegTransactionManager extends AbstractTransactionManager implements
         }
     }
 
-    protected void bid(EventItem eventItem) {
-        //* SEG auction bid 12 11 -> - - auctionState auctionId value
-        EventItem newItem = new EventItem(eventItem.getLogNr(), eventItem.getSellerID(),
-                "845410146913747034", eventItem.getAuctionId(), eventItem.getEventType(),
-                eventItem.getProduct(), eventItem.getValue() + 1, eventItem.getChannel());
-        //channelInteracter.writeMessage(newItem);
-    }
 }

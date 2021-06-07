@@ -41,6 +41,18 @@ public class EventItem {
         this.channel = channel;
     }
 
+    public void setProduct(char[] product) {
+        this.product = product;
+    }
+
+    public void setValue(Integer value) {
+        this.value = value;
+    }
+
+    public void setEventType(EventType eventType) {
+        this.eventType = eventType;
+    }
+
     /** Defaultkonstr. da ich im Scope der createEventItem Methode sonst keine zwei Instanzen erstellen kann,
      so kann ich eine erstellen und je nach EventState entscheide ich was rein kommt */
 
