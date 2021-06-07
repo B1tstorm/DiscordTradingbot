@@ -34,6 +34,7 @@ public class TransactionHistory implements EventListener, Publisher {
 
     @Override
     public void update(EventItem eventItem) {
+        assert eventItem != null;
         if(eventItem.getEventType() == EventType.AUCTION_CLOSE
             || eventItem.getEventType() == EventType.AUCTION_WON) {
             this.transactionHistory.add(createTransactionHistoryItem(eventItem));
