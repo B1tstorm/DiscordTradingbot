@@ -9,6 +9,7 @@ import de.fh_kiel.discordtradingbot.Interaction.EventType;
 import discord4j.core.object.entity.channel.MessageChannel;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import static java.lang.String.valueOf;
 
@@ -99,7 +100,7 @@ public class BuyTransactionManager extends AbstractTransactionManager implements
                 case ACCEPT: {
                     //!jemand hat unser Angebot angenommen und wir müssen ihm bestätigen "wir machen eine confirm Ansage"
                     try {
-                    eventItem.setValue(transactions.get(eventId).getPrice());
+                        eventItem.setValue(transactions.get(eventId).getPrice());
                     }catch (NullPointerException e ){ return;}
 
                     eventItem.setProduct(transactions.get(eventId).getProduct());
@@ -134,6 +135,34 @@ public class BuyTransactionManager extends AbstractTransactionManager implements
 
     }
 
+    /**
+     * die methode vergleicht das product mit dem Inventory. und liefert die davon im Inventory vorhandene Buchstaben zurück
+     * bsp. er will halloe aber wir haben kein o,e also liefern wir hall zum Gegenangebot
+     * @param product das product zum gegenAngebot
+     * @return ein product den wir stattdessen anbieten
+     */
+    private String getCounterOffer(char[] product){
+        HashMap<Character, Integer> hashmap = fillHashmap(new HashMap<>());
+        ArrayList<Letter> letters = Inventory.getInstance().getLetters();
+        StringBuilder counterOffer = new StringBuilder();
 
+        // Hashmap mit angeforderten Buchstaben (Buchstabe , Angeforderte Anzahl)
+        for (Character buchstabe : product) {
+            hashmap.put(buchstabe, hashmap.get(buchstabe) + 1);
+        }
+
+        //schreibe die Buchstaben, die wir liefern können zusammen in den Variablen counterOffer
+        for (Letter letter : letters) {
+            char c = letter.getLetter();
+            if (letter.getAmount() >= hashmap.get(c)){
+                counterOffer.append(String.valueOf(c).repeat(Math.max(0, hashmap.get(c))));
+            }else{
+                counterOffer.append(String.valueOf(c).repeat(Math.max(0, letter.getAmount())));
+            }
+
+        }
+
+        return counterOffer.toString();
+    }
 
 }
