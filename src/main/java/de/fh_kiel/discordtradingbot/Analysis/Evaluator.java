@@ -94,5 +94,4 @@ public class Evaluator implements Subscriber {
             return maxValue;
         }
     }
-
 }

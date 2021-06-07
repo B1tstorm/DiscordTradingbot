@@ -13,6 +13,7 @@ import discord4j.core.object.presence.Activity;
 import discord4j.core.object.presence.Presence;
 import static java.lang.String.valueOf;
 import java.io.*;
+import java.util.*;
 
 
 public class ChannelInteracter implements EventPublisher {
@@ -223,17 +224,21 @@ public class ChannelInteracter implements EventPublisher {
         //* !zulu visualize/wallet/inventory  [letter]
         //    0        1                         2
 
-        String[] messageShards = message.getContent().split(" ");
+        List<String> messageShards = Arrays.asList(message.getContent().split(" "));
 
         EventItem item = new EventItem(null, myId, null,
-                null, null , messageShards[2].toCharArray(), null, message.getChannel().block());
+                null, null , null, null, message.getChannel().block());
 
-        if (messageShards[1].equalsIgnoreCase("visualize")) {
+        if (messageShards.get(1).equalsIgnoreCase("visualize")) {
             item.setEventType(EventType.VISUALIZE);
-        } else if (messageShards[1].equalsIgnoreCase("wallet")) {
+        } else if (messageShards.get(1).equalsIgnoreCase("wallet")) {
             item.setEventType(EventType.WALLET);
-        } else if (messageShards[1].equalsIgnoreCase("inventory")) {
+        } else if (messageShards.get(1).equalsIgnoreCase("inventory")) {
             item.setEventType(EventType.INVENTORY);
+        }
+
+        if (messageShards.size() >= 3) {
+            item.setProduct(messageShards.get(2).toUpperCase(Locale.ROOT).toCharArray());
         }
         return item;
     }
