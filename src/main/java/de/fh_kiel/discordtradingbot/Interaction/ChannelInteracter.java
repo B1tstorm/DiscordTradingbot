@@ -2,33 +2,17 @@ package de.fh_kiel.discordtradingbot.Interaction;
 
 import de.fh_kiel.discordtradingbot.Analysis.Visualizer;
 import de.fh_kiel.discordtradingbot.ZuluBot;
-import de.fh_kiel.discordtradingbot.Transactions.BuyTransactionManager;
-import de.fh_kiel.discordtradingbot.Transactions.SegTransactionManager;
-import de.fh_kiel.discordtradingbot.Transactions.SellTransactionManager;
 import discord4j.core.DiscordClientBuilder;
 import discord4j.core.GatewayDiscordClient;
 import discord4j.core.event.domain.lifecycle.ReadyEvent;
 import discord4j.core.event.domain.message.MessageCreateEvent;
-import discord4j.core.object.entity.Attachment;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.User;
 import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.core.object.presence.Activity;
 import discord4j.core.object.presence.Presence;
-import java.util.Arrays;
-
-
 import static java.lang.String.valueOf;
-
-import discord4j.core.spec.MessageCreateSpec;
-
-import javax.imageio.ImageIO;
-import javax.imageio.stream.FileImageInputStream;
-import java.awt.image.BufferedImage;
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.function.Consumer;
 
 
 public class ChannelInteracter implements EventPublisher {
