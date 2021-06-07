@@ -45,79 +45,56 @@ public class ChannelInteracter implements EventPublisher {
                 });
     }
 
-    /**
-     * @param eventItem
-     * Die Methode antwortet in dem Channel, aus dem die Anfrage kam
-     */
-
-    /**
-     * @param emoji
-     * @return Boolean
-     */
-    private Boolean reactEmoji(String emoji) {
-        // TODO - implement ChannelInteracter.reactEmoji
-        throw new UnsupportedOperationException();
-    }
-
-    public void uploadFile(File file, MessageChannel channel) {
-        try {
-            InputStream stream = new FileInputStream(file);
-            channel.createMessage(messageCreateSpec -> {
-                messageCreateSpec.setContent("Visualization of letter value history:");
-                messageCreateSpec.addFile("File.svg", stream);
-            }).block();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-    }
-
     public void listenToChannel() {
         client.on(MessageCreateEvent.class)
                 .subscribe(event -> {
                     final Message message = event.getMessage();
                     final MessageChannel channel = message.getChannel().block();
-                    if (message.getAuthor().get().getId().equals("845410146913747034")) return;
+                    // Der Bot soll nicht auf eigene Commands reagieren
+                    if (message.getAuthor().get().getId().equals(myId)) return;
+
+                    EventItem eventItem = null;
                     // Bei Auktionen filtern dass nur Messages vom SEG Bot gelesen werden
                     if (getPrefix(message).equalsIgnoreCase("!SEG") /*&& message.getUserData().id().equals("501500923495841792")*/) { //* Hier muss später die ID des SEG Bot stehen!
                         // Für den außergewöhnlichen Fall das der SEG Bot zu wenig Argumente in den Chat schreibt
                         try { //? Evtl. unnötig da der Bot niemals zu wenig Argumente liefert. Nur so stürzt das Programm nicht ab
                             // Setzt die Anzeige auf Auction oder Trading
                             setPresence(EventType.AUCTION_START);
-                            EventItem eventItem = createEventItem(message);
-                            notifySubscriber(eventItem);
+                            eventItem = createEventItem(message);
                         } catch (ArrayIndexOutOfBoundsException e) {
                             System.err.println("Der Channel command enthält zu wenige Zeichen um ein EventItem zu generieren. Fehler: " + e);
                             assert channel != null;
                             channel.createMessage("Keine gültige Transaktion!").block();
+                            return;
                         }
                     }
 
                     // In unserem Channel auf Präfix !ZULU reagieren
                     if (getPrefix(message).equalsIgnoreCase("!ZULU") && message.getAuthor().map(user -> !user.isBot()).orElse(false)) {
-                        Visualizer.getInstance().notify(message);
-                        notifySubscriber(createZuluEventItem(message));
 
                         // TODO: implementieren dass andere auf uns reagieren können
                         // TODO: von Eventtype.SELL geändert
                         setPresence(EventType.SELL_OFFER);
-                    }
 
-                    if (getPrefix(message).equals("!TRD") && !message.getUserData().id().equals("845410146913747034")) {
-                        if (message.getContent().contains("wtb")) {
-                            EventItem eventItem = createBuyEventItem(message);
-                            assert eventItem != null;
-                            notifySubscriber(eventItem);
-                        } else if (message.getContent().contains("wts")) {
-                            EventItem eventItem = createSellEventItem(message);
-                            assert eventItem != null;
-                            notifySubscriber(eventItem);
-                        } else if (message.getContent().contains("accept")) {
-                            EventItem eventItem = createAcceptEventItem(message);
-                            if (eventItem != null) {
-                                notifySubscriber(eventItem);
-                            }
+                        if (message.getContent().contains("help")) {
+                            eventItem = createHelpEventItem(message);
+                        } else if ( message.getContent().contains("wtb") ||message.getContent().contains("confirm")||message.getContent().contains("deny")){
+                            eventItem = createZuluEventItem(message);
+                        } else  {
+                            eventItem = createVisualizerEventItem(message);
                         }
                     }
+
+                    if (getPrefix(message).equals("!TRD") && !message.getUserData().id().equals(myId)) {
+                        if (message.getContent().contains("wtb")) {
+                            eventItem = createBuyEventItem(message);
+                        } else if (message.getContent().contains("wts")) {
+                            eventItem = createSellEventItem(message);
+                        } else if (message.getContent().contains("accept")) {
+                            eventItem = createAcceptEventItem(message);
+                        }
+                    }
+                    if (eventItem != null) notifySubscriber(eventItem);
                 });
 
         //Verbindung schließen
@@ -289,6 +266,31 @@ public class ChannelInteracter implements EventPublisher {
         return null;
     }
 
+    private EventItem createVisualizerEventItem(Message message) {
+        //* metriken, analysen
+        //* !zulu visualize/wallet/inventory  [letter]
+        //    0        1             2
+
+        String[] messageShards = message.getContent().split(" ");
+
+        EventItem item = new EventItem(null, myId, null,
+                null, null , messageShards[2].toCharArray(), null, message.getChannel().block());
+
+        if (messageShards[1].equalsIgnoreCase("visualize")) {
+            item.setEventType(EventType.VISUALIZE);
+        } else if (messageShards[1].equalsIgnoreCase("wallet")) {
+            item.setEventType(EventType.WALLET);
+        } else if (messageShards[1].equalsIgnoreCase("inventory")) {
+            item.setEventType(EventType.INVENTORY);
+        }
+        return item;
+    }
+
+    private EventItem createHelpEventItem(Message message) {
+        return new EventItem(null, null, null, null, EventType.HELP, null, null, message.getChannel().block());
+    }
+
+    //Outbound Communication
 
     private void setPresence(EventType eventType) {
         //? Status anpassen ob Bot gerade in "auction" oder "trade"
@@ -316,7 +318,7 @@ public class ChannelInteracter implements EventPublisher {
                 //! If() ist ein Test welcher schon im TransactionManager stattfindet.
                 //! Das AUCTION_WON case wird nie ausgeführt da es beim TransactionManager
                 //! endet und writeMessage() nicht aufruft
-                if (eventItem.getTraderID().equals("845410146913747034")) {
+                if (eventItem.getTraderID().equals(getMyId())) {
                     channel.createMessage("Wir haben die auctionID " + eventItem.getAuctionId() + " gewonnen!").block();
                 } else {
                     channel.createMessage("Wir haben die auctionID " + eventItem.getAuctionId() + " verloren!").block();
@@ -327,8 +329,22 @@ public class ChannelInteracter implements EventPublisher {
         }
     }
 
+    private Boolean reactEmoji(String emoji) {
+        // TODO - implement ChannelInteracter.reactEmoji
+        throw new UnsupportedOperationException();
+    }
 
-
+    public void uploadFile(File file, MessageChannel channel) {
+        try {
+            InputStream stream = new FileInputStream(file);
+            channel.createMessage(messageCreateSpec -> {
+                messageCreateSpec.setContent("Visualization of letter value history:");
+                messageCreateSpec.addFile("File.svg", stream);
+            }).block();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
 
     public void writeBidMessage(EventItem eventItem) {
         final MessageChannel channel = eventItem.getChannel();

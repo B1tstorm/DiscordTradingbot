@@ -42,18 +42,15 @@ public class BuyTransactionManager extends AbstractTransactionManager implements
 
     @Override
     public void update(EventItem eventItem) {
-        if (eventItem.getEventType().toString().contains("BUY") || eventItem.getEventType().toString().contains("ACCEPT") || eventItem.getEventType().toString().contains("ZULU") ) {
+        if (eventItem.getEventType().toString().contains("BUY") || eventItem.getEventType().toString().contains("ACCEPT")) {
             EventType eventType = eventItem.getEventType() ;
             String traderId = eventItem .getTraderID() ;
             channel = eventItem.getChannel();
             String eventId;
             if (eventItem.getAuctionId() != null) {
                 eventId = eventItem.getAuctionId();
-                //bei Accept fälle von anderen klassen soll das programm diese Methode verlassen
                 if (transactions.get(eventId) == null && eventItem.getEventType().toString().contains("ACCEPT")) return;
-            } else {
-                eventId = eventItem.getLogNr().toString();
-            }
+            } else eventId = eventItem.getLogNr().toString();
 
             char[] product ;
             Integer price ;
@@ -186,11 +183,10 @@ public class BuyTransactionManager extends AbstractTransactionManager implements
         //* !ZULU counterOffer <ID> <String> [Preis]
         char[] product = eventItem.getProduct();
         channel= eventItem.getChannel();
-        String counterOfferMessage = "!ZULU counterOffer " + eventItem.getLogNr() + " " + getCounterString(product) + " "
-                + (int)(calculateProductValue(getCounterString(product).toCharArray())*1.2) ;
+        String counterOfferMessage = "!ZULU counterOffer " + eventItem.getAuctionId() + " " + getCounterString(product) + " "
+                + (int)(calculateProductValue(product)*1.2) ;
         bot.getChannelInteracter().writeThisMessage(counterOfferMessage, channel);
-        eventItem.setValue((int)(calculateProductValue(getCounterString(product).toCharArray())*1.2));
-        transactions.put(eventItem.getLogNr().toString(),new Transaction(eventItem));
+        transactions.put(eventItem.getAuctionId(),new Transaction(eventItem));
     }
 
 }

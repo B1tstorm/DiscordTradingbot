@@ -20,5 +20,9 @@ public enum EventType {
     ZULU_CONFIRM,
     ZULU_DENY,
 
+    VISUALIZE,
+    WALLET,
+    INVENTORY,
+
     HELP;
 }
