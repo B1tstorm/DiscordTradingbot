@@ -79,11 +79,11 @@ public class ZuluBot implements EventListener {
                 .append("Kaufe verfügbare Worte \n")
                 .append("Pattern: !ZULU wtb <String> [Preis]\n")
                 .append("Beispiel 1: !ZULU wtb HALLO 50\n")
-                .append("Beispiel 2: !ZULU wtb HALLO \n")
-                .append("Bestätige ein Angebot \n")
+                //.append("Beispiel 2: !ZULU wtb HALLO \n")
+                .append("Bestätige ein Gegenangebot \n")
                 .append("Pattern: !ZULU confirm <ID> \n")
                 .append("Beispiel 3: !ZULU confirm 01 \n")
-                .append("Lehne ein Angebot ab\n")
+                .append("Lehne ein Gegenangebot ab\n")
                 .append("Pattern: !ZULU deny <ID> \n")
                 .append("Beispiel 4: !ZULU deny 01 \n");
         channelInteracter.writeThisMessage(sb.toString(), channel);
