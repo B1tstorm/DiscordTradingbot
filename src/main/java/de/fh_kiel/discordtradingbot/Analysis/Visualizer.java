@@ -1,9 +1,10 @@
 package de.fh_kiel.discordtradingbot.Analysis;
 
-import de.fh_kiel.discordtradingbot.Config;
 import de.fh_kiel.discordtradingbot.Interaction.ChannelInteracter;
-import discord4j.core.object.entity.Message;
-import discord4j.core.object.entity.channel.MessageChannel;
+import de.fh_kiel.discordtradingbot.Interaction.EventItem;
+import de.fh_kiel.discordtradingbot.Interaction.EventListener;
+import de.fh_kiel.discordtradingbot.Interaction.EventType;
+import de.fh_kiel.discordtradingbot.ZuluBot;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -14,28 +15,18 @@ import java.nio.file.Path;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
 
-public class Visualizer {
+public class Visualizer implements EventListener {
 
 	private volatile static Visualizer Instance;
+	private final ZuluBot bot;
 
-	private Visualizer() {
-
+	public Visualizer(ZuluBot bot) {
+		this.bot = bot;
 	}
 
-	public static Visualizer getInstance() {
-		if (Instance == null) {
-			synchronized (Evaluator.class) {
-				if (Instance == null) {
-					Instance = new Visualizer();
-				}
-			}
-		}
-		return Instance;
-	}
+	public File visualizeHistory(char c) throws IOException {
 
-	public void visualizeHistory(Message message) throws IOException {
-
-		Evaluator.LetterStatisticsItem data = Evaluator.getInstance().getLetterStatistics().get(Config.charToIndex(message.getContent().split(" ")[2].toCharArray()[0]));
+		Evaluator.LetterStatisticsItem data = Evaluator.getInstance().getLetterStatistics().get(c);
 
 		final File file = new File("src\\main\\svg\\svgbase.svg");
 		File newfile = new File("src\\main\\svg\\temp.svg");
@@ -63,25 +54,15 @@ public class Visualizer {
 		fw.write("</g></svg>");
 		fw.close();
 
-
-
-
-
-		//todo svg an channelinteracter senden
-		ChannelInteracter channelInteracter = null; //dummy, todo
-		//!!!!!!!!!!
-
-
-
-		channelInteracter.uploadFile(newfile, message.getChannel().block());
-
+		return newfile;
 	}
 
-	public void notify(Message message) {
-		if (!message.getContent().split(" ")[1].equalsIgnoreCase("visualize")) return;
+	@Override
+	public void update(EventItem eventItem) {
+		if (eventItem.getEventType() != EventType.VISUALIZE) return;
 
 		try {
-			visualizeHistory(message);
+			bot.getChannelInteracter().uploadFile(visualizeHistory(eventItem.getProduct()[0]), eventItem.getChannel());
 		} catch (IOException e) {
 			System.err.println("could not access local filesystem - error" + e);
 		}
