@@ -71,17 +71,13 @@ public class ChannelInteracter implements EventPublisher {
 
                     // In unserem Channel auf Präfix !ZULU reagieren
                     if (getPrefix(message).equalsIgnoreCase("!ZULU") && message.getAuthor().map(user -> !user.isBot()).orElse(false)) {
-
-                        // TODO: implementieren dass andere auf uns reagieren können
-                        // TODO: von Eventtype.SELL geändert
-                        setPresence(EventType.SELL_OFFER);
-
                         if (message.getContent().contains("help")) {
                             eventItem = createHelpEventItem(message);
-                        } else if ( message.getContent().contains("wtb") ||message.getContent().contains("confirm")||message.getContent().contains("deny")){
+                        }else if (message.getContent().contains("wtb") || message.getContent().contains("confirm")||message.getContent().contains("deny")){
                             eventItem = createZuluEventItem(message);
-                        } else  {
-                            eventItem = createVisualizerEventItem(message);
+                        }
+                        else {
+                            eventItem = createVISUALIZEEventItem(message);
                         }
                     }
 
@@ -266,7 +262,7 @@ public class ChannelInteracter implements EventPublisher {
         return null;
     }
 
-    private EventItem createVisualizerEventItem(Message message) {
+    private EventItem createVISUALIZEEventItem(Message message) {
         //* metriken, analysen
         //* !zulu visualize/wallet/inventory  [letter]
         //    0        1             2
@@ -329,10 +325,6 @@ public class ChannelInteracter implements EventPublisher {
         }
     }
 
-    private Boolean reactEmoji(String emoji) {
-        // TODO - implement ChannelInteracter.reactEmoji
-        throw new UnsupportedOperationException();
-    }
 
     public void uploadFile(File file, MessageChannel channel) {
         try {
