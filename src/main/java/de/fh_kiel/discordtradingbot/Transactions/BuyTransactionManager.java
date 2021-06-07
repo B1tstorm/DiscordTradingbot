@@ -75,18 +75,21 @@ public class BuyTransactionManager extends AbstractTransactionManager implements
                         transactions.put(eventId, new Transaction(eventItem));
                         executeTransaction(EventType.BUY_CONFIRM,eventId,price,product);
                         bot.getChannelInteracter().writeThisMessage("Danke für deinen Kauf. Transaktion war erfolgreich", channel);
-                    }else if (eventItem.getSellerID().equals("HIER KOMMT EIKES ID")) {
+                    }else {
                         //! begründe warum wir nicht verkaufen können
                         bot.getChannelInteracter().writeThisMessage(("Wir haben das Produkt -> " + checkInventory(product)).toString(),eventItem.getChannel());
                         bot.getChannelInteracter().writeThisMessage(("Dein Preis ist fair -> " + isProductWorth(price, product)).toString(),eventItem.getChannel());
                         makeCounterOffer(eventItem);
+                        bot.getChannelInteracter().writeThisMessage("zum Bestätigen schreib: !ZULU confirm "+eventItem.getLogNr(), channel);
+                        bot.getChannelInteracter().writeThisMessage("zum Ablehnen schreib:   !ZULU deny "+eventItem.getLogNr(), channel);
                     }
                     break;
-                case ZULU_ACCEPT:
+                case ZULU_CONFIRM:
                     executeTransaction(eventItem);
                     bot.getChannelInteracter().writeThisMessage("Danke für deinen Kauf. Transaktion war erfolgreich", channel);
                     break;
                 case ZULU_DENY:
+                    bot.getChannelInteracter().writeThisMessage("Schade! \n Du kannst uns jeder Zeit gerne ein Gegenangebot machen", channel);
                     dismissTransaction(eventId);
                     break;
                 //! jemand hat was angeboten und wir wollen ihm sagen "geilo, das würde ich gerne kaufen"
