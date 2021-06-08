@@ -56,7 +56,7 @@ public class ChannelInteracter implements EventPublisher {
 
                     EventItem eventItem = null;
                     // Bei Auktionen filtern dass nur Messages vom SEG Bot gelesen werden
-                    if (getPrefix(message).equalsIgnoreCase("!SEG") /*&& message.getUserData().id().equals("501500923495841792")*/) { //* Hier muss später die ID des SEG Bot stehen!
+                    if (getPrefix(message).equalsIgnoreCase("!SEG")  && message.getAuthor().map(user -> !user.isBot()).orElse(false)/*&& message.getUserData().id().equals("501500923495841792")*/) { //* Hier muss später die ID des SEG Bot stehen!
                         // Für den außergewöhnlichen Fall das der SEG Bot zu wenig Argumente in den Chat schreibt
                             setPresence(EventType.AUCTION_START);
                             eventItem = createEventItem(message);
@@ -97,7 +97,7 @@ public class ChannelInteracter implements EventPublisher {
     }
 
     private EventItem createEventItem(Message message) {
-        try {
+        try { //test
             String[] messageShards = message.getContent().split(" ");
             char[] products = null;
             String traderID = null;
@@ -111,6 +111,7 @@ public class ChannelInteracter implements EventPublisher {
                             .toCharArray(); // Erstellt aus dem String einzelne Elemente "products"
                     break;
                 case "bid":
+                    if ( messageShards.length == 5 ) return null;
                     traderID = messageShards[4];
                     eventType = EventType.AUCTION_BID;
                     break;

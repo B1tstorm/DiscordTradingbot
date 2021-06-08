@@ -34,7 +34,7 @@ public class SegTransactionManager extends AbstractTransactionManager implements
 
             char[] product ;
             Integer price ;
-
+            try{
             if(eventItem.getProduct() == null){
                product = transactions.get(eventId).getProduct();
             }else{
@@ -45,6 +45,9 @@ public class SegTransactionManager extends AbstractTransactionManager implements
                 price = transactions.get(eventId).getPrice();
             }else{
                 price = eventItem.getValue();
+            }}catch (Exception e){
+                System.out.println("Es wurde um eine transaction, die es nicht gibt, versteigert");
+                return;
             }
 
             switch (eventType) {
