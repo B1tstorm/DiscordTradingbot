@@ -1,6 +1,6 @@
 package de.fh_kiel.discordtradingbot.Interaction;
 
-import de.fh_kiel.discordtradingbot.Analysis.Visualizer;
+import de.fh_kiel.discordtradingbot.Transactions.Transaction;
 import de.fh_kiel.discordtradingbot.ZuluBot;
 import discord4j.core.DiscordClientBuilder;
 import discord4j.core.GatewayDiscordClient;
@@ -11,13 +11,16 @@ import discord4j.core.object.entity.User;
 import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.core.object.presence.Activity;
 import discord4j.core.object.presence.Presence;
+
 import static java.lang.String.valueOf;
+
 import java.io.*;
 
 
 public class ChannelInteracter implements EventPublisher {
     private final ZuluBot zuluBot;
     private final String myId;
+    private final String myRawId;
     //public EventManager events;
 
     GatewayDiscordClient client;
@@ -33,7 +36,8 @@ public class ChannelInteracter implements EventPublisher {
 
         //Erfolgreiche Authentifikation nach Stdout loggen
         assert client != null;
-        myId = client.getSelfId().asString();
+        myId = "<@!" + client.getSelfId().asString() + ">";
+        myRawId = client.getSelfId().asString();
         client.getEventDispatcher().on(ReadyEvent.class)
                 .subscribe(event -> {
                     final User self = event.getSelf();
@@ -47,35 +51,31 @@ public class ChannelInteracter implements EventPublisher {
                     final Message message = event.getMessage();
                     final MessageChannel channel = message.getChannel().block();
                     // Der Bot soll nicht auf eigene Commands reagieren
-                    if (message.getUserData().id().equals(myId)) return;
+                    if (message.getAuthor().get().getId().equals(myRawId)) return;
 
                     EventItem eventItem = null;
                     // Bei Auktionen filtern dass nur Messages vom SEG Bot gelesen werden
                     if (getPrefix(message).equalsIgnoreCase("!SEG") /*&& message.getUserData().id().equals("501500923495841792")*/) { //* Hier muss später die ID des SEG Bot stehen!
                         // Für den außergewöhnlichen Fall das der SEG Bot zu wenig Argumente in den Chat schreibt
-                        try { //? Evtl. unnötig da der Bot niemals zu wenig Argumente liefert. Nur so stürzt das Programm nicht ab
-                            // Setzt die Anzeige auf Auction oder Trading
                             setPresence(EventType.AUCTION_START);
                             eventItem = createEventItem(message);
-                        } catch (ArrayIndexOutOfBoundsException e) {
-                            System.err.println("Der command enthält ein ungüliges Pattern. Fehler: " + e);
-                            assert channel != null;
-                            channel.createMessage("Keine gültige Transaktion!").block();
-                        }
                     }
 
                     // In unserem Channel auf Präfix !ZULU reagieren
-                    if (getPrefix(message).equalsIgnoreCase("!ZULU") && message.getAuthor().map(user -> !user.isBot()).orElse(false)) {
+                    else if (getPrefix(message).equalsIgnoreCase("!ZULU")
+                            && message.getAuthor().map(user -> !user.isBot()).orElse(false)) {
                         setPresence(EventType.SELL_OFFER);
-
                         if (message.getContent().contains("help")) {
                             eventItem = createHelpEventItem(message);
-                        } else {
+                        } else if (message.getContent().contains("wtb") || message.getContent().contains("confirm")
+                                || message.getContent().contains("deny")) {
                             eventItem = createZuluEventItem(message);
+                        } else {
+                            eventItem = createVISUALIZEEventItem(message);
                         }
                     }
 
-                    if (getPrefix(message).equals("!TRD")) {
+                   else  if (getPrefix(message).equals("!TRD")) {
                         if (message.getContent().contains("wtb")) {
                             eventItem = createBuyEventItem(message);
                         } else if (message.getContent().contains("wts")) {
@@ -97,103 +97,155 @@ public class ChannelInteracter implements EventPublisher {
     }
 
     private EventItem createEventItem(Message message) {
-        String[] messageShards = message.getContent().split(" ");
-        char[] products = null;
-        String traderID = null;
-        EventType eventType = EventType.AUCTION_START;
+        try { //test
+            String[] messageShards = message.getContent().split(" ");
+            char[] products = null;
+            String traderID = null;
+            EventType eventType = EventType.AUCTION_START;
 
-        switch (messageShards[2]) {
-            case "start":
-                products = messageShards[4]
-                        .replaceAll("\\s+", "") // Entfernt alle Leerzeichen
-                        .toUpperCase() // Stellt alle Buchstaben auf Großbuchstaben
-                        .toCharArray(); // Erstellt aus dem String einzelne Elemente "products"
-                break;
-            case "bid":
-                traderID = messageShards[4];
-                eventType = EventType.AUCTION_BID;
-                break;
-            case "won":
-                traderID = messageShards[4];
-                eventType = EventType.AUCTION_WON;
-                break;
-            default:
-                break;
+            switch (messageShards[2]) {
+                case "start":
+                    products = messageShards[4]
+                            .replaceAll("\\s+", "") // Entfernt alle Leerzeichen
+                            .toUpperCase() // Stellt alle Buchstaben auf Großbuchstaben
+                            .toCharArray(); // Erstellt aus dem String einzelne Elemente "products"
+                    break;
+                case "bid":
+                    if ( messageShards.length == 5 ) return null;
+                    traderID = messageShards[4];
+                    eventType = EventType.AUCTION_BID;
+                    break;
+                case "won":
+                    traderID = messageShards[4];
+                    eventType = EventType.AUCTION_WON;
+                    products = zuluBot.getSegTransactionManager().getTransactions().get(messageShards[3]).getProduct();
+
+                    break;
+            }
+            return new EventItem(++logNr,
+                    message.getUserData().id(),
+                    traderID,
+                    messageShards[3], eventType,
+                    products,
+                    Integer.parseInt(messageShards[5]),
+                    message.getChannel().block());
+        } catch (Exception e) {
+            System.err.println("ungültige eingabeeeeee" + e);
         }
+        return null;
+    }
 
-        return new EventItem(logNr + 1,
-                message.getUserData().id(),
-                traderID,
-                messageShards[3], eventType,
-                products,
-                Integer.parseInt(messageShards[5]),
-                message.getChannel().block());
+    private EventItem createZuluEventItem(Message message) {
+        try {
+            String[] messageShards = message.getContent().split(" ");
+            char[] product = null;
+            EventType eventType;
+            Integer price = null;
+            String id = null;
+
+            switch (messageShards[1]) {
+                case "wtb":
+                    //*        !ZULU wtb HALLO 50
+                    eventType = EventType.ZULU_BUY;
+                    product = messageShards[2].toUpperCase().toCharArray();
+                    price = Integer.parseInt(messageShards[3]);
+                    break;
+                case "confirm":
+                    //*        !ZULU confirm <ID>
+                    eventType = EventType.ZULU_CONFIRM;
+                    Transaction transaction = zuluBot.getBuyTransactionManager().getTransactions().get(messageShards[2]);
+                    if (transaction == null) return null;
+                    product = transaction.getProduct();
+                    price = transaction.getPrice();
+                    id = messageShards[2];
+                    break;
+                case "deny":
+                    Transaction transaction2 = zuluBot.getBuyTransactionManager().getTransactions().get(messageShards[2]);
+                    if (transaction2 == null) return null;
+                    //*        !ZULU deny <ID>
+                    eventType = EventType.ZULU_DENY;
+                    id = messageShards[2];
+                    break;
+                default:
+                    return null;
+            }
+            return new EventItem(++logNr, message.getUserData().id(), null, id, eventType, product, price, message.getChannel().block());
+        } catch (Exception e) {
+            System.err.println("ungültige eingabe");
+        }
+        return null;
     }
 
     private EventItem createBuyEventItem(Message message) {
-        String[] messageShards = message.getContent().split(" ");
-        char[] products = null;
-        String traderID = null;
-        //* message.getAuthor().get().getId().asString() das benutzen wir
-        //*und dann halt das <@ davor und das > dahinter
-        String sellerId = "<@" + message.getAuthor().get().getId().asString() + ">";
-        switch (messageShards[1]) {
-            case "wtb": {
-                //* !trd wtb ID PRODUCT PRICE
-                //    0   1  2     3       4
-                EventType eventType = EventType.BUY_OFFER;
-                String auctionId = messageShards[2];
-                products = messageShards[3].toCharArray();
-                Integer price = Integer.parseInt(messageShards[4]);
-                return new EventItem(logNr + 1, sellerId, null,
-                        auctionId, eventType, products, price, message.getChannel().block());
+        try {
+            String[] messageShards = message.getContent().split(" ");
+            char[] products = null;
+            String traderID = null;
+            //* message.getAuthor().get().getId().asString() das benutzen wir
+            //*und dann halt das <@ davor und das > dahinter
+            String sellerId = "<@" + message.getAuthor().get().getId().asString() + ">";
+            switch (messageShards[1]) {
+                case "wtb": {
+                    //* !trd wtb ID PRODUCT PRICE
+                    //    0   1  2     3       4
+                    EventType eventType = EventType.BUY_OFFER;
+                    String auctionId = messageShards[2];
+                    products = messageShards[3].toCharArray();
+                    Integer price = Integer.parseInt(messageShards[4]);
+                    return new EventItem(++logNr, sellerId, null,
+                            auctionId, eventType, products, price, message.getChannel().block());
+                }
+                case "confirm": {
+                    //* !trd confirm <@USER> ID   wtb PRODUCT PRICE
+                    //    0      1      2     3     4    5     6
+                    EventType eventType = EventType.BUY_CONFIRM;
+                    traderID = messageShards[2];
+                    String auctionId = messageShards[3];
+                    products = messageShards[5].toCharArray();
+                    Integer price = Integer.parseInt(messageShards[6]);
+                    return new EventItem(++logNr, sellerId, traderID, auctionId,
+                            eventType, products, price, message.getChannel().block());
+                }
             }
-
-            case "confirm": {
-                //* !trd confirm <@USER> ID   wtb PRODUCT PRICE
-                //    0      1      2     3     4    5     6
-                EventType eventType = EventType.BUY_CONFIRM;
-                traderID = messageShards[2];
-                String auctionId = messageShards[3];
-                products = messageShards[5].toCharArray();
-                Integer price = Integer.parseInt(messageShards[6]);
-                return new EventItem(logNr + 1, sellerId, traderID, auctionId,
-                        eventType, products, price, message.getChannel().block());
-            }
+        } catch (Exception e) {
+            System.err.println("ungültige eingabe");
         }
         return null;
     }
 
     private EventItem createSellEventItem(Message message) {
+        try {
+            String[] messageShards = message.getContent().split(" ");
+            char[] products;
+            String traderID;
+            String auctionId = messageShards[2];
+            String sellerId = "<@" + message.getAuthor().get().getId().asString() + ">";
+            switch (messageShards[1]) {
+                case "wts": {
+                    //* !trd wts ID PRODUCT PRICE
+                    //   0    1   2    3      4
+                    EventType eventType = EventType.SELL_OFFER;
+                    products = messageShards[3].toCharArray();
+                    Integer price = Integer.parseInt(messageShards[4]);
+                    return new EventItem(++logNr, sellerId, null,
+                            auctionId, eventType, products, price, message.getChannel().block());
+                }
 
-        String[] messageShards = message.getContent().split(" ");
-        char[] products;
-        String traderID;
-        String auctionId = messageShards[2];
-        String sellerId = "<@" + message.getAuthor().get().getId().asString() + ">";
-        switch (messageShards[1]) {
-            case "wts": {
-                //* !trd wts ID PRODUCT PRICE
-                //   0    1   2    3      4
-                EventType eventType = EventType.SELL_OFFER;
-                products = messageShards[3].toCharArray();
-                Integer price = Integer.parseInt(messageShards[4]);
-                return new EventItem(logNr + 1, sellerId, null,
-                        auctionId, eventType, products, price, message.getChannel().block());
+                case "confirm": {
+                    //* !trd confirm <@USER> Gesuch-ID wts LETTER/STRING PRICE
+                    //     0    1        2       3      4        5          6
+                    EventType eventType = EventType.SELL_CONFIRM;
+                    traderID = messageShards[2];
+                    auctionId = messageShards[3];
+                    products = messageShards[5].toCharArray();
+                    Integer price = Integer.parseInt(messageShards[6]);
+                    return new EventItem(++logNr, sellerId, traderID, auctionId,
+                            eventType, products, price, message.getChannel().block());
+                }
+
             }
-
-            case "confirm": {
-                //* !trd confirm <@USER> Gesuch-ID wts LETTER/STRING PRICE
-                //     0    1        2       3      4        5          6
-                EventType eventType = EventType.SELL_CONFIRM;
-                traderID = messageShards[2];
-                auctionId = messageShards[3];
-                products = messageShards[5].toCharArray();
-                Integer price = Integer.parseInt(messageShards[6]);
-                return new EventItem(logNr + 1, sellerId, traderID, auctionId,
-                        eventType, products, price, message.getChannel().block());
-            }
-
+        } catch (Exception e) {
+            System.err.println("ungültige eingabe");
         }
         return null;
     }
@@ -205,35 +257,42 @@ public class ChannelInteracter implements EventPublisher {
 
         String[] messageShards = message.getContent().split(" ");
         if (isItMe(messageShards[2])) {
-            EventType eventType = EventType.ACCEPT;
-            String traderID = "<@" + message.getAuthor().get().getId().asString() + ">";
-            String auctionId = messageShards[3];
-            String mentionId = "<@!" + myId + ">";
+            try {
+                EventType eventType = EventType.ACCEPT;
+                String traderID = "<@" + message.getAuthor().get().getId().asString() + ">";
+                String auctionId = messageShards[3];
 
-            return new EventItem(logNr + 1, mentionId, traderID,
-                    auctionId,eventType, null, null, message.getChannel().block());
+                return new EventItem(++logNr, myId, traderID,
+                        auctionId, eventType, null, null, message.getChannel().block());
+            } catch (Exception e) {
+                System.err.println("ungültige eingabe");
+            }
         }
         return null;
     }
 
-    private EventItem createZuluEventItem(Message message) {
+    private EventItem createVISUALIZEEventItem(Message message) {
         //* metriken, analysen
         //* !zulu visualize/wallet/inventory  [letter]
         //    0        1             2
-        String[] messageShards = message.getContent().split(" ");
-        String mentionId = "<@!" + myId + ">";
+        try {
+            String[] messageShards = message.getContent().split(" ");
 
-        EventItem item = new EventItem(null, mentionId, null,
-                null, null , messageShards[2].toCharArray(), null, message.getChannel().block());
+            EventItem item = new EventItem(null, myId, null,
+                    null, null, messageShards[2].toCharArray(), null, message.getChannel().block());
 
-        if (messageShards[1].equalsIgnoreCase("visualize")) {
-            item.setEventType(EventType.VISUALIZE);
-        } else if (messageShards[1].equalsIgnoreCase("wallet")) {
-            item.setEventType(EventType.WALLET);
-        } else if (messageShards[1].equalsIgnoreCase("inventory")) {
-            item.setEventType(EventType.INVENTORY);
+            if (messageShards[1].equalsIgnoreCase("visualize")) {
+                item.setEventType(EventType.VISUALIZE);
+            } else if (messageShards[1].equalsIgnoreCase("wallet")) {
+                item.setEventType(EventType.WALLET);
+            } else if (messageShards[1].equalsIgnoreCase("inventory")) {
+                item.setEventType(EventType.INVENTORY);
+            }
+            return item;
+        } catch (Exception e) {
+            System.err.println("ungültige eingabe");
         }
-        return item;
+        return null;
     }
 
     private EventItem createHelpEventItem(Message message) {
@@ -268,7 +327,7 @@ public class ChannelInteracter implements EventPublisher {
                 //! If() ist ein Test welcher schon im TransactionManager stattfindet.
                 //! Das AUCTION_WON case wird nie ausgeführt da es beim TransactionManager
                 //! endet und writeMessage() nicht aufruft
-                if (eventItem.getTraderID().equals(getMentionId())) {
+                if (eventItem.getTraderID().equals(myRawId)) {
                     channel.createMessage("Wir haben die auctionID " + eventItem.getAuctionId() + " gewonnen!").block();
                 } else {
                     channel.createMessage("Wir haben die auctionID " + eventItem.getAuctionId() + " verloren!").block();
@@ -279,10 +338,6 @@ public class ChannelInteracter implements EventPublisher {
         }
     }
 
-    private Boolean reactEmoji(String emoji) {
-        // TODO - implement ChannelInteracter.reactEmoji
-        throw new UnsupportedOperationException();
-    }
 
     public void uploadFile(File file, MessageChannel channel) {
         try {
@@ -341,12 +396,15 @@ public class ChannelInteracter implements EventPublisher {
 
     }
 
-    private Boolean isItMe(String botId){
-        String mentionId = "<@!" + myId + ">";
-        return botId.equals(mentionId);
+    private Boolean isItMe(String botId) {
+        return botId.equals(myId);
     }
 
-    public String getMentionId() {
-        return "<@!" + myId + ">";
+    public String getMyId() {
+        return myId;
+    }
+
+    public String getMyRawId() {
+        return myRawId;
     }
 }

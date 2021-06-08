@@ -45,7 +45,7 @@ public class Inventory {
 	public void updateLetterAmount(EventType eventType, char[] product){
 		ArrayList<Letter> letterArray = Inventory.getInstance().getLetters();
 			for (char c : product) {
-				if(eventType == EventType.BUY_CONFIRM){
+				if(eventType == EventType.BUY_CONFIRM || eventType == EventType.ZULU_CONFIRM){
 					letterArray.get((int) c - 65).decrementAmount();
 				}else{
 					letterArray.get((int) c - 65).incrementAmount();
