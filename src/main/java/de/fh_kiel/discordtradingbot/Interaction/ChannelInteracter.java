@@ -47,7 +47,7 @@ public class ChannelInteracter implements EventPublisher {
                     final Message message = event.getMessage();
                     final MessageChannel channel = message.getChannel().block();
                     // Der Bot soll nicht auf eigene Commands reagieren
-                    if (message.getAuthor().get().getId().equals(myId)) return;
+                    if (message.getUserData().id().equals(myId)) return;
 
                     EventItem eventItem = null;
                     // Bei Auktionen filtern dass nur Messages vom SEG Bot gelesen werden
@@ -58,10 +58,9 @@ public class ChannelInteracter implements EventPublisher {
                             setPresence(EventType.AUCTION_START);
                             eventItem = createEventItem(message);
                         } catch (ArrayIndexOutOfBoundsException e) {
-                            System.err.println("Der Channel command enthält zu wenige Zeichen um ein EventItem zu generieren. Fehler: " + e);
+                            System.err.println("Der command enthält ein ungüliges Pattern. Fehler: " + e);
                             assert channel != null;
                             channel.createMessage("Keine gültige Transaktion!").block();
-                            return;
                         }
                     }
 
@@ -76,7 +75,7 @@ public class ChannelInteracter implements EventPublisher {
                         }
                     }
 
-                    if (getPrefix(message).equals("!TRD") && !message.getUserData().id().equals(myId)) {
+                    if (getPrefix(message).equals("!TRD")) {
                         if (message.getContent().contains("wtb")) {
                             eventItem = createBuyEventItem(message);
                         } else if (message.getContent().contains("wts")) {
