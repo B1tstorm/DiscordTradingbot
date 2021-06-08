@@ -12,7 +12,6 @@ public class TransactionHistory implements EventListener, Publisher {
 
     // Thread Safety with "double-checked-locking"
     private final List<TransactionHistoryItem> transactionHistory = new ArrayList<>();
-    private final List<Subscriber> subscribers = new ArrayList<>();
 
     // volatile guarantees that field is not stored in cache, safety for multithreading
     private volatile static TransactionHistory onlyInstance;

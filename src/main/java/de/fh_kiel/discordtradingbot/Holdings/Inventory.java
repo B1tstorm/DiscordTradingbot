@@ -1,6 +1,7 @@
 package de.fh_kiel.discordtradingbot.Holdings;
 
 import de.fh_kiel.discordtradingbot.Analysis.Evaluator;
+import de.fh_kiel.discordtradingbot.Analysis.Subscriber;
 import de.fh_kiel.discordtradingbot.Config;
 import de.fh_kiel.discordtradingbot.Interaction.EventItem;
 import de.fh_kiel.discordtradingbot.Interaction.EventListener;
@@ -9,7 +10,7 @@ import de.fh_kiel.discordtradingbot.ZuluBot;
 
 import java.util.ArrayList;
 
-public class Inventory implements EventListener {
+public class Inventory implements EventListener, Subscriber {
 
 	private final ArrayList<Letter> letters = new ArrayList<>();
 	private Integer wallet;
@@ -26,13 +27,15 @@ public class Inventory implements EventListener {
 		this.bot = bot;
 		for (int i = 0; i < 26; i++) {
 			//todo amount init auf 0
-		letters.add(new Letter(Config.indexToChar(i), 10, 10));
+		letters.add(new Letter(Config.indexToChar(i), 10, (int) ((Config.staticLetterValues[i] * 5) + 5)));
 		}
 	}
 
-	private Integer calculateValue(Letter letter) {
-		// TODO - implement Inventory.calculateValue
-		throw new UnsupportedOperationException();
+	@Override
+	public void update(Letter l) {
+
+		//todo nur updates vom evaluator annehmen
+		letters.get(Config.charToIndex(l.getLetter())).setValue(l.getValue());
 	}
 
 	//metode kann auch einen negativen price bekommen
