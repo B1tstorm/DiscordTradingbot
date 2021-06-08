@@ -8,11 +8,10 @@ import de.fh_kiel.discordtradingbot.Interaction.EventType;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TransactionHistory implements EventListener, Publisher {
+public class TransactionHistory implements EventListener, LetterPublisher {
 
     // Thread Safety with "double-checked-locking"
     private final List<TransactionHistoryItem> transactionHistory = new ArrayList<>();
-    private final List<Subscriber> subscribers = new ArrayList<>();
 
     // volatile guarantees that field is not stored in cache, safety for multithreading
     private volatile static TransactionHistory onlyInstance;
@@ -66,12 +65,12 @@ public class TransactionHistory implements EventListener, Publisher {
     }
 
 
-    public void registerSubscriber(Subscriber s) {
+    public void registerSubscriber(LetterListener s) {
         this.subscribers.add(s);
     }
 
     @Override
-    public void removeSubscriber(Subscriber s) {
+    public void removeSubscriber(LetterListener s) {
         if (this.subscribers.contains(s)) {
             this.subscribers.remove(s);
         } else {
@@ -81,8 +80,8 @@ public class TransactionHistory implements EventListener, Publisher {
 
     @Override
     public void notifySubscribers(Letter l) {
-        for (Subscriber s : subscribers) {
-            s.update(l);
+        for (LetterListener s : subscribers) {
+            s.update(l, EventType.HISTORY);
         }
     }
 }

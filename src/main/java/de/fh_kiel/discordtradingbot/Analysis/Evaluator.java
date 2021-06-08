@@ -2,20 +2,24 @@ package de.fh_kiel.discordtradingbot.Analysis;
 
 import de.fh_kiel.discordtradingbot.Config;
 import de.fh_kiel.discordtradingbot.Holdings.Letter;
+import de.fh_kiel.discordtradingbot.Interaction.EventType;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class Evaluator implements Subscriber {
+public class Evaluator implements LetterListener, LetterPublisher {
 
     private volatile static Evaluator onlyInstance;
     private final List<LetterStatisticsItem> letterStatistics;
 
+
+
     Evaluator() {
         letterStatistics = new ArrayList<>();
         for(int i = 0 ; i < 26; i++) {
-            letterStatistics.add(new LetterStatisticsItem(Config.indexToChar(i)));
+            letterStatistics.add(
+                    new LetterStatisticsItem((Config.staticLetterValues[i] * 5) + 5, Config.indexToChar(i)));
         }
     }
 
@@ -35,9 +39,33 @@ public class Evaluator implements Subscriber {
     }
 
     @Override
-    public void update(Letter l) {
-        int index = Config.charToIndex(l.getLetter());
-        this.letterStatistics.get(index).updateValues(l);
+    public void update(Letter l, EventType source) {
+        if (source != EventType.HISTORY) return;
+
+        int i = Config.charToIndex(l.getLetter());
+        this.letterStatistics.get(i).updateValues(l);
+
+        notifySubscribers(this.letterStatistics.get(i).letter);
+    }
+
+    public void registerSubscriber(LetterListener s) {
+        this.subscribers.add(s);
+    }
+
+    @Override
+    public void removeSubscriber(LetterListener s) {
+        if (this.subscribers.contains(s)) {
+            this.subscribers.remove(s);
+        } else {
+            System.out.println("The Subscriber has not subscribed and cannot be removed.");
+        }
+    }
+
+    @Override
+    public void notifySubscribers(Letter l) {
+        for (LetterListener s : subscribers) {
+            s.update(l, EventType.EVALUATION);
+        }
     }
 
     public Integer getCurrentLetterValue(Letter l) {
@@ -48,25 +76,28 @@ public class Evaluator implements Subscriber {
     // getCurrentAvgValue MaxValue ...
 
     public class LetterStatisticsItem {
-        private char letter;
+        private final Letter letter;
         private final List<Integer> tradedLetterValues = new ArrayList<>();
         private Integer amountTraded = 0;
-        private Double averageValue = 0d;
+        private double averageValue = 0d;
+        private double staticValue = 0d;
         private Integer minValue = 0;
         private Integer maxValue = 0;
         private Double increaseInValue = 0d;
 
-        LetterStatisticsItem(char c) {
-            this.letter = c;
+        public LetterStatisticsItem(Double staticValue, char c) {
+            this.staticValue = staticValue;
+            this.averageValue = staticValue;
+            this.letter = new Letter(c, -1, (int) this.averageValue);
         }
-
 
         protected void updateValues(Letter l) {
             this.tradedLetterValues.add(l.getValue());
             this.amountTraded = this.tradedLetterValues.size();
-            this.averageValue = getAverageValue(this.tradedLetterValues);
             this.maxValue = Collections.max(tradedLetterValues);
             this.minValue = Collections.min(tradedLetterValues);
+
+            this.averageValue = ((getAverageValue(this.tradedLetterValues) * (1-(1.0/this.amountTraded))) + (this.staticValue * (1.0/this.amountTraded)));
             this.increaseInValue = getValueIncreasePercentage(l.getValue());
         }
 
@@ -82,7 +113,7 @@ public class Evaluator implements Subscriber {
             return ((double) newValue) / tradedLetterValues.get(0);
         }
 
-        public char getLetter() {
+        public Letter getLetter() {
             return letter;
         }
 

@@ -1,7 +1,6 @@
 package de.fh_kiel.discordtradingbot.Analysis;
 
 import de.fh_kiel.discordtradingbot.Config;
-import de.fh_kiel.discordtradingbot.Interaction.ChannelInteracter;
 import de.fh_kiel.discordtradingbot.Interaction.EventItem;
 import de.fh_kiel.discordtradingbot.Interaction.EventListener;
 import de.fh_kiel.discordtradingbot.Interaction.EventType;
@@ -25,7 +24,7 @@ public class Visualizer implements EventListener {
 		this.bot = bot;
 	}
 
-	public File visualizeHistory(char c) throws IOException {
+	public Path visualizeHistory(char c) throws IOException {
 
 		Evaluator.LetterStatisticsItem data = Evaluator.getInstance().getLetterStatistics().get(Config.charToIndex(c));
 
@@ -55,7 +54,7 @@ public class Visualizer implements EventListener {
 		fw.write("</g></svg>");
 		fw.close();
 
-		return newfile;
+		return newfilepath;
 	}
 
 	@Override
@@ -63,7 +62,8 @@ public class Visualizer implements EventListener {
 		if (eventItem.getEventType() != EventType.VISUALIZE) return;
 
 		try {
-			bot.getChannelInteracter().uploadFile(visualizeHistory(eventItem.getProduct()[0]), eventItem.getChannel());
+			Path p = visualizeHistory(eventItem.getProduct()[0]);
+			bot.getChannelInteracter().uploadFile(p.toFile(), eventItem.getChannel());
 		} catch (IOException e) {
 			System.err.println("could not access local filesystem - error" + e);
 		}

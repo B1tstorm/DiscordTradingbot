@@ -45,6 +45,7 @@ public class ZuluBot implements EventListener {
 
         Evaluator evaluator = Evaluator.getInstance();
         transactionHistory.registerSubscriber(evaluator);
+        evaluator.registerSubscriber(inventory);
 
         //TODO DELETE
         inventory.setWallet(2000);

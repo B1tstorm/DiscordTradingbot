@@ -1,6 +1,6 @@
 package de.fh_kiel.discordtradingbot.Holdings;
 
-import de.fh_kiel.discordtradingbot.Analysis.Evaluator;
+import de.fh_kiel.discordtradingbot.Analysis.LetterListener;
 import de.fh_kiel.discordtradingbot.Config;
 import de.fh_kiel.discordtradingbot.Interaction.EventItem;
 import de.fh_kiel.discordtradingbot.Interaction.EventListener;
@@ -9,7 +9,7 @@ import de.fh_kiel.discordtradingbot.ZuluBot;
 
 import java.util.ArrayList;
 
-public class Inventory implements EventListener {
+public class Inventory implements EventListener, LetterListener {
 
 	private final ArrayList<Letter> letters = new ArrayList<>();
 	private Integer wallet;
@@ -26,13 +26,15 @@ public class Inventory implements EventListener {
 		this.bot = bot;
 		for (int i = 0; i < 26; i++) {
 			//todo amount init auf 0
-		letters.add(new Letter(Config.indexToChar(i), 10, 10));
+		letters.add(new Letter(Config.indexToChar(i), 10, (int) ((Config.staticLetterValues[i] * 5) + 5)));
 		}
 	}
 
-	private Integer calculateValue(Letter letter) {
-		// TODO - implement Inventory.calculateValue
-		throw new UnsupportedOperationException();
+	@Override
+	public void update(Letter l, EventType source) {
+		if (source != EventType.EVALUATION) return;
+
+		letters.get(Config.charToIndex(l.getLetter())).setValue(l.getValue());
 	}
 
 	//metode kann auch einen negativen price bekommen
@@ -71,7 +73,7 @@ public class Inventory implements EventListener {
 			case INVENTORY:
 				sb = new StringBuilder("My current Inventory is : \n");
 				for (int i = 0; i < 26; i++) {
-					sb.append(this.letters.get(i).getLetter().toString()).append(" - ").append(this.letters.get(i).getValue()).append(" pieces \n");
+					sb.append(this.letters.get(i).getLetter().toString()).append(" - ").append(this.letters.get(i).getAmount()).append(" pieces - valued at ").append(this.letters.get(i).getValue()).append("\n");
 				}
 				break;
 			case WALLET:
