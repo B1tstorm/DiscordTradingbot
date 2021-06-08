@@ -12,19 +12,21 @@ import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.core.object.presence.Activity;
 import discord4j.core.object.presence.Presence;
 
-import static java.lang.String.valueOf;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 
-import java.io.*;
+import static java.lang.String.valueOf;
 
 
 public class ChannelInteracter implements EventPublisher {
+    static Integer logNr = 0;
     private final ZuluBot zuluBot;
     private final String myId;
-    private final String myRawId;
     //public EventManager events;
-
+    private final String myRawId;
     GatewayDiscordClient client;
-    static Integer logNr = 0;
 
     public ChannelInteracter(String token, ZuluBot bot) {
         this.zuluBot = bot;
@@ -51,19 +53,20 @@ public class ChannelInteracter implements EventPublisher {
                     final Message message = event.getMessage();
                     final MessageChannel channel = message.getChannel().block();
                     // Der Bot soll nicht auf eigene Commands reagieren
-                    if (message.getAuthor().get().getId().equals("myRawId")) return; //bitte nutze die Methode getMyId nicht. sie liefert nämlich die ID mit <@> und das ist falsch (ANAS)
+                    if (message.getAuthor().get().getId().equals(myRawId)) return;
 
                     EventItem eventItem = null;
                     // Bei Auktionen filtern dass nur Messages vom SEG Bot gelesen werden
-                    if (getPrefix(message).equalsIgnoreCase("!SEG")  && message.getAuthor().map(user -> !user.isBot()).orElse(false)/*&& message.getUserData().id().equals("501500923495841792")*/) { //* Hier muss später die ID des SEG Bot stehen!
+                    if (getPrefix(message).equalsIgnoreCase("!SEG") /*&& message.getUserData().id().equals("501500923495841792")*/) { //* Hier muss später die ID des SEG Bot stehen!
                         // Für den außergewöhnlichen Fall das der SEG Bot zu wenig Argumente in den Chat schreibt
-                            setPresence(EventType.AUCTION_START);
-                            eventItem = createEventItem(message);
+                        setPresence(EventType.AUCTION_START);
+                        eventItem = createEventItem(message);
                     }
 
                     // In unserem Channel auf Präfix !ZULU reagieren
                     else if (getPrefix(message).equalsIgnoreCase("!ZULU")
                             && message.getAuthor().map(user -> !user.isBot()).orElse(false)) {
+                        setPresence(EventType.SELL_OFFER);
                         if (message.getContent().contains("help")) {
                             eventItem = createHelpEventItem(message);
                         } else if (message.getContent().contains("wtb") || message.getContent().contains("confirm")
@@ -72,9 +75,7 @@ public class ChannelInteracter implements EventPublisher {
                         } else {
                             eventItem = createVISUALIZEEventItem(message);
                         }
-                    }
-
-                   else  if (getPrefix(message).equals("!TRD") && !message.getUserData().id().equals(myRawId)) { //verdammt nicht ändern!!! ANAS
+                    } else if (getPrefix(message).equals("!TRD")) {
                         if (message.getContent().contains("wtb")) {
                             eventItem = createBuyEventItem(message);
                         } else if (message.getContent().contains("wts")) {
@@ -110,7 +111,7 @@ public class ChannelInteracter implements EventPublisher {
                             .toCharArray(); // Erstellt aus dem String einzelne Elemente "products"
                     break;
                 case "bid":
-                    if ( messageShards.length == 5 ) return null;
+                    if (messageShards.length == 5) return null;
                     traderID = messageShards[4];
                     eventType = EventType.AUCTION_BID;
                     break;
@@ -253,18 +254,19 @@ public class ChannelInteracter implements EventPublisher {
         //* jeamand hat unser Angebot angenommen
         //* !trd accept <@USER> Gesuch-ID
         //      0    1       2     3     4
+
         String[] messageShards = message.getContent().split(" ");
-        if (isItMe(messageShards[2])) {
-            try {
+        try {
+            if (isItMe(messageShards[2])) {
                 EventType eventType = EventType.ACCEPT;
                 String traderID = "<@" + message.getAuthor().get().getId().asString() + ">";
                 String auctionId = messageShards[3];
 
                 return new EventItem(++logNr, myId, traderID,
                         auctionId, eventType, null, null, message.getChannel().block());
-            } catch (Exception e) {
-                System.err.println("ungültige eingabe");
             }
+        } catch (Exception e) {
+            System.err.println("ungültige eingabe");
         }
         return null;
     }
