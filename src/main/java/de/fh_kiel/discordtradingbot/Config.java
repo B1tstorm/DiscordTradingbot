@@ -3,7 +3,8 @@ package de.fh_kiel.discordtradingbot;
 import java.util.ArrayList;
 
 public class Config {
-    public static final String token =  "ODIzOTkwNDA1NjgyOTU0MzAw.YFo23Q.c8rbWnHwAE2QtxJPSgD2KvsAUBw";
+    public static final String token =  "ODQ1NDEwMTQ2OTEzNzQ3MDM0.YKgjjQ.VJDUA3YOxYR6yKXQRFShP293Vm4";
+
 
     public static String SEGID = null;
 
