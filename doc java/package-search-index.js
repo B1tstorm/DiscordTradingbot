@@ -1,0 +1,1 @@
+packageSearchIndex = [{"l":"All Packages","url":"allpackages-index.html"},{"l":"de.fh_kiel.discordtradingbot"},{"l":"de.fh_kiel.discordtradingbot.Analysis"},{"l":"de.fh_kiel.discordtradingbot.Holdings"},{"l":"de.fh_kiel.discordtradingbot.Interaction"},{"l":"de.fh_kiel.discordtradingbot.Transactions"}]
