@@ -20,6 +20,7 @@ public class SellTransactionManager extends AbstractTransactionManager implement
     @Override
     public void executeTransaction(EventType eventType, String eventId, Integer price, char[] product) {
         super.executeTransaction(eventType, eventId, (price * (-1)), product);
+        logHoldings();
     }
 
     @Override

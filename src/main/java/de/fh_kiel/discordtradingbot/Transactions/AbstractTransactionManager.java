@@ -64,6 +64,8 @@ public abstract class AbstractTransactionManager {
         transactions.remove(eventId);
         //TODO delete
         System.err.println("Transaction wurde excuted");
+        logHoldings();
+
     }
 
     public void executeTransaction(EventItem eventItem) {
@@ -105,6 +107,22 @@ public abstract class AbstractTransactionManager {
             totalLocalValue += letterArray.get((int) c - 65).getValue();
         }
         return totalLocalValue;
+    }
+    protected void logHoldings(){
+        System.out.print("LETTERS:    ");
+        for (Letter letter :Inventory.getInstance().getLetters()) {
+            System.out.print("."+(char)(letter.getLetter())+"    ");
+        }
+        System.out.println("");
+        System.out.print("Amount:     ");
+        for (Letter letter :Inventory.getInstance().getLetters()) {
+            System.out.print(letter.getAmount()+"    ");
+        }
+        System.out.println("");
+        System.out.print("VALUE:      ");
+        for (Letter letter :Inventory.getInstance().getLetters()) {
+            System.out.print(letter.getValue()+"    ");
+        }
     }
 
 }
