@@ -89,7 +89,7 @@ public abstract class AbstractTransactionManager {
     }
 
     protected Boolean isItMe(String botId) {
-        return botId.equals(bot.getChannelInteracter().getMentionId());
+        return botId.equals(bot.getChannelInteracter().getMyId());
     }
 
     protected String getRandId (){

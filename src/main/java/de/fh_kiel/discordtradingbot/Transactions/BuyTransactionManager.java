@@ -133,7 +133,7 @@ public class BuyTransactionManager extends AbstractTransactionManager implements
         }
         String s = "!trd wts " + id + " " + valueOf(product) + " " + value;
         bot.getChannelInteracter().writeThisMessage(s, channel);
-        transactions.put(id, new Transaction(new EventItem(null, bot.getChannelInteracter().getMentionId(), null, id
+        transactions.put(id, new Transaction(new EventItem(null, bot.getChannelInteracter().getMyId(), null, id
                 , EventType.BUY_OFFER, product, value, channel)));
     }
 
