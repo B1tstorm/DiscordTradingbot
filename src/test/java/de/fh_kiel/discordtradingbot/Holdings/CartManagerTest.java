@@ -2,6 +2,7 @@ package de.fh_kiel.discordtradingbot.Holdings;
 
 import static org.assertj.core.api.Assertions.*;
 
+import de.fh_kiel.discordtradingbot.ZuluBot;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalTime;
@@ -15,6 +16,8 @@ class CartManagerTest {
     void createCart() {
         CartManager testManager = new CartManager();
         ArrayList<Letter> buchstabenssollTest = new ArrayList<>();
+        ZuluBot bot = new ZuluBot();
+        bot.launch();
         Inventory inventory = bot.getInventory();
         Letter letter1 =  bot.getInventory().getLetters().get(0);
         Letter letter2 =  bot.getInventory().getLetters().get(1);

@@ -125,6 +125,10 @@ public class BuyTransactionManager extends AbstractTransactionManager implements
 
     }
 
+    /**
+     * schreibe ein verkaufsAngebot in den Channel
+     * @param product to be selled
+     */
     public void makeSellOffer(char[] product) {
         //* !trd wts ID product PRICE
         String id = getRandId();
@@ -168,6 +172,11 @@ public class BuyTransactionManager extends AbstractTransactionManager implements
         return counterOffer.toString();
     }
 
+    /**
+     * jemand will was kaufen und wir können die ganze Ware nicht liefern
+     * wir machen ein gegenAngebot, das die Buchstaben anbietet, die wir aus dem String im Inventar vorhanden haben
+     * @param eventItem
+     */
     private void makeCounterOffer(EventItem eventItem) {
         //* !ZULU counterOffer <ID> <String> [Preis]
         char[] product = eventItem.getProduct();

@@ -85,6 +85,10 @@ public class SellTransactionManager extends AbstractTransactionManager implement
         }
     }
 
+    /**
+     * schreibt ein "I want to buy" Angebot in den Cannel
+     * @param product to Buy
+     */
     public void makeBuyOffer(char[] product) {
         //* !trd wtb ID product PRICE
         String id = getRandId();

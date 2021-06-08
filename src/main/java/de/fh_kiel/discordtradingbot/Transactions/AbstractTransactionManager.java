@@ -26,7 +26,11 @@ public abstract class AbstractTransactionManager {
         this.bot = bot;
     }
 
-
+    /**
+     * check ob wir das produkt im Inventory haben
+     * @param product zu prüfen
+     * @return
+     */
     public Boolean checkInventory(@NonNull char[] product) {
         ArrayList<Letter> letters = bot.getInventory().getLetters();
         HashMap<Character, Integer> hashmap = fillHashmap(new HashMap<>());
@@ -42,7 +46,11 @@ public abstract class AbstractTransactionManager {
         return true;
     }
 
-    //interne Funktion, ergänzt ChenInventory
+    /**
+     * füllt eine Hashmap mit den Buchstaben von A bis Z
+     * @param hashMap wird voll returned
+     * @return
+     */
     protected HashMap<Character, Integer> fillHashmap(HashMap<Character, Integer> hashMap) {
         for (int ascii = 65; ascii < 91; ascii++) {
             hashMap.put((char) ascii, 0);
@@ -50,16 +58,32 @@ public abstract class AbstractTransactionManager {
         return hashMap;
     }
 
+    /**
+     * checkt ob wir ein Preis ausgeben konnen
+     * @param price to be prüfed
+     * @return
+     */
     public Boolean isPriceAffordable(Integer price) {
         return price <= bot.getInventory().getWallet();
     }
 
-
+    /**
+     * bricht eine Transaction ab
+     * @param eventId Transaction wird anhanddessen erkannt
+     */
     public void dismissTransaction(String eventId) {
         transactions.remove(eventId);
         System.out.println("Auktion verloren");
     }
 
+    /**
+     * je nach Transaction wird das Walle und die Anzahl der Buchstaben (LetterAmount) angepasst
+     * die Transaction wird gelöscht
+     * @param eventType um welche Transaction handelt es sich
+     * @param eventId id
+     * @param price price des Products
+     * @param product das String
+     */
     public void executeTransaction(EventType eventType, String eventId, Integer price, char[] product) {
         bot.getInventory().updateLetterAmount(eventType, product);
         bot.getInventory().updateWallet(price);
@@ -69,6 +93,10 @@ public abstract class AbstractTransactionManager {
         System.out.println("Transactions = " + transactions.size());
     }
 
+    /**
+     * methode überladung
+     * @param eventItem
+     */
     public void executeTransaction(EventItem eventItem) {
             Transaction transaction = transactions.get(eventItem.getAuctionId());
             if (transaction != null){
@@ -80,6 +108,12 @@ public abstract class AbstractTransactionManager {
         }
     }
 
+    /**
+     * prüfe ob das produkt dem angegebenen price wert ist (kauf und verkauf sind untershiedlich)// die Methode wird überschrieben in einigen fällen
+     * @param price
+     * @param product
+     * @return
+     */
     public Boolean isProductWorth(Integer price, char[] product) {
         //ToDo Method is to be tested
         int totalLocalValue = calculateProductValue(product);
@@ -91,16 +125,30 @@ public abstract class AbstractTransactionManager {
         // TODO für später: falls TotalLocalValue z.B. 5% mehr wäre als das Gebot, trotzdem verkaufen
     }
 
+    /**
+     * prüfe ob das meine Id ist
+     * @param botId
+     * @return
+     */
     protected Boolean isItMe(String botId) {
         return botId.equals(bot.getChannelInteracter().getMyId());
     }
 
+    /**
+     * returnt eine 4stellige zahl
+     * @return
+     */
     protected String getRandId (){
         Random r = new Random();
         int i = r.nextInt(9000);
         return i + 1000+"";
     }
 
+    /**
+     * rechnet das interne wert eined Produktes
+     * @param product
+     * @return
+     */
     protected int calculateProductValue(char[] product){
         int totalLocalValue = 0;
         ArrayList<Letter> letterArray = bot.getInventory().getLetters();
