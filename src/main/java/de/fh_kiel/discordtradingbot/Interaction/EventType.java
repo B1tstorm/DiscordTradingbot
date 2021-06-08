@@ -24,5 +24,8 @@ public enum EventType {
     WALLET,
     INVENTORY,
 
+    EVALUATION,
+    HISTORY,
+
     HELP;
 }

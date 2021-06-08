@@ -2,12 +2,13 @@ package de.fh_kiel.discordtradingbot.Analysis;
 
 import de.fh_kiel.discordtradingbot.Config;
 import de.fh_kiel.discordtradingbot.Holdings.Letter;
+import de.fh_kiel.discordtradingbot.Interaction.EventType;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class Evaluator implements Subscriber, Publisher {
+public class Evaluator implements LetterListener, LetterPublisher {
 
     private volatile static Evaluator onlyInstance;
     private final List<LetterStatisticsItem> letterStatistics;
@@ -38,20 +39,21 @@ public class Evaluator implements Subscriber, Publisher {
     }
 
     @Override
-    public void update(Letter l) {
+    public void update(Letter l, EventType source) {
+        if (source != EventType.HISTORY) return;
+
         int i = Config.charToIndex(l.getLetter());
         this.letterStatistics.get(i).updateValues(l);
 
-        //todo nicht selbst notifyen
         notifySubscribers(this.letterStatistics.get(i).letter);
     }
 
-    public void registerSubscriber(Subscriber s) {
+    public void registerSubscriber(LetterListener s) {
         this.subscribers.add(s);
     }
 
     @Override
-    public void removeSubscriber(Subscriber s) {
+    public void removeSubscriber(LetterListener s) {
         if (this.subscribers.contains(s)) {
             this.subscribers.remove(s);
         } else {
@@ -61,8 +63,8 @@ public class Evaluator implements Subscriber, Publisher {
 
     @Override
     public void notifySubscribers(Letter l) {
-        for (Subscriber s : subscribers) {
-            s.update(l);
+        for (LetterListener s : subscribers) {
+            s.update(l, EventType.EVALUATION);
         }
     }
 
@@ -74,7 +76,7 @@ public class Evaluator implements Subscriber, Publisher {
     // getCurrentAvgValue MaxValue ...
 
     public class LetterStatisticsItem {
-        private Letter letter;
+        private final Letter letter;
         private final List<Integer> tradedLetterValues = new ArrayList<>();
         private Integer amountTraded = 0;
         private double averageValue = 0d;

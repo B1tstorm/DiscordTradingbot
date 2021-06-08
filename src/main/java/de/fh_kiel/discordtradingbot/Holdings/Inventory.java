@@ -1,7 +1,6 @@
 package de.fh_kiel.discordtradingbot.Holdings;
 
-import de.fh_kiel.discordtradingbot.Analysis.Evaluator;
-import de.fh_kiel.discordtradingbot.Analysis.Subscriber;
+import de.fh_kiel.discordtradingbot.Analysis.LetterListener;
 import de.fh_kiel.discordtradingbot.Config;
 import de.fh_kiel.discordtradingbot.Interaction.EventItem;
 import de.fh_kiel.discordtradingbot.Interaction.EventListener;
@@ -10,7 +9,7 @@ import de.fh_kiel.discordtradingbot.ZuluBot;
 
 import java.util.ArrayList;
 
-public class Inventory implements EventListener, Subscriber {
+public class Inventory implements EventListener, LetterListener {
 
 	private final ArrayList<Letter> letters = new ArrayList<>();
 	private Integer wallet;
@@ -32,9 +31,9 @@ public class Inventory implements EventListener, Subscriber {
 	}
 
 	@Override
-	public void update(Letter l) {
+	public void update(Letter l, EventType source) {
+		if (source != EventType.EVALUATION) return;
 
-		//todo nur updates vom evaluator annehmen
 		letters.get(Config.charToIndex(l.getLetter())).setValue(l.getValue());
 	}
 
@@ -74,7 +73,7 @@ public class Inventory implements EventListener, Subscriber {
 			case INVENTORY:
 				sb = new StringBuilder("My current Inventory is : \n");
 				for (int i = 0; i < 26; i++) {
-					sb.append(this.letters.get(i).getLetter().toString()).append(" - ").append(this.letters.get(i).getValue()).append(" pieces \n");
+					sb.append(this.letters.get(i).getLetter().toString()).append(" - ").append(this.letters.get(i).getAmount()).append(" pieces - valued at ").append(this.letters.get(i).getValue()).append("\n");
 				}
 				break;
 			case WALLET:

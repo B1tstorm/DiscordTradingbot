@@ -1,7 +1,6 @@
 package de.fh_kiel.discordtradingbot.Analysis;
 
 import de.fh_kiel.discordtradingbot.Config;
-import de.fh_kiel.discordtradingbot.Interaction.ChannelInteracter;
 import de.fh_kiel.discordtradingbot.Interaction.EventItem;
 import de.fh_kiel.discordtradingbot.Interaction.EventListener;
 import de.fh_kiel.discordtradingbot.Interaction.EventType;
