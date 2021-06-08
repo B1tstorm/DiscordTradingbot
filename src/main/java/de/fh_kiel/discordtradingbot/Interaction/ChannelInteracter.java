@@ -1,5 +1,6 @@
 package de.fh_kiel.discordtradingbot.Interaction;
 
+import de.fh_kiel.discordtradingbot.Config;
 import de.fh_kiel.discordtradingbot.Transactions.Transaction;
 import de.fh_kiel.discordtradingbot.ZuluBot;
 import discord4j.core.DiscordClientBuilder;
@@ -59,7 +60,7 @@ public class ChannelInteracter implements EventPublisher {
 
                     EventItem eventItem = null;
                     // Bei Auktionen filtern dass nur Messages vom SEG Bot gelesen werden
-                    if (getPrefix(message).equalsIgnoreCase("!SEG") /*&& message.getUserData().id().equals("501500923495841792")*/) { //* Hier muss später die ID des SEG Bot stehen!
+                    if (getPrefix(message).equalsIgnoreCase("!SEG")) {
                         // Für den außergewöhnlichen Fall das der SEG Bot zu wenig Argumente in den Chat schreibt
                         setPresence(EventType.AUCTION_START);
                         eventItem = createEventItem(message);
@@ -106,6 +107,18 @@ public class ChannelInteracter implements EventPublisher {
             String traderID = null;
             EventType eventType = EventType.AUCTION_START;
 
+            //Ja, das ist ghetto.
+            if (Config.SEGID == null && messageShards.length == 3) {
+                zuluBot.getInventory().setWallet(Integer.parseInt(messageShards[2]));
+                this.writeThisMessage("Wallet set to " + zuluBot.getInventory().getWallet() + "\nReady to trade!", message.getChannel().block());
+                Config.SEGID = message.getUserData().id();
+                return null;
+            }
+
+            //das auch.
+            if (!message.getUserData().id().equals(Config.SEGID)) return null;
+
+
             switch (messageShards[2]) {
                 case "start":
                     products = messageShards[4]
@@ -126,12 +139,6 @@ public class ChannelInteracter implements EventPublisher {
                     price = Integer.parseInt(messageShards[5]);
                     //price = zuluBot.getSegTransactionManager().getTransactions().get(messageShards[3]).getPrice();
                     break;
-
-                    //initiale geldverteilung
-                default:
-                    zuluBot.getInventory().setWallet(Integer.parseInt(messageShards[2]));
-                    this.writeThisMessage("Wallet set to " + zuluBot.getInventory().getWallet() + "\nReady to trade!", message.getChannel().block());
-                    return null;
             }
             return new EventItem(++logNr,
                     message.getUserData().id(),

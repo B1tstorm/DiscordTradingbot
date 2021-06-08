@@ -97,7 +97,7 @@ public class Evaluator implements LetterListener, LetterPublisher {
             this.maxValue = Collections.max(tradedLetterValues);
             this.minValue = Collections.min(tradedLetterValues);
 
-            this.averageValue = ((getAverageValue(this.tradedLetterValues) * (1-(1.0/this.amountTraded))) + (this.staticValue * (1.0/this.amountTraded)));
+            this.averageValue = ((getAverageValue(this.tradedLetterValues) * (1.0-(1.0/this.amountTraded))) + (this.staticValue * (1.0/this.amountTraded)));
             this.increaseInValue = getValueIncreasePercentage(l.getValue());
         }
 
