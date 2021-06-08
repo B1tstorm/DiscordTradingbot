@@ -1,34 +1,33 @@
 package de.fh_kiel.discordtradingbot.Holdings;
 
+import de.fh_kiel.discordtradingbot.Analysis.Evaluator;
+import de.fh_kiel.discordtradingbot.Config;
+import de.fh_kiel.discordtradingbot.Interaction.EventItem;
+import de.fh_kiel.discordtradingbot.Interaction.EventListener;
 import de.fh_kiel.discordtradingbot.Interaction.EventType;
+import de.fh_kiel.discordtradingbot.ZuluBot;
 
 import java.util.ArrayList;
 
-public class Inventory {
-	//singelton pattern
-	private static Inventory inventory;
+public class Inventory implements EventListener {
 
 	private final ArrayList<Letter> letters = new ArrayList<>();
+	private Integer wallet;
+	private final ZuluBot bot;
 
+	//todo delete?
 	public void setWallet(Integer wallet) {
 		this.wallet = wallet;
 	}
 
-	private Integer wallet = 0;
 
 	//bei der erstellung eines Objekt, wird das ArrayLetters erstellt und initialisiert
-	private Inventory() {
-		// Alle 26 Buchstaben von A - Z werden mittels ascii initial gespeichert
-		for (int ascii = 65; ascii < 91; ascii++) {
-		letters.add(new Letter((char)ascii, 10, 10));
+	public Inventory(ZuluBot bot) {
+		this.bot = bot;
+		for (int i = 0; i < 26; i++) {
+			//todo amount init auf 0
+		letters.add(new Letter(Config.indexToChar(i), 10, 10));
 		}
-	}
-
-	public static Inventory getInstance(){
-		if (inventory == null){
-			inventory = new Inventory();
-		}
-		return Inventory.inventory;
 	}
 
 	private Integer calculateValue(Letter letter) {
@@ -43,7 +42,7 @@ public class Inventory {
 
 //	Vermindert oder erhöht den amount der Buchstaben im Array
 	public void updateLetterAmount(EventType eventType, char[] product){
-		ArrayList<Letter> letterArray = Inventory.getInstance().getLetters();
+		ArrayList<Letter> letterArray = this.getLetters();
 			for (char c : product) {
 				if(eventType == EventType.BUY_CONFIRM || eventType == EventType.ZULU_CONFIRM){
 					letterArray.get((int) c - 65).decrementAmount();
@@ -59,10 +58,29 @@ public class Inventory {
 	}
 
 	public  ArrayList<Letter> getLetters() {
-		return inventory.letters;
+		return this.letters;
 	}
 	public Integer getWallet() {
 		return wallet;
 	}
 
+	@Override
+	public void update(EventItem eventItem) {
+		StringBuilder sb;
+		switch (eventItem.getEventType()) {
+			case INVENTORY:
+				sb = new StringBuilder("My current Inventory is : \n");
+				for (int i = 0; i < 26; i++) {
+					sb.append(this.letters.get(i).getLetter().toString()).append(" - ").append(this.letters.get(i).getValue()).append(" pieces \n");
+				}
+				break;
+			case WALLET:
+				sb = new StringBuilder("My current buying power is : \n");
+				sb.append(this.wallet);
+				break;
+			default:
+				return;
+		}
+		bot.getChannelInteracter().writeThisMessage(sb.toString(), eventItem.getChannel());
+	}
 }

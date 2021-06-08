@@ -12,10 +12,10 @@ class SegTransactionManagerTest extends AbstractTransactionManager {
     void executeTransaction() {
         SegTransactionManager transactionManager = new SegTransactionManager();
         transactionManager.executeTransaction(EventType.AUCTION_WON,"22",200,"ABC".toCharArray());
-        assertThat(Inventory.getInstance().getWallet()).isEqualTo(-200);
-        assertThat(Inventory.getInstance().getLetters().get(0).getAmount()).isEqualTo(1);
-        assertThat(Inventory.getInstance().getLetters().get(1).getAmount()).isEqualTo(1);
-        assertThat(Inventory.getInstance().getLetters().get(2).getAmount()).isEqualTo(1);
+        assertThat(bot.getInventory().getWallet()).isEqualTo(-200);
+        assertThat(bot.getInventory().getLetters().get(0).getAmount()).isEqualTo(1);
+        assertThat(bot.getInventory().getLetters().get(1).getAmount()).isEqualTo(1);
+        assertThat(bot.getInventory().getLetters().get(2).getAmount()).isEqualTo(1);
         assertThat(TransactionManager.getTransactions().get("22")).isNull();
     }
 

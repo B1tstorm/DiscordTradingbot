@@ -20,7 +20,6 @@ public class SellTransactionManager extends AbstractTransactionManager implement
     @Override
     public void executeTransaction(EventType eventType, String eventId, Integer price, char[] product) {
         super.executeTransaction(eventType, eventId, (price * (-1)), product);
-        logHoldings();
     }
 
     @Override
@@ -90,9 +89,9 @@ public class SellTransactionManager extends AbstractTransactionManager implement
         //* !trd wtb ID product PRICE
         String id = getRandId();
         //String id = UUID.randomUUID().toString();
-        int value = 0;
-        for (Character c : product) {
-            int temp = Inventory.getInstance().getLetters().get((int) c - 65).getValue();
+        Integer value = 0;
+        for (Character c: product) {
+            int temp =  bot.getInventory().getLetters().get((int)c - 65).getValue();
             value += temp;
         }
         String s = "!trd wtb " + id + " " + valueOf(product) + " " + value;

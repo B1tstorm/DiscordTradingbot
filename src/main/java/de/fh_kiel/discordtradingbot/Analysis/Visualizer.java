@@ -1,5 +1,6 @@
 package de.fh_kiel.discordtradingbot.Analysis;
 
+import de.fh_kiel.discordtradingbot.Config;
 import de.fh_kiel.discordtradingbot.Interaction.ChannelInteracter;
 import de.fh_kiel.discordtradingbot.Interaction.EventItem;
 import de.fh_kiel.discordtradingbot.Interaction.EventListener;
@@ -26,7 +27,7 @@ public class Visualizer implements EventListener {
 
 	public File visualizeHistory(char c) throws IOException {
 
-		Evaluator.LetterStatisticsItem data = Evaluator.getInstance().getLetterStatistics().get(c);
+		Evaluator.LetterStatisticsItem data = Evaluator.getInstance().getLetterStatistics().get(Config.charToIndex(c));
 
 		final File file = new File("src\\main\\svg\\svgbase.svg");
 		File newfile = new File("src\\main\\svg\\temp.svg");

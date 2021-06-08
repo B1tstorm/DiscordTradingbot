@@ -7,6 +7,7 @@ import de.fh_kiel.discordtradingbot.Interaction.EventListener;
 import de.fh_kiel.discordtradingbot.ZuluBot;
 import de.fh_kiel.discordtradingbot.Interaction.EventType;
 import discord4j.core.object.entity.channel.MessageChannel;
+import io.netty.handler.codec.compression.JdkZlibEncoder;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,7 +25,7 @@ public class BuyTransactionManager extends AbstractTransactionManager implements
     @Override
     public Boolean isProductWorth(Integer price, char[] product) {
         int totalLocalValue = 0;
-        ArrayList<Letter> letterArray = Inventory.getInstance().getLetters();
+        ArrayList<Letter> letterArray = bot.getInventory().getLetters();
         //rechne gesamtWert vom product
         for (char c : product) {
             //zugriff auf werte im Inventar Letter Array mit ascii index berechnung
@@ -63,6 +64,7 @@ public class BuyTransactionManager extends AbstractTransactionManager implements
             } else {
                 price = eventItem.getValue();
             }
+
 
             switch (eventType) {
                 case ZULU_BUY:
@@ -126,9 +128,9 @@ public class BuyTransactionManager extends AbstractTransactionManager implements
     public void makeSellOffer(char[] product) {
         //* !trd wts ID product PRICE
         String id = getRandId();
-        int value = 0;
-        for (Character c : product) {
-            int temp = Inventory.getInstance().getLetters().get((int) c - 65).getValue();
+        Integer value = 0;
+        for (Character c: product) {
+            int temp =  bot.getInventory().getLetters().get((int)c - 65).getValue();
             value += temp;
         }
         String s = "!trd wts " + id + " " + valueOf(product) + " " + value;
@@ -140,13 +142,12 @@ public class BuyTransactionManager extends AbstractTransactionManager implements
     /**
      * die methode vergleicht das product mit dem Inventory. und liefert die davon im Inventory vorhandene Buchstaben zurück
      * bsp. er will halloe aber wir haben kein o,e also liefern wir hall zum Gegenangebot
-     *
      * @param product das product zum gegenAngebot
      * @return ein product den wir stattdessen anbieten
      */
     private String getCounterString(char[] product) {
         HashMap<Character, Integer> hashmap = fillHashmap(new HashMap<>());
-        ArrayList<Letter> letters = Inventory.getInstance().getLetters();
+        ArrayList<Letter> letters = bot.getInventory().getLetters();
         StringBuilder counterOffer = new StringBuilder();
 
         // Hashmap mit angeforderten Buchstaben (Buchstabe , Angeforderte Anzahl)

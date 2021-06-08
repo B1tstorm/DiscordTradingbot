@@ -1,6 +1,7 @@
 package de.fh_kiel.discordtradingbot.Interaction;
 
 import de.fh_kiel.discordtradingbot.Transactions.Transaction;
+import de.fh_kiel.discordtradingbot.Analysis.Visualizer;
 import de.fh_kiel.discordtradingbot.ZuluBot;
 import discord4j.core.DiscordClientBuilder;
 import discord4j.core.GatewayDiscordClient;
@@ -18,15 +19,17 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 
 import static java.lang.String.valueOf;
+import java.io.*;
+import java.util.*;
 
 
 public class ChannelInteracter implements EventPublisher {
-    static Integer logNr = 0;
     private final ZuluBot zuluBot;
     private final String myId;
     //public EventManager events;
     private final String myRawId;
     GatewayDiscordClient client;
+    static Integer logNr = 0;
 
     public ChannelInteracter(String token, ZuluBot bot) {
         this.zuluBot = bot;
@@ -253,7 +256,7 @@ public class ChannelInteracter implements EventPublisher {
     private EventItem createAcceptEventItem(Message message) {
         //* jeamand hat unser Angebot angenommen
         //* !trd accept <@USER> Gesuch-ID
-        //      0    1       2     3     4
+      //      0    1       2     3     4
 
         String[] messageShards = message.getContent().split(" ");
         try {
@@ -274,25 +277,29 @@ public class ChannelInteracter implements EventPublisher {
     private EventItem createVISUALIZEEventItem(Message message) {
         //* metriken, analysen
         //* !zulu visualize/wallet/inventory  [letter]
-        //    0        1             2
+        //    0        1                         2
         try {
-            String[] messageShards = message.getContent().split(" ");
+        List<String> messageShards = Arrays.asList(message.getContent().split(" "));
 
-            EventItem item = new EventItem(null, myId, null,
-                    null, null, messageShards[2].toCharArray(), null, message.getChannel().block());
+        EventItem item = new EventItem(null, myId, null,
+                null, null , null, null, message.getChannel().block());
 
-            if (messageShards[1].equalsIgnoreCase("visualize")) {
-                item.setEventType(EventType.VISUALIZE);
-            } else if (messageShards[1].equalsIgnoreCase("wallet")) {
-                item.setEventType(EventType.WALLET);
-            } else if (messageShards[1].equalsIgnoreCase("inventory")) {
-                item.setEventType(EventType.INVENTORY);
-            }
-            return item;
+        if (messageShards.get(1).equalsIgnoreCase("visualize")) {
+            item.setEventType(EventType.VISUALIZE);
+        } else if (messageShards.get(1).equalsIgnoreCase("wallet")) {
+            item.setEventType(EventType.WALLET);
+        } else if (messageShards.get(1).equalsIgnoreCase("inventory")) {
+            item.setEventType(EventType.INVENTORY);
+        }
+
+        if (messageShards.size() >= 3) {
+            item.setProduct(messageShards.get(2).toUpperCase(Locale.ROOT).toCharArray());
+        }
+        return item;
         } catch (Exception e) {
             System.err.println("ungültige eingabe");
+            return null;
         }
-        return null;
     }
 
     private EventItem createHelpEventItem(Message message) {

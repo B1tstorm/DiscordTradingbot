@@ -25,7 +25,7 @@ class InventoryTest {
     @Test
     void updateAmount() {
         //! Alle Amonts im Inventory sollen auf 0 sein sonst kein test
-        Inventory inventory = Inventory.getInstance();
+        Inventory inventory = bot.getInventory();
 
         inventory.updateLetterAmount(EventType.BUY_CONFIRM, "ABC".toCharArray());
         assertThat(inventory.getLetters().get(0).getAmount()).isEqualTo(1);

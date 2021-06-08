@@ -20,6 +20,7 @@ public class ZuluBot implements EventListener {
     private SellTransactionManager sellTransactionManager;
     private TransactionHistory transactionHistory;
     private Visualizer visualizer;
+    private Inventory inventory;
 
     public ZuluBot() {
     }
@@ -31,12 +32,14 @@ public class ZuluBot implements EventListener {
         this.sellTransactionManager = new SellTransactionManager(this);
         this.segTransactionManager = new SegTransactionManager(this);
         this.visualizer = new Visualizer (this);
+        this.inventory = new Inventory(this);
 
         channelInteracter.subscribe(TransactionHistory.getInstance());
         channelInteracter.subscribe(buyTransactionManager);
         channelInteracter.subscribe(sellTransactionManager);
         channelInteracter.subscribe(segTransactionManager);
         channelInteracter.subscribe(visualizer);
+        channelInteracter.subscribe(inventory);
         // Der ZuluBot subscribed sich selbst für die Help funktion
         channelInteracter.subscribe(this);
 
@@ -44,7 +47,7 @@ public class ZuluBot implements EventListener {
         transactionHistory.registerSubscriber(evaluator);
 
         //TODO DELETE
-        Inventory.getInstance().setWallet(2000);
+        inventory.setWallet(2000);
         channelInteracter.listenToChannel();
     }
 
@@ -70,6 +73,10 @@ public class ZuluBot implements EventListener {
 
     public Visualizer getVisualizer() {
         return visualizer;
+    }
+
+    public Inventory getInventory() {
+        return inventory;
     }
 
     @Override
