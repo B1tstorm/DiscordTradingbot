@@ -86,6 +86,10 @@ public class ZuluBot implements EventListener {
         provideHelp(eventItem.getChannel());
     }
 
+    /**
+     * wenn jemand !ZULU help schreibt bekommt er die folgende Ausgabe
+     * @param channel
+     */
     private void provideHelp(MessageChannel channel) {
         StringBuilder sb = new StringBuilder()
                 .append("Moin, ich bin Zulu \n")
@@ -93,7 +97,6 @@ public class ZuluBot implements EventListener {
                 .append("Kaufe verfügbare Worte \n")
                 .append("Pattern: !ZULU wtb <String> [Preis]\n")
                 .append("Beispiel 1: !ZULU wtb HALLO 50\n")
-                //.append("Beispiel 2: !ZULU wtb HALLO \n")
                 .append("Im Fall eines GegebAngebot antworten mir mit \n")
                 .append("!ZULU counterOffer <ID> <String> [Preis] \n")
                 .append("Bestätige ein Gegenangebot \n")
@@ -101,7 +104,12 @@ public class ZuluBot implements EventListener {
                 .append("Beispiel 3: !ZULU confirm 01 \n")
                 .append("Lehne ein Gegenangebot ab\n")
                 .append("Pattern: !ZULU deny <ID> \n")
-                .append("Beispiel 4: !ZULU deny 01 \n");
+                .append("Beispiel 4: !ZULU deny 01 \n")
+
+                .append("um eine Statistik zu bekommen schreibe\n!ZULU visualize \n")
+                .append("um unseren Wallet zu sehen:\n!ZULU wallet\n")
+                .append("um unseren Inventory zu sehen:\n!ZULU inventory\n")
+                ;
         channelInteracter.writeThisMessage(sb.toString(), channel);
     }
 }

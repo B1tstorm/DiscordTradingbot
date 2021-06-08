@@ -2,6 +2,9 @@ package de.fh_kiel.discordtradingbot.Interaction;
 
 import java.util.ArrayList;
 
+/**
+ * Benachrichtigt alle subscriber mit einem eventItem
+ */
 public interface EventPublisher {
     ArrayList<EventListener> listeners = new ArrayList<>();
     
