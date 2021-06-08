@@ -26,23 +26,6 @@ public abstract class AbstractTransactionManager {
         this.bot = bot;
     }
 
-    //Attributes
-    EventType eventType ;
-    Integer price ;
-    char[] product ;
-    String traderId ;
-    String eventId;
-
-    //methode extrahiert die Attribute aus dem EventItem
-    protected void fillAttributes (EventItem eventItem){
-        this.eventType = eventItem.getEventType();
-        this.price = eventItem.getValue();
-        this.product = eventItem.getProduct();
-        this.traderId = eventItem.getTraderID();
-        if (eventItem.getAuctionId() != null) {
-            this.eventId = eventItem.getAuctionId();
-        } else this.eventId = eventItem.getLogNr().toString();
-    }
 
     public Boolean checkInventory(@NonNull char[] product) {
         ArrayList<Letter> letters = bot.getInventory().getLetters();
@@ -71,9 +54,6 @@ public abstract class AbstractTransactionManager {
         return price <= bot.getInventory().getWallet();
     }
 
-    public Transaction startTransaction(EventType eventType) {
-        return new Transaction(eventType);
-    }
 
     public void dismissTransaction(String eventId) {
         transactions.remove(eventId);
@@ -84,7 +64,7 @@ public abstract class AbstractTransactionManager {
         bot.getInventory().updateWallet(price);
         transactions.remove(eventId);
         //TODO delete
-        System.out.println("Tranaction wurde excuted");
+        System.err.println("Transaction wurde executed");
     }
 
     public void executeTransaction(EventItem eventItem) {
@@ -129,5 +109,4 @@ public abstract class AbstractTransactionManager {
         }
         return totalLocalValue;
     }
-
 }
