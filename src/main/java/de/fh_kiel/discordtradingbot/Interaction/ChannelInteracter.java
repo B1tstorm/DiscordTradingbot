@@ -1,7 +1,6 @@
 package de.fh_kiel.discordtradingbot.Interaction;
 
 import de.fh_kiel.discordtradingbot.Transactions.Transaction;
-import de.fh_kiel.discordtradingbot.Analysis.Visualizer;
 import de.fh_kiel.discordtradingbot.ZuluBot;
 import discord4j.core.DiscordClientBuilder;
 import discord4j.core.GatewayDiscordClient;
@@ -19,7 +18,7 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 
 import static java.lang.String.valueOf;
-import java.io.*;
+
 import java.util.*;
 
 
@@ -76,7 +75,7 @@ public class ChannelInteracter implements EventPublisher {
                                 || message.getContent().contains("deny")) {
                             eventItem = createZuluEventItem(message);
                         } else {
-                            eventItem = createVISUALIZEEventItem(message);
+                            eventItem = createInfoEventItem(message);
                         }
                     } else if (getPrefix(message).equals("!TRD")) {
                         if (message.getContent().contains("wtb")) {
@@ -127,6 +126,12 @@ public class ChannelInteracter implements EventPublisher {
                     price = Integer.parseInt(messageShards[5]);
                     //price = zuluBot.getSegTransactionManager().getTransactions().get(messageShards[3]).getPrice();
                     break;
+
+                    //initiale geldverteilung
+                default:
+                    zuluBot.getInventory().setWallet(Integer.parseInt(messageShards[2]));
+                    this.writeThisMessage("Wallet set to " + zuluBot.getInventory().getWallet() + "\nReady to trade!", message.getChannel().block());
+                    return null;
             }
             return new EventItem(++logNr,
                     message.getUserData().id(),
@@ -135,8 +140,8 @@ public class ChannelInteracter implements EventPublisher {
                     products,
                     price,
                     message.getChannel().block());
-        } catch (Exception e) {
-            System.err.println("ungültige eingabeeeeee" + e);
+        } catch (ArrayIndexOutOfBoundsException e) {
+            System.err.println("Eingabe dieser länge ist nur zulässig zum Registrieren" + e);
         }
         return null;
     }
@@ -176,7 +181,7 @@ public class ChannelInteracter implements EventPublisher {
                     return null;
             }
             return new EventItem(++logNr, message.getUserData().id(), null, id, eventType, product, price, message.getChannel().block());
-        } catch (Exception e) {
+        } catch (ArrayIndexOutOfBoundsException e) {
             System.err.println("ungültige eingabe");
         }
         return null;
@@ -213,7 +218,7 @@ public class ChannelInteracter implements EventPublisher {
                             eventType, products, price, message.getChannel().block());
                 }
             }
-        } catch (Exception e) {
+        } catch (ArrayIndexOutOfBoundsException e) {
             System.err.println("ungültige eingabe");
         }
         return null;
@@ -250,7 +255,7 @@ public class ChannelInteracter implements EventPublisher {
                 }
 
             }
-        } catch (Exception e) {
+        } catch (ArrayIndexOutOfBoundsException e) {
             System.err.println("ungültige eingabe");
         }
         return null;
@@ -271,21 +276,25 @@ public class ChannelInteracter implements EventPublisher {
                 return new EventItem(++logNr, myId, traderID,
                         auctionId, eventType, null, null, message.getChannel().block());
             }
-        } catch (Exception e) {
+        } catch (ArrayIndexOutOfBoundsException e) {
             System.err.println("ungültige eingabe");
         }
         return null;
     }
 
-    private EventItem createVISUALIZEEventItem(Message message) {
+    private EventItem createInfoEventItem(Message message) {
         //* metriken, analysen
-        //* !zulu visualize/wallet/inventory  [letter]
-        //    0        1                         2
-        try {
+        //* !zulu [visualize/wallet/inventory]  [letter]
+        //    0                 1                  2
         List<String> messageShards = Arrays.asList(message.getContent().split(" "));
 
-        EventItem item = new EventItem(null, myId, null,
-                null, null , null, null, message.getChannel().block());
+        if (messageShards.size() == 1) {
+            this.writeThisMessage("!SEG register", message.getChannel().block());
+            return null;
+        }
+
+        EventItem item = new EventItem(
+                null, myId, null, null, null , null, null, message.getChannel().block());
 
         if (messageShards.get(1).equalsIgnoreCase("visualize")) {
             item.setEventType(EventType.VISUALIZE);
@@ -299,10 +308,6 @@ public class ChannelInteracter implements EventPublisher {
             item.setProduct(messageShards.get(2).toUpperCase(Locale.ROOT).toCharArray());
         }
         return item;
-        } catch (Exception e) {
-            System.err.println("ungültige eingabe");
-            return null;
-        }
     }
 
     private EventItem createHelpEventItem(Message message) {

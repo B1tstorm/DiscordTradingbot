@@ -12,7 +12,7 @@ import java.util.ArrayList;
 public class Inventory implements EventListener, LetterListener {
 
 	private final ArrayList<Letter> letters = new ArrayList<>();
-	private Integer wallet;
+	private int wallet;
 	private final ZuluBot bot;
 
 	//todo delete?
