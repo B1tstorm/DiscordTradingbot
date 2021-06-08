@@ -1,6 +1,8 @@
 package de.fh_kiel.discordtradingbot.Analysis;
 
-
+/**
+ * Transaction History to persistently save recent Transactions
+ */
 public class TransactionHistoryItem {
     private final Integer transactionId;
     private final Integer value;

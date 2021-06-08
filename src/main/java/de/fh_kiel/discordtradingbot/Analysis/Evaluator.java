@@ -7,11 +7,18 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Evaluator Class computes Lettervalues and transaction statistics
+ */
 public class Evaluator implements Subscriber {
 
     private volatile static Evaluator onlyInstance;
     private final List<LetterStatisticsItem> letterStatistics;
 
+    /**
+     * Initial Creation of 26 statistic items. One for each letter, index is alphabetical index of each letter
+     * e.g. [0] A, [25]Z
+     */
     Evaluator() {
         letterStatistics = new ArrayList<>();
         for(int i = 0 ; i < 26; i++) {
@@ -24,6 +31,11 @@ public class Evaluator implements Subscriber {
         return letterStatistics;
     }
 
+    /**
+     * Singleton Implementation of Evaluator Class. Thread-Safety trough double-checked-locking.
+     * Synchronized only for initialisation; better performance with statement synchronization
+     * @return
+     */
     public static Evaluator getInstance() {
         if (onlyInstance == null) {
             synchronized (Evaluator.class) {
@@ -35,6 +47,10 @@ public class Evaluator implements Subscriber {
         return onlyInstance;
     }
 
+    /**
+     * update
+     * @param l
+     */
     @Override
     public void update(Letter l) {
         int index = Config.charToIndex(l.getLetter());

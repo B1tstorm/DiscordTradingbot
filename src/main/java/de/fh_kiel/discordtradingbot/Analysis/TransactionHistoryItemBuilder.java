@@ -1,5 +1,8 @@
 package de.fh_kiel.discordtradingbot.Analysis;
 
+/**
+ * Builder Pattern for creating Transaction History Items
+ */
 public class TransactionHistoryItemBuilder {
 
     private Integer transactionId;

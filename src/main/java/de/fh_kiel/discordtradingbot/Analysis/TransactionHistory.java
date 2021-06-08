@@ -19,8 +19,11 @@ public class TransactionHistory implements EventListener, Publisher {
 
     private TransactionHistory() {
     }
-
-    // double-checked-locking: Synchronized only for initialisation; better performance with statement synchronization
+    /**
+     * Singleton Implementation of Transaction History Class. Thread-Safety trough double-checked-locking.
+     * Synchronized only for initialisation; better performance with statement synchronization
+     * @return instance of TransactionHistory
+     */
     public static TransactionHistory getInstance() {
         if (onlyInstance == null) {
             synchronized (TransactionHistory.class) {
@@ -32,6 +35,10 @@ public class TransactionHistory implements EventListener, Publisher {
         return onlyInstance;
     }
 
+    /**
+     * Method for creating new Transaction History Items for closed or won auctions
+     * @param eventItem from ChannelInteractor Class
+     */
     @Override
     public void update(EventItem eventItem) {
         assert eventItem != null;
@@ -42,20 +49,20 @@ public class TransactionHistory implements EventListener, Publisher {
         }
     }
 
+    /**
+     * Utility Method for extracting the letter of a single transaction
+     * @param item is an eventItem containing the letter as product
+     * @return Letter Object
+     */
     private Letter extractLetterObject(EventItem item) {
         return new Letter(item.getProduct()[0], 1, item.getValue());
     }
-    // Test
-    // Does not work as intended since it requires a value per letter, String only has combined val.
-    private List<Letter> extractLetterObjectList(EventItem item) {
-        List <Letter> letterObjectList = new ArrayList<>();
-        for(char chars : item.getProduct()){
-            letterObjectList.add(new Letter(chars, 1, item.getValue()));
-        }
-        return letterObjectList;
-    }
 
-    // Builder Pattern
+    /**
+     * Creation of TransactionHistoryItem with builder pattern.
+     * @param eventItem
+     * @return
+     */
     private TransactionHistoryItem createTransactionHistoryItem(EventItem eventItem) {
         return new TransactionHistoryItemBuilder().setTransactionId(Integer.parseInt(eventItem.getAuctionId()))
                 .setValue(eventItem.getValue())
@@ -65,7 +72,10 @@ public class TransactionHistory implements EventListener, Publisher {
                 .build();
     }
 
-
+    /**
+     * Observer Utility
+     * @param s
+     */
     public void registerSubscriber(Subscriber s) {
         this.subscribers.add(s);
     }
