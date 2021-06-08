@@ -1,6 +1,7 @@
 package de.fh_kiel.discordtradingbot.Holdings;
 
 import de.fh_kiel.discordtradingbot.Interaction.EventType;
+import de.fh_kiel.discordtradingbot.ZuluBot;
 import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.*;
 
@@ -25,6 +26,9 @@ class InventoryTest {
     @Test
     void updateAmount() {
         //! Alle Amonts im Inventory sollen auf 0 sein sonst kein test
+        //! Methode listenToChannel() soll auskommentiert werden  in    :     bot.launch();
+        ZuluBot bot = new ZuluBot();
+        bot.launch();
         Inventory inventory = bot.getInventory();
 
         inventory.updateLetterAmount(EventType.BUY_CONFIRM, "ABC".toCharArray());

@@ -98,10 +98,7 @@ public class BuyTransactionManager extends AbstractTransactionManager implements
                 case BUY_CONFIRM:
                     if (isItMe(traderId) && transactions.get(eventId) != null) {
                         executeTransaction(eventType, eventId, price, product);
-                        bot.getChannelInteracter().writeThisMessage("OKAY ich habe verkauft \n", eventItem.getChannel());
                         channel = eventItem.getChannel();
-                        makeSellOffer(product);
-
                     } else dismissTransaction(eventId);
                     break;
                 case ACCEPT: {

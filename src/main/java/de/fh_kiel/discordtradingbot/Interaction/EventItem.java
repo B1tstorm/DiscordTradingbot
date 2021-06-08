@@ -3,16 +3,6 @@ package de.fh_kiel.discordtradingbot.Interaction;
 import discord4j.core.object.entity.channel.MessageChannel;
 
 public class EventItem {
-
-    // Strings to process:
-    // !SEG auction start 12 A 10 -> - - auctionState auctionId product value
-    // !SEG auction bid 12 11 -> - - auctionState auctionId value
-    // !SEG auction bid 12 901251 11 -> auctionState auctionId traderId value
-    // !SEG auction won 12 901251 345 -> auctionState auctionId traderId value
-    // !SEG auction closed 12 -> auctionState auctionId
-
-
-
     private Integer logNr;  // chronological item number
     private String sellerID; // oder sellerID?
     private String traderID; // String besser zu verarbeiten als int/Integer

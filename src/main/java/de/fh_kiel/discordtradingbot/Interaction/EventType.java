@@ -1,5 +1,9 @@
 package de.fh_kiel.discordtradingbot.Interaction;
 
+/**
+ * alle Nachricht im Channel werden bei uns in ein EventItem gewandelt
+ * der typ dieses EventItem beschreibt, worum es in dieser Nachricht geht
+ */
 public enum EventType {
     BUY_OFFER,
     BUY_ACCEPT,
