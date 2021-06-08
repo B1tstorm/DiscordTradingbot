@@ -103,6 +103,7 @@ public class ChannelInteracter implements EventPublisher {
         try { //test
             String[] messageShards = message.getContent().split(" ");
             char[] products = null;
+            Integer price = null;
             String traderID = null;
             EventType eventType = EventType.AUCTION_START;
 
@@ -112,6 +113,7 @@ public class ChannelInteracter implements EventPublisher {
                             .replaceAll("\\s+", "") // Entfernt alle Leerzeichen
                             .toUpperCase() // Stellt alle Buchstaben auf Großbuchstaben
                             .toCharArray(); // Erstellt aus dem String einzelne Elemente "products"
+                    price = Integer.parseInt(messageShards[5]);
                     break;
                 case "bid":
                     if (messageShards.length == 5) return null;
@@ -122,7 +124,8 @@ public class ChannelInteracter implements EventPublisher {
                     traderID = messageShards[4];
                     eventType = EventType.AUCTION_WON;
                     products = zuluBot.getSegTransactionManager().getTransactions().get(messageShards[3]).getProduct();
-
+                    price = Integer.parseInt(messageShards[5]);
+                    //price = zuluBot.getSegTransactionManager().getTransactions().get(messageShards[3]).getPrice();
                     break;
             }
             return new EventItem(++logNr,
@@ -130,7 +133,7 @@ public class ChannelInteracter implements EventPublisher {
                     traderID,
                     messageShards[3], eventType,
                     products,
-                    Integer.parseInt(messageShards[5]),
+                    price,
                     message.getChannel().block());
         } catch (Exception e) {
             System.err.println("ungültige eingabeeeeee" + e);

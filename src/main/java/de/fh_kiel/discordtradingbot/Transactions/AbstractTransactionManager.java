@@ -57,6 +57,7 @@ public abstract class AbstractTransactionManager {
 
     public void dismissTransaction(String eventId) {
         transactions.remove(eventId);
+        System.out.println("Auktion verloren");
     }
 
     public void executeTransaction(EventType eventType, String eventId, Integer price, char[] product) {
@@ -64,7 +65,8 @@ public abstract class AbstractTransactionManager {
         bot.getInventory().updateWallet(price);
         transactions.remove(eventId);
         //TODO delete
-        System.err.println("Transaction wurde executed");
+        System.out.println("Transaction wurde executed");
+        System.out.println("Transactions = " + transactions.size());
     }
 
     public void executeTransaction(EventItem eventItem) {

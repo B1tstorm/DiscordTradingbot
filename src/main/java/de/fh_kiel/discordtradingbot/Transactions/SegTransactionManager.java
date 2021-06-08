@@ -14,7 +14,6 @@ public class SegTransactionManager extends AbstractTransactionManager implements
     }
 
 
-
     @Override
     protected Boolean isItMe(String botId) {
         return botId.equals(bot.getChannelInteracter().getMyRawId());
@@ -23,6 +22,7 @@ public class SegTransactionManager extends AbstractTransactionManager implements
     @Override
     public void executeTransaction(EventType eventType, String eventId, Integer price, char[] product) {
         super.executeTransaction(eventType, eventId, (price * (-1)), product);
+        System.out.println("Auktion gewonnen");
     }
 
     @Override
@@ -30,27 +30,28 @@ public class SegTransactionManager extends AbstractTransactionManager implements
         if (eventItem.getEventType().toString().contains("AUCTION")) {
 
             //Attributes
-            EventType eventType = eventItem.getEventType() ;
-            String traderId = eventItem .getTraderID() ;
+            EventType eventType = eventItem.getEventType();
+            String traderId = eventItem.getTraderID();
             String eventId;
             if (eventItem.getAuctionId() != null) {
                 eventId = eventItem.getAuctionId();
             } else eventId = eventItem.getLogNr().toString();
 
-            char[] product ;
-            Integer price ;
-            try{
-            if(eventItem.getProduct() == null){
-               product = transactions.get(eventId).getProduct();
-            }else{
-                product = eventItem.getProduct();
-            }
+            char[] product;
+            Integer price;
+            try {
+                if (eventItem.getProduct() == null) {
+                    product = transactions.get(eventId).getProduct();
+                } else {
+                    product = eventItem.getProduct();
+                }
 
-            if (  eventItem.getValue() == null){
-                price = transactions.get(eventId).getPrice();
-            }else{
-                price = eventItem.getValue();
-            }}catch (Exception e){
+                if (eventItem.getValue() == null) {
+                    price = transactions.get(eventId).getPrice();
+                } else {
+                    price = eventItem.getValue();
+                }
+            } catch (Exception e) {
                 System.out.println("Es wurde um eine transaction, die es nicht gibt, versteigert");
                 return;
             }
@@ -62,12 +63,15 @@ public class SegTransactionManager extends AbstractTransactionManager implements
                         Transaction transaction = new Transaction(eventItem);
                         transactions.put(eventId, transaction);
                         bot.getChannelInteracter().writeBidMessage(eventItem);
+                        System.out.println("Auf Auktion geboten");
+                        System.out.println("Transactions = " + transactions.size());
                     }
                     break;
                 case AUCTION_BID:
                     // !isItMe(traderId) negation damit wir uns nicht versteigern
                     if (isProductWorth(price, product) && isPriceAffordable(price) && !isItMe(traderId)) {
                         bot.getChannelInteracter().writeBidMessage(eventItem);
+                        System.out.println("Auf Auktion geboten");
                     }
                     break;
                 case AUCTION_WON:
