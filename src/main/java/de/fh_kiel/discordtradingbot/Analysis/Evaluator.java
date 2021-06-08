@@ -85,16 +85,17 @@ public class Evaluator implements LetterListener, LetterPublisher {
         private Integer maxValue = 0;
         private Double increaseInValue = 0d;
 
-        public LetterStatisticsItem(Double staticValue, char c) {
+        public LetterStatisticsItem(double staticValue, char c) {
             this.staticValue = staticValue;
             this.averageValue = staticValue;
+            this.maxValue = (int) staticValue;
             this.letter = new Letter(c, -1, (int) this.averageValue);
         }
 
         protected void updateValues(Letter l) {
             this.tradedLetterValues.add(l.getValue());
             this.amountTraded = this.tradedLetterValues.size();
-            this.maxValue = Collections.max(tradedLetterValues);
+            this.maxValue = Math.max(Collections.max(tradedLetterValues), this.getMaxValue());
             this.minValue = Collections.min(tradedLetterValues);
 
             this.averageValue = ((getAverageValue(this.tradedLetterValues) * (1.0-(1.0/this.amountTraded))) + (this.staticValue * (1.0/this.amountTraded)));
