@@ -41,13 +41,11 @@ public class SegTransactionManager extends AbstractTransactionManager implements
                 product = eventItem.getProduct();
             }
 
-
             if (  eventItem.getValue() == null){
                 price = transactions.get(eventId).getPrice();
             }else{
                 price = eventItem.getValue();
             }
-
 
             switch (eventType) {
                 //wenn Transaction neu ist, erstellen, zum Array hinzufügen und beim BID einsteigen
@@ -58,23 +56,17 @@ public class SegTransactionManager extends AbstractTransactionManager implements
                         bot.getChannelInteracter().writeBidMessage(eventItem);
                     }
                     break;
-                //TODO
-                //!trader ID muss geprüft werden. wir dürfen uns selbst nicht versteigern
                 case AUCTION_BID:
                     if (isProductWorth(price, product) && isPriceAffordable(price) && !isItMe(traderId)) {
-                        //TransactionManager.getTransactions().get(eventId).bid(eventId, price);
                         bot.getChannelInteracter().writeBidMessage(eventItem);
                     }
                     break;
                 case AUCTION_WON:
                     if (isItMe(traderId)) {
-                        //* "price*(-1)" macht die transaktion negativ (wir bezahlen)
                         executeTransaction(eventType, eventId, price, product);
                     } else {
                         dismissTransaction(eventId);
                     }
-                    break;
-                case AUCTION_CLOSE:
                     break;
             }
         }
