@@ -1,6 +1,5 @@
 package de.fh_kiel.discordtradingbot.Transactions;
 
-import de.fh_kiel.discordtradingbot.Interaction.ChannelInteracter;
 import de.fh_kiel.discordtradingbot.Interaction.EventItem;
 import de.fh_kiel.discordtradingbot.Interaction.EventListener;
 import de.fh_kiel.discordtradingbot.Interaction.EventType;
@@ -15,6 +14,11 @@ public class SegTransactionManager extends AbstractTransactionManager implements
     }
 
 
+
+    @Override
+    protected Boolean isItMe(String botId) {
+        return botId.equals(bot.getChannelInteracter().getMyRawId());
+    }
 
     @Override
     public void executeTransaction(EventType eventType, String eventId, Integer price, char[] product) {
@@ -35,20 +39,21 @@ public class SegTransactionManager extends AbstractTransactionManager implements
 
             char[] product ;
             Integer price ;
-
+            try{
             if(eventItem.getProduct() == null){
                product = transactions.get(eventId).getProduct();
             }else{
                 product = eventItem.getProduct();
             }
 
-
             if (  eventItem.getValue() == null){
                 price = transactions.get(eventId).getPrice();
             }else{
                 price = eventItem.getValue();
+            }}catch (Exception e){
+                System.out.println("Es wurde um eine transaction, die es nicht gibt, versteigert");
+                return;
             }
-
 
             switch (eventType) {
                 //wenn Transaction neu ist, erstellen, zum Array hinzufügen und beim BID einsteigen
@@ -59,23 +64,18 @@ public class SegTransactionManager extends AbstractTransactionManager implements
                         bot.getChannelInteracter().writeBidMessage(eventItem);
                     }
                     break;
-                //TODO
-                //!trader ID muss geprüft werden. wir dürfen uns selbst nicht versteigern
                 case AUCTION_BID:
+                    // !isItMe(traderId) negation damit wir uns nicht versteigern
                     if (isProductWorth(price, product) && isPriceAffordable(price) && !isItMe(traderId)) {
-                        //TransactionManager.getTransactions().get(eventId).bid(eventId, price);
                         bot.getChannelInteracter().writeBidMessage(eventItem);
                     }
                     break;
                 case AUCTION_WON:
                     if (isItMe(traderId)) {
-                        //* "price*(-1)" macht die transaktion negativ (wir bezahlen)
                         executeTransaction(eventType, eventId, price, product);
                     } else {
                         dismissTransaction(eventId);
                     }
-                    break;
-                case AUCTION_CLOSE:
                     break;
             }
         }

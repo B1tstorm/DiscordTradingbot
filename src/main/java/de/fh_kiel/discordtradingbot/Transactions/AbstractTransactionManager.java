@@ -2,7 +2,6 @@ package de.fh_kiel.discordtradingbot.Transactions;
 
 import de.fh_kiel.discordtradingbot.Holdings.Inventory;
 import de.fh_kiel.discordtradingbot.Holdings.Letter;
-import de.fh_kiel.discordtradingbot.Interaction.ChannelInteracter;
 import de.fh_kiel.discordtradingbot.Interaction.EventItem;
 import de.fh_kiel.discordtradingbot.Interaction.EventType;
 import de.fh_kiel.discordtradingbot.ZuluBot;
@@ -26,23 +25,6 @@ public abstract class AbstractTransactionManager {
         this.bot = bot;
     }
 
-    //Attributes
-    EventType eventType ;
-    Integer price ;
-    char[] product ;
-    String traderId ;
-    String eventId;
-
-    //methode extrahiert die Attribute aus dem EventItem
-    protected void fillAttributes (EventItem eventItem){
-        this.eventType = eventItem.getEventType();
-        this.price = eventItem.getValue();
-        this.product = eventItem.getProduct();
-        this.traderId = eventItem.getTraderID();
-        if (eventItem.getAuctionId() != null) {
-            this.eventId = eventItem.getAuctionId();
-        } else this.eventId = eventItem.getLogNr().toString();
-    }
 
     public Boolean checkInventory(@NonNull char[] product) {
         ArrayList<Letter> letters = Inventory.getInstance().getLetters();
@@ -71,9 +53,6 @@ public abstract class AbstractTransactionManager {
         return price <= Inventory.getInstance().getWallet();
     }
 
-    public Transaction startTransaction(EventType eventType) {
-        return new Transaction(eventType);
-    }
 
     public void dismissTransaction(String eventId) {
         transactions.remove(eventId);
@@ -84,7 +63,7 @@ public abstract class AbstractTransactionManager {
         Inventory.getInstance().updateWallet(price);
         transactions.remove(eventId);
         //TODO delete
-        System.out.println("Tranaction wurde excuted");
+        System.err.println("Transaction wurde excuted");
     }
 
     public void executeTransaction(EventItem eventItem) {
@@ -94,19 +73,17 @@ public abstract class AbstractTransactionManager {
             Inventory.getInstance().updateWallet(transaction.getPrice());
             transactions.remove(eventItem.getAuctionId());
             //TODO delete
-            System.out.println("Tranaction wurde excuted");
+            System.out.println("Transaction wurde excuted");
         }
     }
 
     public Boolean isProductWorth(Integer price, char[] product) {
-        //ToDo Method is to be tested
         int totalLocalValue = calculateProductValue(product);
 
         // Der Fall wenn wir auf einen Buchstaben versteigern können und der Buchstabe bei uns einen Wert von 0 hat, dann bieten wir nicht mit.
         if (totalLocalValue == 0) return false;
         // * bei Auction: wir bidden immer weiter geld solang der geforderte Price unter unserem internen price legt
         return totalLocalValue >= price;
-        // TODO für später: falls TotalLocalValue z.B. 5% mehr wäre als das Gebot, trotzdem verkaufen
     }
 
     protected Boolean isItMe(String botId) {
