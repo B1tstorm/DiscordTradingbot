@@ -15,34 +15,42 @@ public class Inventory implements EventListener, LetterListener {
 	private int wallet;
 	private final ZuluBot bot;
 
-	//todo delete?
 	public void setWallet(Integer wallet) {
 		this.wallet = wallet;
 	}
 
-
-	//bei der erstellung eines Objekt, wird das ArrayLetters erstellt und initialisiert
+	/**
+	 * bei der erstellung eines Objekt, wird das ArrayLetters erstellt und initialisiert
+	 */
 	public Inventory(ZuluBot bot) {
 		this.bot = bot;
 		for (int i = 0; i < 26; i++) {
-			//todo amount init auf 0
-		letters.add(new Letter(Config.indexToChar(i), 10, (int) ((Config.staticLetterValues[i] * 5) + 5)));
+		letters.add(new Letter(Config.indexToChar(i), 0, (int) ((Config.staticLetterValues[i] * 5) + 5)));
 		}
 	}
 
+	/**
+	 *holt den aktuell berechneten Wert eies beuchstaben
+	 */
 	@Override
 	public void update(Letter l, EventType source) {
 		if (source != EventType.EVALUATION) return;
-
 		letters.get(Config.charToIndex(l.getLetter())).setValue(l.getValue());
 	}
 
-	//metode kann auch einen negativen price bekommen
+	/**
+	 * kassiert oder zahlt punkte
+	 * metode kann auch einen negativen price bekommen
+	 * @param price
+	 */
 	public void updateWallet(Integer price)   {
 		this.wallet +=price;
 	}
 
-//	Vermindert oder erhöht den amount der Buchstaben im Array
+	/**
+	 * je nach kauf oder verkauf
+	 * Vermindert oder erhöht den amount der Buchstaben im Inventory
+	 */
 	public void updateLetterAmount(EventType eventType, char[] product){
 		ArrayList<Letter> letterArray = this.getLetters();
 			for (char c : product) {
@@ -54,11 +62,6 @@ public class Inventory implements EventListener, LetterListener {
 			}
 	}
 
-	public void deposit() {
-		// TODO - implement Inventory.deposit
-		throw new UnsupportedOperationException();
-	}
-
 	public  ArrayList<Letter> getLetters() {
 		return this.letters;
 	}
@@ -66,6 +69,10 @@ public class Inventory implements EventListener, LetterListener {
 		return wallet;
 	}
 
+	/**
+	 * ausgabe bei der bedienung von !ZULU
+	 * @param eventItem
+	 */
 	@Override
 	public void update(EventItem eventItem) {
 		StringBuilder sb;

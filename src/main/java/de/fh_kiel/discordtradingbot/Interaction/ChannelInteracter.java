@@ -94,11 +94,18 @@ public class ChannelInteracter implements EventPublisher {
         client.onDisconnect().block();
     }
 
+    /**
+     * minnt ein message an und gibt den ersten Index davon großgeschrieben
+     */
     private String getPrefix(Message message) {
         String[] messageShards = message.getContent().split(" ");
         return messageShards[0].toUpperCase();
     }
 
+    /**
+     * fall !SEG:
+     * ein Message wird in ein EvenItem gewandelt
+     */
     private EventItem createEventItem(Message message) {
         try { //test
             String[] messageShards = message.getContent().split(" ");
@@ -137,7 +144,6 @@ public class ChannelInteracter implements EventPublisher {
                     eventType = EventType.AUCTION_WON;
                     products = zuluBot.getSegTransactionManager().getTransactions().get(messageShards[3]).getProduct();
                     price = Integer.parseInt(messageShards[5]);
-                    //price = zuluBot.getSegTransactionManager().getTransactions().get(messageShards[3]).getPrice();
                     break;
             }
             return new EventItem(++logNr,
@@ -152,7 +158,10 @@ public class ChannelInteracter implements EventPublisher {
         }
         return null;
     }
-
+    /**
+     * fall !ZULU traiding:
+     * ein Message wird in ein EvenItem gewandelt
+     */
     private EventItem createZuluEventItem(Message message) {
         try {
             String[] messageShards = message.getContent().split(" ");
@@ -193,7 +202,10 @@ public class ChannelInteracter implements EventPublisher {
         }
         return null;
     }
-
+    /**
+     * fall !trd wtb oder confirm
+     * ein Message wird in ein EvenItem gewandelt
+     */
     private EventItem createBuyEventItem(Message message) {
         try {
             String[] messageShards = message.getContent().split(" ");
@@ -230,7 +242,10 @@ public class ChannelInteracter implements EventPublisher {
         }
         return null;
     }
-
+    /**
+     * fall !trd wts  oder confirm
+     * ein Message wird in ein EvenItem gewandelt
+     */
     private EventItem createSellEventItem(Message message) {
         try {
             String[] messageShards = message.getContent().split(" ");
@@ -267,7 +282,10 @@ public class ChannelInteracter implements EventPublisher {
         }
         return null;
     }
-
+    /**
+     * fall !trd accept:
+     * ein Message wird in ein EvenItem gewandelt
+     */
     private EventItem createAcceptEventItem(Message message) {
         //* jeamand hat unser Angebot angenommen
         //* !trd accept <@USER> Gesuch-ID
@@ -289,6 +307,12 @@ public class ChannelInteracter implements EventPublisher {
         return null;
     }
 
+    /**
+     * fall !ZULU visualize/wallet/inventory
+     * ein Message wird in ein EvenItem gewandelt
+     * @param message
+     * @return
+     */
     private EventItem createInfoEventItem(Message message) {
         //* metriken, analysen
         //* !zulu [visualize/wallet/inventory]  [letter]
@@ -317,12 +341,22 @@ public class ChannelInteracter implements EventPublisher {
         return item;
     }
 
+    /**
+     * fall !ZULU help
+     * ein Message wird in ein EvenItem gewandelt
+     * @param message
+     * @return
+     */
     private EventItem createHelpEventItem(Message message) {
         return new EventItem(null, null, null, null, EventType.HELP, null, null, message.getChannel().block());
     }
 
     //Outbound Communication
 
+    /**
+     * ändert den bot status
+     * @param eventType
+     */
     private void setPresence(EventType eventType) {
         //? Status anpassen ob Bot gerade in "auction" oder "trade"
         if (eventType.equals(EventType.AUCTION_START)) {
@@ -332,35 +366,14 @@ public class ChannelInteracter implements EventPublisher {
         }
     }
 
+
+
     /**
-     * @param eventItem Die Methode antwortet in dem Channel, aus dem die Anfrage kam
+     * schickt einen File in den channel als .svg Datei.
+     * Die Datei beinhaltet eine statistik zu jedem Buchstaben
+     * @param file
+     * @param channel
      */
-    public void writeMessage(EventItem eventItem) {
-        final MessageChannel channel = eventItem.getChannel();
-        switch (eventItem.getEventType()) {
-            // TODO: Switch-case überarbeiten sobald der TransactionManager das eventItem geändert schickt
-            case AUCTION_START:
-                channel.createMessage("!SEG auction bid " + eventItem.getAuctionId() + " " + eventItem.getValue()).block();
-                break;
-            case AUCTION_BID:
-                channel.createMessage("!SEG auction bid " + eventItem.getAuctionId() + " " + eventItem.getValue()).block();
-                break;
-            case AUCTION_WON:
-                //! If() ist ein Test welcher schon im TransactionManager stattfindet.
-                //! Das AUCTION_WON case wird nie ausgeführt da es beim TransactionManager
-                //! endet und writeMessage() nicht aufruft
-                if (eventItem.getTraderID().equals(myRawId)) {
-                    channel.createMessage("Wir haben die auctionID " + eventItem.getAuctionId() + " gewonnen!").block();
-                } else {
-                    channel.createMessage("Wir haben die auctionID " + eventItem.getAuctionId() + " verloren!").block();
-                }
-                break;
-            default:
-                channel.createMessage("Default case").block();
-        }
-    }
-
-
     public void uploadFile(File file, MessageChannel channel) {
         try {
             InputStream stream = new FileInputStream(file);
@@ -373,6 +386,10 @@ public class ChannelInteracter implements EventPublisher {
         }
     }
 
+    /**
+     * bidd um eine Auktion im SEG channel
+     * @param eventItem
+     */
     public void writeBidMessage(EventItem eventItem) {
         final MessageChannel channel = eventItem.getChannel();
         if (eventItem.getValue() != null) {
@@ -383,32 +400,42 @@ public class ChannelInteracter implements EventPublisher {
         }
     }
 
+    /**
+     * scheibt eine bestimmte Nachricht die als String übergenen wird
+     * @param s
+     * @param channel
+     */
     public void writeThisMessage(String s, MessageChannel channel) {
         channel.createMessage(s).block();
     }
 
+    /**
+     * scheibt //! !step accept @USER ID
+     * @param eventItem
+     */
     public void writeAcceptMessage(EventItem eventItem) {
         final MessageChannel channel = eventItem.getChannel();
-        //! Antworte mit dem pattern:
-        //! !step accept @USER ID
         channel.createMessage("!trd accept " + eventItem.getSellerID() + " " + eventItem.getAuctionId()).block();
     }
 
+    /**
+     *    schreibt in den Channel:     //* !step confirm ID @USER sell LETTER PRICE
+     * @param eventItem
+     */
     public void writeSellConfirmMessage(EventItem eventItem) {
-        //* !step confirm ID @USER sell LETTER PRICE
-
         final MessageChannel channel = eventItem.getChannel();
         String id = eventItem.getAuctionId();
         String traderId = eventItem.getTraderID();
         char[] product = zuluBot.getBuyTransactionManager().getTransactions().get(id).getProduct();
         Integer price = zuluBot.getBuyTransactionManager().getTransactions().get(id).getPrice();
         channel.createMessage("!trd confirm " + traderId + " " + id + " wts " + valueOf(product) + " " + price).block();
-        //*                    !trd confirm     <@USER>      Gesuch-ID  wts    LETTER/STRING    PRICE
     }
 
+    /**
+     *   schreibt in den Channel      //* !trd confirm <@USER> Gesuch-ID wtb PRODUCT PRICE
+     * @param eventItem
+     */
     public void writeBuyConfirmMessage(EventItem eventItem) {
-        //* !trd confirm <@USER> Gesuch-ID wtb PRODUCT PRICE
-
         final MessageChannel channel = eventItem.getChannel();
         String id = eventItem.getAuctionId();
         String traderId = eventItem.getTraderID();
@@ -418,14 +445,27 @@ public class ChannelInteracter implements EventPublisher {
 
     }
 
+    /**
+     * prüfe meine ID
+     * @param botId
+     * @return
+     */
     private Boolean isItMe(String botId) {
         return botId.equals(myId);
     }
 
+    /**
+     * liefert die ID mit mention klammern    <@.......>
+     * @return
+     */
     public String getMyId() {
         return myId;
     }
 
+    /**
+     * liefert die ID als eine Zahlen ID
+     * @return
+     */
     public String getMyRawId() {
         return myRawId;
     }
