@@ -16,6 +16,11 @@ public class SegTransactionManager extends AbstractTransactionManager implements
 
 
     @Override
+    protected Boolean isItMe(String botId) {
+        return botId.equals(bot.getChannelInteracter().getMyRawId());
+    }
+
+    @Override
     public void executeTransaction(EventType eventType, String eventId, Integer price, char[] product) {
         super.executeTransaction(eventType, eventId, (price * (-1)), product);
     }
@@ -60,6 +65,7 @@ public class SegTransactionManager extends AbstractTransactionManager implements
                     }
                     break;
                 case AUCTION_BID:
+                    // !isItMe(traderId) negation damit wir uns nicht versteigern
                     if (isProductWorth(price, product) && isPriceAffordable(price) && !isItMe(traderId)) {
                         bot.getChannelInteracter().writeBidMessage(eventItem);
                     }

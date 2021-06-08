@@ -1,6 +1,5 @@
 package de.fh_kiel.discordtradingbot.Interaction;
 
-import de.fh_kiel.discordtradingbot.Analysis.Visualizer;
 import de.fh_kiel.discordtradingbot.Transactions.Transaction;
 import de.fh_kiel.discordtradingbot.ZuluBot;
 import discord4j.core.DiscordClientBuilder;
@@ -13,8 +12,6 @@ import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.core.object.presence.Activity;
 import discord4j.core.object.presence.Presence;
 
-import javax.xml.crypto.dsig.TransformService;
-
 import static java.lang.String.valueOf;
 
 import java.io.*;
@@ -23,6 +20,7 @@ import java.io.*;
 public class ChannelInteracter implements EventPublisher {
     private final ZuluBot zuluBot;
     private final String myId;
+    private final String myRawId;
     //public EventManager events;
 
     GatewayDiscordClient client;
@@ -39,6 +37,7 @@ public class ChannelInteracter implements EventPublisher {
         //Erfolgreiche Authentifikation nach Stdout loggen
         assert client != null;
         myId = "<@!" + client.getSelfId().asString() + ">";
+        myRawId = client.getSelfId().asString();
         client.getEventDispatcher().on(ReadyEvent.class)
                 .subscribe(event -> {
                     final User self = event.getSelf();
@@ -52,7 +51,7 @@ public class ChannelInteracter implements EventPublisher {
                     final Message message = event.getMessage();
                     final MessageChannel channel = message.getChannel().block();
                     // Der Bot soll nicht auf eigene Commands reagieren
-                    if (message.getAuthor().get().getId().equals(myId)) return;
+                    if (message.getAuthor().get().getId().equals("myRawId")) return; //bitte nutze die Methode getMyId nicht. sie liefert nämlich die ID mit <@> und das ist falsch (ANAS)
 
                     EventItem eventItem = null;
                     // Bei Auktionen filtern dass nur Messages vom SEG Bot gelesen werden
@@ -75,7 +74,7 @@ public class ChannelInteracter implements EventPublisher {
                         }
                     }
 
-                   else  if (getPrefix(message).equals("!TRD") && !message.getUserData().id().equals(myId)) {
+                   else  if (getPrefix(message).equals("!TRD") && !message.getUserData().id().equals(myRawId)) { //verdammt nicht ändern!!! ANAS
                         if (message.getContent().contains("wtb")) {
                             eventItem = createBuyEventItem(message);
                         } else if (message.getContent().contains("wts")) {
@@ -326,7 +325,7 @@ public class ChannelInteracter implements EventPublisher {
                 //! If() ist ein Test welcher schon im TransactionManager stattfindet.
                 //! Das AUCTION_WON case wird nie ausgeführt da es beim TransactionManager
                 //! endet und writeMessage() nicht aufruft
-                if (eventItem.getTraderID().equals(getMyId())) {
+                if (eventItem.getTraderID().equals(myRawId)) {
                     channel.createMessage("Wir haben die auctionID " + eventItem.getAuctionId() + " gewonnen!").block();
                 } else {
                     channel.createMessage("Wir haben die auctionID " + eventItem.getAuctionId() + " verloren!").block();
@@ -401,5 +400,9 @@ public class ChannelInteracter implements EventPublisher {
 
     public String getMyId() {
         return myId;
+    }
+
+    public String getMyRawId() {
+        return myRawId;
     }
 }
